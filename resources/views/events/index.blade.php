@@ -10,51 +10,125 @@
         {{-- <div class="timeline-section"> ... </div> --}}
 
         {{-- FullCalendarを表示するためのHTML要素 --}}
+        <!-- モーダル表示に必要なCSS/JSを読み込む (例: Bootstrap) -->
+        {{-- 必要に応じて、CDNまたはnpm/yarnでインストールしたファイルを読み込みます --}}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
         <div id='calendar'></div>
 
+        <!-- イベント追加用モーダル -->
+        <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createEventModalLabel">新しいイベントを追加</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="createEventForm">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="eventTitle" class="form-label">タイトル</label>
+                                <input type="text" class="form-control" id="eventTitle" name="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="eventDescription" class="form-label">説明</label>
+                                <textarea class="form-control" id="eventDescription" name="description"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="eventStart" class="form-label">開始日時</label>
+                                <input type="datetime-local" class="form-control" id="eventStart" name="start_at" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="eventEnd" class="form-label">終了日時 (任意)</label>
+                                <input type="datetime-local" class="form-control" id="eventEnd" name="end_at">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                            <button type="submit" class="btn btn-primary">保存</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
+            var calendarElement = document.getElementById('calendar');
+            var createEventModal = new bootstrap.Modal(document.getElementById(
+            'createEventModal'));
+            var eventForm = document.getElementById('createEventForm');
+            var eventStartInput = document.getElementById('eventStart'); // 開始日時入力フィールド
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+            // カレンダー表示
+            var calendar = new FullCalendar.Calendar(calendarElement, {
                 initialView: 'dayGridMonth',
                 locale: 'ja',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
+                events: '{{ route('api.events') }}',
 
-                events: '#{{-- route('api.events') --}}',
+                // FullCalendarドキュメント: dateClick
+                // https://fullcalendar.io/docs/dateClick
 
-                eventClick: function(info) {
-                    if (info.event.url) {
-                        window.open(info.event.url);
-                    } else {
-                        alert('Event Details:\n' +
-                            'Title: ' + info.event.title + '\n' +
-                            'Start: ' + info.event.start.toLocaleString() +
-                            (info.event.end ? '\nEnd: ' + info.event.end.toLocaleString() : '')
-                        );
-                    }
-                    info.jsEvent.preventDefault(); // デフォルトのリンク動作などをキャンセル
-                },
-
-                // 日付部分をクリックした時のコールバック関数
                 dateClick: function(info) {
-                    alert('Date: ' + info.dateStr);
-                    // 例: window.location.href = '{{ route('events.create') }}?date=' + info.dateStr;
+                    createEventModal.show();
+
+                    // クリックされた日付を開始日時フィールドに自動入力
+                    // info.dateStr は YYYY-MM-DD 形式の文字列
+                    // datetime-local には YYYY-MM-DDTHH:mm 形式が必要なので、T00:00 を追加
+                    eventStartInput.value = info.dateStr + 'T00:00';
                 },
 
-                // FullCalendar の設定オプション
-                // https://fullcalendar.io/docs
+                // イベントクリック時の処理
+                eventClick: function(info) {
+                    // info.event.title でタイトル、info.event.start で開始日時などが取得できます
+                    // 詳細表示モーダルなどをここに実装します
+                    alert('Event: ' + info.event.title + '\nStart: ' + info.event.start
+                    .toLocaleString());
+                },
             });
-
             calendar.render();
+
+            // フォーム送信時の処理
+            eventForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(eventForm);
+                fetch('{{ route('events.store') }}', { // Ajaxでバックエンドに送信：　イベント作成APIのURL (POSTリクエスト)
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json' // JSONレスポンスを期待する
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            // HTTPステータスコードが200番台以外の場合のエラー処理
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'イベントの保存に失敗しました');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('イベント保存成功:', data);
+                        createEventModal.hide();
+                        eventForm.reset();
+
+                        // カレンダーのイベントデータを再読み込みして表示を更新
+                        calendar.refetchEvents();
+
+                        // 成功メッセージ表示など
+                        alert('イベントが保存されました！');
+                    })
+                    .catch(error => {
+                        console.error('イベント保存エラー:', error);
+                        alert('イベントの保存中にエラーが発生しました: ' + error.message);
+                    });
+            });
         });
     </script>
 @endpush
