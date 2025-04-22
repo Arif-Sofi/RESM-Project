@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateEventRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller
 {
@@ -18,7 +19,6 @@ class EventController extends Controller
     {
         $user = Auth::user();
         if ($user) {
-
             //$tasks = Event::all(); 要らないかも
             return view('events.index', [
                 //'tasks' => $tasks,
@@ -42,15 +42,38 @@ class EventController extends Controller
     public function store(StoreEventRequest $request)
     {
         $validatedData = $request->validated();
-        $event = Event::create($validatedData);
 
-        return response()->json(
-            [
-                'message' => 'イベントが保存されました。',
-                'event' => $event,
-            ],
-            201,
-        );
+        // フロントエンドからユーザーのタイムゾーン名を受け取る（例: 'user_timezone'というパラメータ名）
+        // もしタイムゾーン名がない場合は、Laravelのデフォルトタイムゾーン（config/app.php）やUTCなどを使用する
+        $userTimezone = $request->get('user_timezone', config('app.timezone'));
+
+        try {
+            if (isset($validatedData['start_at'])) {
+                $startAtInUserTimezone = Carbon::parse($validatedData['start_at'], $userTimezone);
+                $validatedData['start_at'] = $startAtInUserTimezone->utc(); // UTCに変換
+            }
+
+            if (isset($validatedData['end_at'])) {
+                $endAtInUserTimezone = Carbon::parse($validatedData['end_at'], $userTimezone);
+                $validatedData['end_at'] = $endAtInUserTimezone->utc();
+            } else {
+                $validatedData['end_at'] = null;
+            }
+            $event = Event::create($validatedData);
+
+            return response()->json(
+                [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'start' => $event->start_at->toIso8601String(),
+                    'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
+                ],
+                201,
+            );
+        } catch (\Exception $e) {
+            Log::error('Error creating event: ' . $e->getMessage());
+            return response()->json(['message' => 'イベントの作成中にエラーが発生しました。', 'error' => $e->getMessage()], 500);
+        }
     }
 
     /**

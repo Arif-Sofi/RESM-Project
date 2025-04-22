@@ -60,7 +60,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             var calendarElement = document.getElementById('calendar');
             var createEventModal = new bootstrap.Modal(document.getElementById(
-            'createEventModal'));
+                'createEventModal'));
             var eventForm = document.getElementById('createEventForm');
             var eventStartInput = document.getElementById('eventStart'); // 開始日時入力フィールド
 
@@ -87,7 +87,8 @@
                     // info.event.title でタイトル、info.event.start で開始日時などが取得できます
                     // 詳細表示モーダルなどをここに実装します
                     alert('Event: ' + info.event.title + '\nStart: ' + info.event.start
-                    .toLocaleString());
+                        .toLocaleString() + '\nEnd: ' + (info.event.end ? info.event.end
+                            .toLocaleString() : 'N/A'));
                 },
             });
             calendar.render();
@@ -95,7 +96,9 @@
             // フォーム送信時の処理
             eventForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+                const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                 var formData = new FormData(eventForm);
+                formData.append('user_timezone', userTimezone); // ユーザーのタイムゾーンを追加
                 fetch('{{ route('events.store') }}', { // Ajaxでバックエンドに送信：　イベント作成APIのURL (POSTリクエスト)
                         method: 'POST',
                         headers: {
