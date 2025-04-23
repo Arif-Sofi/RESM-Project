@@ -43,6 +43,20 @@
                                 <label for="eventEnd" class="form-label">終了日時 (任意)</label>
                                 <input type="datetime-local" class="form-control" id="eventEnd" name="end_at">
                             </div>
+                            <div class="mb-3">
+                                <label for="eventStaff" class="form-label">参加スタッフ (複数選択可)</label>
+                                <select class="form-select" id="eventStaff" name="staff[]" multiple
+                                    aria-label="Select Staff" style="height: 150px;">
+                                    @isset($users)
+                                        @foreach ($users as $user)
+                                            @if (Auth::id() !== $user->id) {{-- 自分自身を除外 --}}
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                            @endif
+                                        @endforeach
+                                    @endisset
+                                </select>
+                                <small class="form-text text-muted">Ctrl (または Command) キーを押しながらクリックすると複数選択できます。</small>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>

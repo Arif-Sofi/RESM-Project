@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -44,5 +46,24 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * このユーザーが作成したイベントを取得 (Eventモデルとのリレーション)
+     */
+    public function createdEvents(): HasMany
+    {
+        return $this->hasMany(Event::class, 'user_id');
+    }
+
+    /**
+     * このユーザーが参加しているイベントを取得 (Eventモデルとの多対多リレーション)
+     */
+    public function participatingEvents(): BelongsToMany
+    {
+        // 第2引数: ピボットテーブル名
+        // 第3引数: このモデルの外部キー名 (user_id)
+        // 第4引数: 関連モデルの外部キー名 (event_id)
+        return $this->belongsToMany(Event::class, 'event_staff_pivot', 'user_id', 'event_id');
     }
 }

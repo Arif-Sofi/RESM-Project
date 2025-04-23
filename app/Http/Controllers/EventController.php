@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
+use App\Models\User;
 
 class EventController extends Controller
 {
@@ -18,14 +21,16 @@ class EventController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user) {
-            //$tasks = Event::all(); 要らないかも
-            return view('events.index', [
-                //'tasks' => $tasks,
-            ]);
-        } else {
-            return redirect()->route('login')->with('error', 'ログインしてください。');
-        }
+        $events = Event::where('user_id', $user->id)
+            ->orWhereHas('staff', function ($query) use ($user) {
+                $query->where('users.id', $user->id);
+            })
+            ->with('creator', 'staff')
+            ->get();
+
+        $users = User::all();
+
+        return view('events.index', compact('events', 'users'));
     }
 
     /**
@@ -42,36 +47,53 @@ class EventController extends Controller
     public function store(StoreEventRequest $request)
     {
         $validatedData = $request->validated();
+        $userTimezone = $request->input('user_timezone', config('app.timezone')); // input() を使用推奨
 
-        // フロントエンドからユーザーのタイムゾーン名を受け取る（例: 'user_timezone'というパラメータ名）
-        // もしタイムゾーン名がない場合は、Laravelのデフォルトタイムゾーン（config/app.php）やUTCなどを使用する
-        $userTimezone = $request->get('user_timezone', config('app.timezone'));
-
+        DB::beginTransaction();
         try {
+            // タイムゾーン変換 (イベント作成前に行う)
             if (isset($validatedData['start_at'])) {
-                $startAtInUserTimezone = Carbon::parse($validatedData['start_at'], $userTimezone);
-                $validatedData['start_at'] = $startAtInUserTimezone->utc(); // UTCに変換
+                $validatedData['start_at'] = Carbon::parse($validatedData['start_at'], $userTimezone)->utc();
             }
-
             if (isset($validatedData['end_at'])) {
-                $endAtInUserTimezone = Carbon::parse($validatedData['end_at'], $userTimezone);
-                $validatedData['end_at'] = $endAtInUserTimezone->utc();
+                $validatedData['end_at'] = Carbon::parse($validatedData['end_at'], $userTimezone)->utc();
             } else {
                 $validatedData['end_at'] = null;
             }
-            $event = Event::create($validatedData);
 
+            // 認証ユーザーIDを追加
+            $validatedData['user_id'] = Auth::id();
+
+            // イベントを作成 (スタッフ情報を除くデータで一度作成)
+            // staff 配列は create に含めない
+            $eventDataToCreate = collect($validatedData)->except('staff')->toArray();
+            $event = Event::create($eventDataToCreate);
+
+            if (!empty($validatedData['staff'])) {
+                $event->staff()->attach($validatedData['staff']);
+            }
+            DB::commit();
+
+            // 成功レスポンス
             return response()->json(
                 [
-                    'id' => $event->id,
-                    'title' => $event->title,
-                    'start' => $event->start_at->toIso8601String(),
-                    'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
+                    'message' => 'イベントが作成されました。',
+                    'event' => [
+                        'id' => $event->id,
+                        'title' => $event->title,
+                        'start' => $event->start_at ? $event->start_at->toIso8601String() : null,
+                        'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
+                        'description' => $event->description,
+                        'creator' => $event->creator->name ?? 'N/A',
+                        'staff' => $event->load('staff')->staff->pluck('name')->implode(', '),
+                    ],
                 ],
                 201,
             );
         } catch (\Exception $e) {
+            DB::rollBack(); // エラー発生時はロールバック
             Log::error('Error creating event: ' . $e->getMessage());
+            // エラーレスポンス
             return response()->json(['message' => 'イベントの作成中にエラーが発生しました。', 'error' => $e->getMessage()], 500);
         }
     }
@@ -109,31 +131,39 @@ class EventController extends Controller
     }
 
     /**
-     * API endpoint to fetch events within a given date range.
+     * APIエンドポイント: イベントの取得
      */
     public function apiEvents(Request $request)
     {
-        $start = Carbon::parse($request->get('start'));
-        $end = Carbon::parse($request->get('end'));
+        $user = Auth::user();
+        $query = Event::where('user_id', $user->id) // 自分が作成したイベント
+            ->orWhereHas('staff', function ($query) use ($user) {
+                // または、自分がスタッフとして参加しているイベント
+                $query->where('users.id', $user->id);
+            });
 
-        $events = Event::where('start_at', '>=', $start)
-            ->where('start_at', '<=', $end)
-            ->orWhere(function ($query) use ($start, $end) {
-                $query
-                    ->where('start_at', '<=', $end) // 期間中に始まるイベント
-                    ->where('end_at', '>=', $start); // 期間中に終わるイベント、または期間を完全に含むイベント
-            })
-            ->get();
+        // FullCalendarなどのために期間指定があれば適用
+        if ($request->has(key: ['start', 'end'])) {
+            $query->where(function ($q) use ($request) {
+                $q->where('start_at', '<=', $request->input('end'))->where('end_at', '>=', $request->input('start'));
+            });
+        }
 
-        $formattedEvents = $events->map(function ($event) {
-            return [
-                'id' => $event->id,
-                'title' => $event->title,
-                'start' => $event->start_at->toIso8601String(),
-                'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
-            ];
-        });
+        $events = $query
+            ->with('creator:id,name', 'staff:id,name')
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'start' => $event->start_at ? $event->start_at->toIso8601String() : null,
+                    'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
+                    'description' => $event->description,
+                    'creator' => $event->creator->name ?? 'N/A',
+                    'staff' => $event->staff->pluck('name')->implode(', '),
+                ];
+            });
 
-        return response()->json($formattedEvents);
+        return response()->json($events);
     }
 }
