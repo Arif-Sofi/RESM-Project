@@ -47,11 +47,10 @@ class EventController extends Controller
     public function store(StoreEventRequest $request)
     {
         $validatedData = $request->validated();
-        $userTimezone = $request->input('user_timezone', config('app.timezone')); // input() を使用推奨
+        $userTimezone = $request->input('user_timezone', config('app.timezone'));
 
         DB::beginTransaction();
         try {
-            // タイムゾーン変換 (イベント作成前に行う)
             if (isset($validatedData['start_at'])) {
                 $validatedData['start_at'] = Carbon::parse($validatedData['start_at'], $userTimezone)->utc();
             }
