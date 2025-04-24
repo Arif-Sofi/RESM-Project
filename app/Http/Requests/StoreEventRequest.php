@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreEventRequest extends FormRequest
 {
@@ -26,7 +27,8 @@ class StoreEventRequest extends FormRequest
             'description' => 'nullable|string',
             'start_at' => 'required|date',
             'end_at' => 'nullable|date|after_or_equal:start_at',
-            // 'user_id' => 'required|exists:users,id', // ユーザーに紐付ける場合
+            'staff' => 'nullable|array',
+            'staff.*' => 'exists:users,id',
         ];
     }
 }
