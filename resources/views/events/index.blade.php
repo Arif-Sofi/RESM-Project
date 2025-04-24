@@ -87,17 +87,17 @@
                 // FullCalendarドキュメント: dateClick
                 // https://fullcalendar.io/docs/dateClick
 
-                dateClick: function(info) {
-                    createEventModal.show();
+            dateClick: function(info) {
+                createEventModal.show();
 
-                    // クリックされた日付を開始日時フィールドに自動入力
-                    // info.dateStr は YYYY-MM-DD 形式の文字列
-                    // datetime-local には YYYY-MM-DDTHH:mm 形式が必要なので、T00:00 を追加
-                    eventStartInput.value = info.dateStr + 'T00:00';
-                },
+                // クリックされた日付を開始日時フィールドに自動入力
+                // info.dateStr は YYYY-MM-DD 形式の文字列
+                // datetime-local には YYYY-MM-DDTHH:mm 形式が必要なので、T00:00 を追加
+                eventStartInput.value = info.dateStr + 'T00:00';
+            },
 
                 // イベントクリック時の処理
-                eventClick: function(info) {
+            eventClick: function(info) {
                     // info.event.title でタイトル、info.event.start で開始日時などが取得できます
                     // 詳細表示モーダルなどをここに実装します
                     alert('Event: ' + info.event.title +
