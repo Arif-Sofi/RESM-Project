@@ -144,7 +144,11 @@ class EventController extends Controller
         // FullCalendarなどのために期間指定があれば適用
         if ($request->has(key: ['start', 'end'])) {
             $query->where(function ($q) use ($request) {
-                $q->where('start_at', '<=', $request->input('end'))->where('end_at', '>=', $request->input('start'));
+                $q->where('start_at', '<=', $request->input('end'))
+                  ->where(function ($q2) use ($request) {
+                      $q2->where('end_at', '>=', $request->input('start'))
+                         ->orWhereNull('end_at');
+                  });
             });
         }
 
