@@ -100,9 +100,12 @@
                 eventClick: function(info) {
                     // info.event.title でタイトル、info.event.start で開始日時などが取得できます
                     // 詳細表示モーダルなどをここに実装します
-                    alert('Event: ' + info.event.title + '\nStart: ' + info.event.start
-                        .toLocaleString() + '\nEnd: ' + (info.event.end ? info.event.end
-                            .toLocaleString() : 'N/A'));
+                    alert('Event: ' + info.event.title +
+                        '\nStart: ' + info.event.start.toLocaleString() +
+                        '\nEnd: ' + (info.event.end ? info.event.end.toLocaleString() : 'N/A') +
+                        '\nCreator: ' + info.event.extendedProps.creator +
+                        '\nStaff: ' + (Array.isArray(info.event.extendedProps.staff) ? info.event.extendedProps.staff.join(', ') : (info.event.extendedProps.staff || 'N/A'))
+                    );
                 },
             });
             calendar.render();
