@@ -3,8 +3,8 @@
 @section('title', 'イベントカレンダー')
 
 @section('content')
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-2xl font-bold mb-6">カレンダー</h1>
+    <div class="calendar-container">
+        <h1 class="text-2xl font-bold mb-4">カレンダー</h1>
 
         {{-- ここにタイムラインやフィルタリングなどの要素を配置する --}}
         {{-- <div class="timeline-section"> ... </div> --}}
@@ -15,7 +15,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        <div id='calendar'></div>
+        <div id="calendar"></div>
 
         <!-- イベント追加用モーダル -->
         <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
@@ -83,6 +83,8 @@
                 initialView: 'dayGridMonth',
                 locale: 'ja',
                 events: '{{ route('api.events') }}',
+                height: '100%',
+                width: '100%',
 
                 // FullCalendarドキュメント: dateClick
                 // https://fullcalendar.io/docs/dateClick
@@ -151,4 +153,42 @@
             });
         });
     </script>
+@endpush
+
+@push('styles')
+<style>
+    /* ページ全体に適用するスタイル */
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    /* カレンダーコンテナを画面いっぱいに */
+    .calendar-container {
+        width: 100vw;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    /* カレンダー自体のサイズ */
+    #calendar {
+        width: 100%;
+        height: calc(100vh - 100px); /* 見出しの高さを引いた残り */
+        min-height: 500px;
+    }
+
+    /* FullCalendarのスタイル調整 */
+    .fc {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    /* レスポンシブデザイン調整 */
+    @media (max-width: 768px) {
+        #calendar {
+            height: calc(100vh - 120px);
+        }
+    }
+</style>
 @endpush
