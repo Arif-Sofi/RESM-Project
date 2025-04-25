@@ -1,9 +1,9 @@
+@import url('https://fonts.bunny.net/css?family=instrument-sans:400,500,600');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.bunny.net/css?family=instrument-sans:400,500,600');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
 
 body {
     font-family: 'Instrument Sans', 'Noto Sans JP', sans-serif;
