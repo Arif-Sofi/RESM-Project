@@ -14,10 +14,16 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Figtree', 'Noto Sans JP', ...defaultTheme.fontFamily.sans],
+            },
+            // スクリーンフィットのための高さと幅の拡張
+            minHeight: {
+                'screen-fit': '100vh',
             },
         },
     },
 
     plugins: [forms],
+    // ダークモードを設定（オプション）
+    darkMode: 'class', // または 'media'（システム設定に基づく場合）
 };
