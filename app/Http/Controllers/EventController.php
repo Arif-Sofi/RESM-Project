@@ -10,8 +10,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 use App\Models\User;
+use App\Mail\EventCreatedNotification;
 
 class EventController extends Controller
 {
@@ -72,6 +74,16 @@ class EventController extends Controller
                 $event->staff()->attach($validatedData['staff']);
             }
             DB::commit();
+
+            // イベント作成者とスタッフに通知メールを送信
+            if ($event->creator) {
+                Mail::to($event->creator->email)->queue(new EventCreatedNotification($event));
+            }
+
+            // スタッフに通知メールを送信
+            foreach ($event->staff as $staffMember) {
+                Mail::to($staffMember->email)->queue(new EventCreatedNotification($event));
+            }
 
             // 成功レスポンス
             return response()->json(
