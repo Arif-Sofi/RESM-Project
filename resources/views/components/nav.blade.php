@@ -1,4 +1,3 @@
-{{-- resources/views/components/nav.blade.php --}}
 <div class="nav-links">
     @auth
         <x-nav-link :href="url('/dashboard')" :active="request()->routeIs('dashboard')">
