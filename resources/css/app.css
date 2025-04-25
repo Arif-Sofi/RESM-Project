@@ -9,6 +9,15 @@ body {
     font-family: 'Instrument Sans', 'Noto Sans JP', sans-serif;
     margin: 0;
     padding: 0;
+}
+
+/* Remove the default flex display that was causing stretching issues */
+body:not(.auth-split-screen) {
+    display: block;
+}
+
+/* Only use flex for the split-screen login layout */
+body.auth-split-screen {
     display: flex;
     min-height: 100vh;
 }
@@ -31,4 +40,18 @@ body {
     flex: 1;
     background-position: center;
     background-size: cover;
+}
+
+/* Logo adjustments */
+.logo-container img {
+    max-height: 48px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Dashboard improvements */
+.dashboard-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1rem;
 }

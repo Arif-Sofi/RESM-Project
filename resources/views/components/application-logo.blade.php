@@ -1,1 +1,1 @@
-<img src = "{{ asset('images/SKSU-logo.png')}}" alt = "SKSU_Logo"  class = "w-100 h-100 fill-current text-gray-500 outline outline-black">
+<img src="{{ asset('images/SKSU-logo.png')}}" alt="SKSU_Logo" {{ $attributes->merge(['class' => 'fill-current text-gray-500']) }} style="object-fit: contain;">
