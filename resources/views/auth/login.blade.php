@@ -1,7 +1,7 @@
 <x-guest-layout>
-    <div class="min-h-screen flex flex-col md:flex-row">
+    <div class="min-h-screen flex flex-col md:flex-row w-full">
         <!-- Left Panel with Logo and Background -->
-        <div class="w-full md:w-1/2 bg-gradient-to-br from-amber-500 to-amber-100 dark:from-amber-600 dark:to-amber-900 p-8 flex flex-col justify-center items-center">
+        <div class="w-full md:w-1/2 bg-gradient-to-br from-amber-500 to-amber-100 dark:from-amber-600 dark:to-amber-900 p-8 flex flex-col justify-center items-center min-h-[40vh] md:min-h-screen">
             <div class="mb-8">
                 <a href="/">
                     <x-application-logo class="w-32 h-32" />
@@ -16,7 +16,7 @@
         </div>
 
         <!-- Right Panel with Login Form -->
-        <div class="w-full md:w-1/2 bg-gray-50 dark:bg-gray-900 p-8 flex items-center justify-center">
+        <div class="w-full md:w-1/2 bg-gray-50 dark:bg-gray-900 p-8 flex items-center justify-center min-h-[60vh] md:min-h-screen">
             <div class="w-full max-w-md">
                 <!-- Session Status -->
                 <x-auth-session-status class="mb-4" :status="session('status')" />

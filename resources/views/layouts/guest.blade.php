@@ -14,9 +14,20 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- 全幅表示のためのスタイル -->
+        <style>
+            html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow-x: hidden;
+            }
+        </style>
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen">
+        <div class="w-full min-h-screen">
             {{ $slot }}
         </div>
     </body>

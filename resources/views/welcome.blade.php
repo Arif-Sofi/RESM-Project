@@ -118,7 +118,7 @@
                 </div>
 
                 <h1 class="text-4xl md:text-5xl font-bold mb-8 text-gray-800 dark:text-white">
-                    サウジャナ・ウタマ国立学校イジョクへようこそ
+                    立入禁止区域
                 </h1>
 
                 <!-- Nav Links -->
@@ -130,7 +130,7 @@
                             </a>
                         @else
                             <a href="{{ route('login') }}" class="block w-full px-4 py-3 bg-white dark:bg-gray-800 rounded-lg text-center font-medium text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white dark:hover:bg-white dark:hover:text-gray-800 transition duration-200 shadow-md">
-                                ログイン
+                                関係者以外立ち入り禁止
                             </a>
                             @if (Route::has('register'))
                                 <a href="{{ route('register') }}" class="block w-full px-4 py-3 bg-white dark:bg-gray-800 rounded-lg text-center font-medium text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white dark:hover:bg-white dark:hover:text-gray-800 transition duration-200 shadow-md">
@@ -140,16 +140,16 @@
                         @endauth
 
                         <a href="{{ route('events.index') }}" class="block w-full px-4 py-3 bg-white dark:bg-gray-800 rounded-lg text-center font-medium text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white dark:hover:bg-white dark:hover:text-gray-800 transition duration-200 shadow-md">
-                            イベントカレンダー
+                            廃イベント記録表（破損あり）
                         </a>
                         <a href="https://laravel.com/docs" target="_blank" class="block w-full px-4 py-3 bg-white dark:bg-gray-800 rounded-lg text-center font-medium text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white dark:hover:bg-white dark:hover:text-gray-800 transition duration-200 shadow-md">
-                            ドキュメント
+                            最後の通信
                         </a>
                         <a href="https://laracasts.com" target="_blank" class="block w-full px-4 py-3 bg-white dark:bg-gray-800 rounded-lg text-center font-medium text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white dark:hover:bg-white dark:hover:text-gray-800 transition duration-200 shadow-md">
-                            Laracasts
+                            Outcasts
                         </a>
                         <a href="https://cloud.laravel.com" target="_blank" class="block w-full px-4 py-3 bg-white dark:bg-gray-800 rounded-lg text-center font-medium text-gray-800 dark:text-white hover:bg-gray-800 hover:text-white dark:hover:bg-white dark:hover:text-gray-800 transition duration-200 shadow-md">
-                            デプロイ
+                            Assimilate
                         </a>
                     </div>
                 @endif
