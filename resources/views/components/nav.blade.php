@@ -1,4 +1,4 @@
-<div class="nav-links">
+<div class="nav-links-horizontal">
     @auth
         <x-nav-link :href="url('/dashboard')" :active="request()->routeIs('dashboard')">
             ダッシュボード

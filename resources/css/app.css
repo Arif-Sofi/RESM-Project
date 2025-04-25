@@ -30,8 +30,18 @@ body.auth-split-screen {
     justify-content: center;
 }
 
+/* Modified: Change nav-links to vertical layout instead of horizontal */
 .nav-links {
     display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Add a special class for horizontal nav links if needed elsewhere */
+.nav-links-horizontal {
+    display: flex;
+    flex-direction: row;
     gap: 1rem;
     margin-bottom: 2rem;
 }
