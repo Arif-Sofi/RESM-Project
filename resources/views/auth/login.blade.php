@@ -8,10 +8,10 @@
                 </a>
             </div>
             <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4 text-center">
-                サウジャナ・ウタマ国立学校
+                ■■■
             </h1>
             <p class="text-xl text-gray-700 dark:text-gray-200 text-center">
-                スクール管理システムへようこそ
+                ▒▒▒▒▒▒▒▒▒▒▒▒
             </p>
         </div>
 

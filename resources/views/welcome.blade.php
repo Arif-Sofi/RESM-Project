@@ -162,7 +162,7 @@
             </div>
 
             <div class="right-panel w-3/5 bg-cover bg-center"
-                 style="background-image: url('{{ asset('images/background.webp') }}');"
+                 style="background-image: url('{{ asset('images/background.PNG') }}');"
                  role="img"
                  aria-label="学校の背景画像">
             </div>
