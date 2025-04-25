@@ -1,6 +1,3 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
-import forms from '@tailwindcss/forms';
-
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
@@ -14,7 +11,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', 'Noto Sans JP', ...defaultTheme.fontFamily.sans],
+                sans: ['Figtree', 'Noto Sans JP', 'sans-serif'],
             },
             // スクリーンフィットのための高さと幅の拡張
             minHeight: {
@@ -23,7 +20,9 @@ export default {
         },
     },
 
-    plugins: [forms],
+    plugins: [
+        require('@tailwindcss/forms'),
+    ],
     // ダークモードを設定（オプション）
     darkMode: 'class', // または 'media'（システム設定に基づく場合）
 };
