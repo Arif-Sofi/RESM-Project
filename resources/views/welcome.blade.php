@@ -111,13 +111,13 @@
         <div class="flex min-h-screen">
             <div class="left-panel w-2/5 p-8 flex flex-col justify-center relative overflow-hidden bg-gradient-to-br from-amber-500 to-amber-100 dark:from-amber-600 dark:to-amber-900">
                 <!-- Logo -->
-                <div class="mb-6">
+                <div class="mb-6 mt-6 flex justify-center">
                     <a href="/">
-                        <x-application-logo class="w-24 h-24" />
+                        <x-application-logo class="w-32 h-32" />
                     </a>
                 </div>
 
-                <h1 class="text-4xl md:text-5xl font-bold mb-8 text-gray-800 dark:text-white">
+                <h1 class="text-4xl md:text-5xl font-bold mb-8 text-gray-800 dark:text-white text-center">
                     立入禁止区域
                 </h1>
 
