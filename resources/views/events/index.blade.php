@@ -1,80 +1,106 @@
-@extends('events.layout')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('イベントカレンダー') }}
+        </h2>
+    </x-slot>
 
-@section('title', 'イベントカレンダー')
+    <div class="w-full py-12">
+        <div class="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="calendar-container">
+                {{-- FullCalendarを表示するためのHTML要素 --}}
+                <!-- モーダル表示に必要なCSS/JSを読み込む (例: Bootstrap) -->
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
 
-@section('content')
-    <div class="calendar-container">
-        <h1 class="text-2xl font-bold mb-4">カレンダー</h1>
+                <div id="calendar"></div>
 
-        {{-- ここにタイムラインやフィルタリングなどの要素を配置する --}}
-        {{-- <div class="timeline-section"> ... </div> --}}
-
-        {{-- FullCalendarを表示するためのHTML要素 --}}
-        <!-- モーダル表示に必要なCSS/JSを読み込む (例: Bootstrap) -->
-        {{-- 必要に応じて、CDNまたはnpm/yarnでインストールしたファイルを読み込みます --}}
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-        <div id="calendar"></div>
-
-        <!-- イベント追加用モーダル -->
-        <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="createEventModalLabel">新しいイベントを追加</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <!-- イベント追加用モーダル -->
+                <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createEventModalLabel">新しいイベントを追加</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form id="createEventForm">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="eventTitle" class="form-label">タイトル</label>
+                                        <input type="text" class="form-control" id="eventTitle" name="title" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="eventDescription" class="form-label">説明</label>
+                                        <textarea class="form-control" id="eventDescription" name="description"></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="eventStart" class="form-label">開始日時</label>
+                                        <input type="datetime-local" class="form-control" id="eventStart" name="start_at" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="eventEnd" class="form-label">終了日時 (任意)</label>
+                                        <input type="datetime-local" class="form-control" id="eventEnd" name="end_at">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="eventStaff" class="form-label">参加スタッフ (複数選択可)</label>
+                                        <select class="form-select" id="eventStaff" name="staff[]" multiple
+                                            aria-label="Select Staff" style="height: 150px;">
+                                            @isset($users)
+                                                @foreach ($users as $user)
+                                                    @if (Auth::id() !== $user->id) {{-- 自分自身を除外 --}}
+                                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                    @endif
+                                                @endforeach
+                                            @endisset
+                                        </select>
+                                        <small class="form-text text-muted">Ctrl (または Command) キーを押しながらクリックすると複数選択できます。</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                                    <button type="submit" class="btn btn-primary">保存</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <form id="createEventForm">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="eventTitle" class="form-label">タイトル</label>
-                                <input type="text" class="form-control" id="eventTitle" name="title" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="eventDescription" class="form-label">説明</label>
-                                <textarea class="form-control" id="eventDescription" name="description"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="eventStart" class="form-label">開始日時</label>
-                                <input type="datetime-local" class="form-control" id="eventStart" name="start_at" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="eventEnd" class="form-label">終了日時 (任意)</label>
-                                <input type="datetime-local" class="form-control" id="eventEnd" name="end_at">
-                            </div>
-                            <div class="mb-3">
-                                <label for="eventStaff" class="form-label">参加スタッフ (複数選択可)</label>
-                                <select class="form-select" id="eventStaff" name="staff[]" multiple
-                                    aria-label="Select Staff" style="height: 150px;">
-                                    @isset($users)
-                                        @foreach ($users as $user)
-                                            @if (Auth::id() !== $user->id) {{-- 自分自身を除外 --}}
-                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                            @endif
-                                        @endforeach
-                                    @endisset
-                                </select>
-                                <small class="form-text text-muted">Ctrl (または Command) キーを押しながらクリックすると複数選択できます。</small>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
-                            <button type="submit" class="btn btn-primary">保存</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
-@endsection
 
-@push('scripts')
+    <style>
+        /* カレンダーコンテナ */
+        .calendar-container {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* カレンダー自体のサイズ */
+        #calendar {
+            width: 100%;
+            height: calc(100vh - 250px); /* ヘッダーとナビゲーションバーの高さを考慮 */
+            min-height: 500px;
+        }
+
+        /* FullCalendarのスタイル調整 */
+        .fc {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* レスポンシブデザイン調整 */
+        @media (max-width: 768px) {
+            #calendar {
+                height: calc(100vh - 300px);
+            }
+        }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarElement = document.getElementById('calendar');
-            var createEventModal = new bootstrap.Modal(document.getElementById(
-                'createEventModal'));
+            var createEventModal = new bootstrap.Modal(document.getElementById('createEventModal'));
             var eventForm = document.getElementById('createEventForm');
             var eventStartInput = document.getElementById('eventStart'); // 開始日時入力フィールド
 
@@ -86,22 +112,15 @@
                 height: '100%',
                 width: '100%',
 
-                // FullCalendarドキュメント: dateClick
-                // https://fullcalendar.io/docs/dateClick
-
-            dateClick: function(info) {
-                createEventModal.show();
-
-                // クリックされた日付を開始日時フィールドに自動入力
-                // info.dateStr は YYYY-MM-DD 形式の文字列
-                // datetime-local には YYYY-MM-DDTHH:mm 形式が必要なので、T00:00 を追加
-                eventStartInput.value = info.dateStr + 'T00:00';
-            },
+                // クリック時の処理
+                dateClick: function(info) {
+                    createEventModal.show();
+                    // クリックされた日付を開始日時フィールドに自動入力
+                    eventStartInput.value = info.dateStr + 'T00:00';
+                },
 
                 // イベントクリック時の処理
-            eventClick: function(info) {
-                    // info.event.title でタイトル、info.event.start で開始日時などが取得できます
-                    // 詳細表示モーダルなどをここに実装します
+                eventClick: function(info) {
                     alert('Event: ' + info.event.title +
                         '\nStart: ' + info.event.start.toLocaleString() +
                         '\nEnd: ' + (info.event.end ? info.event.end.toLocaleString() : 'N/A') +
@@ -117,18 +136,17 @@
                 e.preventDefault();
                 const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                 var formData = new FormData(eventForm);
-                formData.append('user_timezone', userTimezone); // ユーザーのタイムゾーンを追加
-                fetch('{{ route('events.store') }}', { // Ajaxでバックエンドに送信：　イベント作成APIのURL (POSTリクエスト)
+                formData.append('user_timezone', userTimezone);
+                fetch('{{ route('events.store') }}', {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json' // JSONレスポンスを期待する
+                            'Accept': 'application/json'
                         },
                         body: formData
                     })
                     .then(response => {
                         if (!response.ok) {
-                            // HTTPステータスコードが200番台以外の場合のエラー処理
                             return response.json().then(data => {
                                 throw new Error(data.message || 'イベントの保存に失敗しました');
                             });
@@ -139,11 +157,7 @@
                         console.log('イベント保存成功:', data);
                         createEventModal.hide();
                         eventForm.reset();
-
-                        // カレンダーのイベントデータを再読み込みして表示を更新
                         calendar.refetchEvents();
-
-                        // 成功メッセージ表示など
                         alert('イベントが保存されました！');
                     })
                     .catch(error => {
@@ -153,42 +167,4 @@
             });
         });
     </script>
-@endpush
-
-@push('styles')
-<style>
-    /* ページ全体に適用するスタイル */
-    body {
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-    }
-
-    /* カレンダーコンテナを画面いっぱいに */
-    .calendar-container {
-        width: 100vw;
-        padding: 16px;
-        box-sizing: border-box;
-    }
-
-    /* カレンダー自体のサイズ */
-    #calendar {
-        width: 100%;
-        height: calc(100vh - 100px); /* 見出しの高さを引いた残り */
-        min-height: 500px;
-    }
-
-    /* FullCalendarのスタイル調整 */
-    .fc {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    /* レスポンシブデザイン調整 */
-    @media (max-width: 768px) {
-        #calendar {
-            height: calc(100vh - 120px);
-        }
-    }
-</style>
-@endpush
+</x-app-layout>
