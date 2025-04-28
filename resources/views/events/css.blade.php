@@ -20,4 +20,13 @@
             height: calc(100vh - 300px);
         }
     }
+
+    #calendar a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    nav a {
+        text-decoration: none !important;
+    }
 </style>
