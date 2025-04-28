@@ -30,7 +30,7 @@
                             <a href="{{ route('events.index') }}" class="block p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('イベントカレンダー') }}</span>
                             </a>
-                            <a href="#" class="block p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                            <a href="{{ route('profile.edit') }}" class="block p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('プロフィール設定') }}</span>
                             </a>
                         </div>
