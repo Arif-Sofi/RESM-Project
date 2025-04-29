@@ -1,7 +1,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarElement = document.getElementById('calendar');
-        var createEventModal = new bootstrap.Modal(document.getElementById('createEventModal'));
         var eventForm = document.getElementById('createEventForm');
         var eventStartInput = document.getElementById('eventStart'); // 開始日時入力フィールド
 
@@ -15,7 +14,7 @@
 
             // クリック時の処理
             dateClick: function(info) {
-                createEventModal.show();
+                window.dispatchEvent(new CustomEvent('open-modal', { detail: 'createEventModal' }));
                 // クリックされた日付を開始日時フィールドに自動入力
                 eventStartInput.value = info.dateStr + 'T00:00';
             },
@@ -58,7 +57,7 @@
                 })
                 .then(data => {
                     console.log('イベント保存成功:', data);
-                    createEventModal.hide();
+                    window.dispatchEvent(new CustomEvent('close'));
                     eventForm.reset();
                     calendar.refetchEvents();
                     alert('イベントが保存されました！');
