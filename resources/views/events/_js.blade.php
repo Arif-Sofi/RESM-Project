@@ -14,7 +14,9 @@
 
             // クリック時の処理
             dateClick: function(info) {
-                window.dispatchEvent(new CustomEvent('open-modal', { detail: 'createEventModal' }));
+                window.dispatchEvent(new CustomEvent('open-modal', {
+                    detail: 'createEventModal'
+                }));
                 // クリックされた日付を開始日時フィールドに自動入力
                 eventStartInput.value = info.dateStr + 'T00:00';
             },
@@ -67,5 +69,20 @@
                     alert('イベントの保存中にエラーが発生しました: ' + error.message);
                 });
         });
+    });
+
+    // 全スタッフ選択ボタンの処理
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllStaffButton = document.getElementById('selectAllStaffButton');
+        if (selectAllStaffButton) {
+            selectAllStaffButton.addEventListener('click', function() {
+                const eventStaffSelect = document.getElementById('eventStaff');
+                if (eventStaffSelect) {
+                    for (let i = 0; i < eventStaffSelect.options.length; i++) {
+                        eventStaffSelect.options[i].selected = true;
+                    }
+                }
+            });
+        }
     });
 </script>

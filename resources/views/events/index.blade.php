@@ -16,6 +16,6 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
     @include('events._css')
     @include('events._js')
-    @include('events._event_modal')
+    @include('events._create_event_modal')
 
 </x-app-layout>
