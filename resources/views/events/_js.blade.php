@@ -21,21 +21,64 @@
                 eventStartInput.value = info.dateStr + 'T00:00';
             },
 
-            // イベントクリック時の処理
+            // イベントクリック時の処理 (編集モーダルを開く)
             eventClick: function(info) {
-                alert('Event: ' + info.event.title +
-                    '\nStart: ' + info.event.start.toLocaleString() +
-                    '\nEnd: ' + (info.event.end ? info.event.end.toLocaleString() : 'N/A') +
-                    '\nCreator: ' + info.event.extendedProps.creator +
-                    '\nStaff: ' + (Array.isArray(info.event.extendedProps.staff) ? info.event
-                        .extendedProps.staff.join(', ') : (info.event.extendedProps.staff ||
-                            'N/A'))
-                );
+                // Open the edit modal
+                window.dispatchEvent(new CustomEvent('open-modal', {
+                    detail: 'editEventModal'
+                }));
+
+                // Populate the edit form with event data
+                const editEventId = document.getElementById('editEventId');
+                const editEventTitle = document.getElementById('editEventTitle');
+                const editEventDescription = document.getElementById('editEventDescription');
+                const editEventStart = document.getElementById('editEventStart');
+                const editEventStaffSelect = document.getElementById('editEventStaff');
+                const editEventSubmitButton = document.querySelector('#editEventForm x-primary-button'); // Assuming x-primary-button is the submit button
+
+                editEventId.value = info.event.id;
+                editEventTitle.value = info.event.title;
+                editEventDescription.value = info.event.extendedProps.description || '';
+
+                // Format dates for datetime-local input
+                const start = info.event.start;
+                const end = info.event.end;
+                editEventStart.value = start ? start.toISOString().slice(0, 16) : '';
+                // document.getElementById('editEventEnd').value = end ? end.toISOString().slice(0, 16) : ''; // Uncomment if using end date
+
+                // Select staff
+                const staffIds = info.event.extendedProps.staff_ids || []; // Assuming staff_ids is available in extendedProps
+
+                // Deselect all options first
+                for (let i = 0; i < editEventStaffSelect.options.length; i++) {
+                    editEventStaffSelect.options[i].selected = false;
+                }
+
+                // Select options based on staffIds
+                for (let i = 0; i < editEventStaffSelect.options.length; i++) {
+                    if (staffIds.includes(parseInt(editEventStaffSelect.options[i].value))) {
+                        editEventStaffSelect.options[i].selected = true;
+                    }
+                }
+
+                // Disable form elements if the user is not the creator
+                const isCreator = '{{ Auth::id() }}' == info.event.extendedProps.creator_id;
+
+                editEventTitle.disabled = !isCreator;
+                editEventDescription.disabled = !isCreator;
+                editEventStart.disabled = !isCreator;
+                editEventStaffSelect.disabled = !isCreator;
+
+                // Disable submit button if not the creator
+                if (editEventSubmitButton) {
+                    editEventSubmitButton.disabled = !isCreator;
+                    editEventSubmitButton.classList.toggle('opacity-50 cursor-not-allowed', !isCreator); // Optional: visually indicate disabled state
+                }
             },
         });
         calendar.render();
 
-        // フォーム送信時の処理
+        // Create form submission handler
         eventForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -69,9 +112,49 @@
                     alert('イベントの保存中にエラーが発生しました: ' + error.message);
                 });
         });
+
+        // Edit form submission handler
+        const editEventForm = document.getElementById('editEventForm');
+        if (editEventForm) {
+            editEventForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const eventId = document.getElementById('editEventId').value;
+                const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                var formData = new FormData(editEventForm);
+                formData.append('_method', 'PATCH'); // Use PATCH method for update
+                formData.append('user_timezone', userTimezone);
+
+                fetch(`/events/${eventId}`, { // Assuming the update route is /events/{id}
+                        method: 'POST', // Fetch requires POST for PATCH/PUT with FormData
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'イベントの更新に失敗しました');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('イベント更新成功:', data);
+                        window.dispatchEvent(new CustomEvent('close'));
+                        calendar.refetchEvents(); // Refresh calendar events
+                        alert('イベントが更新されました！');
+                    })
+                    .catch(error => {
+                        console.error('イベント更新エラー:', error);
+                        alert('イベントの更新中にエラーが発生しました: ' + error.message);
+                    });
+            });
+        }
     });
 
-    // 全スタッフ選択ボタンの処理
+    // Select All Staff button handler for Create Modal
     document.addEventListener('DOMContentLoaded', function() {
         const selectAllStaffButton = document.getElementById('selectAllStaffButton');
         if (selectAllStaffButton) {
@@ -80,6 +163,21 @@
                 if (eventStaffSelect) {
                     for (let i = 0; i < eventStaffSelect.options.length; i++) {
                         eventStaffSelect.options[i].selected = true;
+                    }
+                }
+            });
+        }
+    });
+
+    // Select All Staff button handler for Edit Modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllStaffButtonEdit = document.getElementById('selectAllStaffButtonEdit');
+        if (selectAllStaffButtonEdit) {
+            selectAllStaffButtonEdit.addEventListener('click', function() {
+                const editEventStaffSelect = document.getElementById('editEventStaff');
+                if (editEventStaffSelect) {
+                    for (let i = 0; i < editEventStaffSelect.options.length; i++) {
+                        editEventStaffSelect.options[i].selected = true;
                     }
                 }
             });

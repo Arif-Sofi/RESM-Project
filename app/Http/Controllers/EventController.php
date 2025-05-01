@@ -130,7 +130,53 @@ class EventController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event)
     {
-        //
+        $validatedData = $request->validated();
+        $userTimezone = $request->input('user_timezone', config('app.timezone'));
+
+        DB::beginTransaction();
+        try {
+            if (isset($validatedData['start_at'])) {
+                $validatedData['start_at'] = Carbon::parse($validatedData['start_at'], $userTimezone)->utc();
+            }
+            if (isset($validatedData['end_at'])) {
+                $validatedData['end_at'] = Carbon::parse($validatedData['end_at'], $userTimezone)->utc();
+            } else {
+                $validatedData['end_at'] = null;
+            }
+
+            // イベントを更新
+            $event->update(collect($validatedData)->except('staff')->toArray());
+
+            // スタッフを更新
+            if (isset($validatedData['staff'])) {
+                $event->staff()->sync($validatedData['staff']);
+            } else {
+                $event->staff()->detach();
+            }
+
+            DB::commit();
+
+            return response()->json(
+                [
+                    'message' => 'イベントが更新されました。',
+                    'event' => [
+                        'id' => $event->id,
+                        'title' => $event->title,
+                        'start' => $event->start_at ? $event->start_at->toIso8601String() : null,
+                        'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
+                        'description' => $event->description,
+                        'creator' => $event->creator->name ?? 'N/A',
+                        'staff' => $event->load('staff')->staff->pluck('name')->implode(', '),
+                        'staff_ids' => $event->staff->pluck('id')->toArray(),
+                    ],
+                ],
+                200,
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error updating event: ' . $e->getMessage());
+            return response()->json(['message' => 'イベントの更新中にエラーが発生しました。', 'error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -176,6 +222,8 @@ class EventController extends Controller
                     'description' => $event->description,
                     'creator' => $event->creator->name ?? 'N/A',
                     'staff' => $event->staff->pluck('name')->implode(', '),
+                    'staff_ids' => $event->staff->pluck('id')->toArray(),
+                    'creator_id' => $event->creator->id ?? null,
                 ];
             });
 

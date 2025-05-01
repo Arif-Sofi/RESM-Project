@@ -17,5 +17,6 @@
     @include('events._css')
     @include('events._js')
     @include('events._create_event_modal')
+    @include('events._edit_event_modal')
 
 </x-app-layout>
