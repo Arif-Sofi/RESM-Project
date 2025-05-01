@@ -35,6 +35,9 @@
                 <div class="mb-3">
                     <div class="flex items-center justify-between">
                         <x-input-label for="editEventStaff" value="参加スタッフ (複数選択可)" />
+                        <x-secondary-button id="cancelAllStaffButtonEdit" type="button" class="mr-2">
+                            {{ __('全スタッフの選択を解除') }}
+                        </x-secondary-button>
                         <x-secondary-button id="selectAllStaffButtonEdit" type="button">
                             {{ __('全スタッフを選択') }}
                         </x-secondary-button>
