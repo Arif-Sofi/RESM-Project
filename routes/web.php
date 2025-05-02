@@ -18,6 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('events', controller: 'App\Http\Controllers\EventController');
+    Route::delete('/events/{event}', [\App\Http\Controllers\EventController::class, 'destroy'])->name('events.destroy');
     Route::get('/api/events', [App\Http\Controllers\EventController::class, 'apiEvents'])->name('api.events');});
 
 require __DIR__.'/auth.php';

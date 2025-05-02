@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 
 use App\Models\User;
 use App\Mail\EventCreatedNotification;
+use Symfony\Component\HttpFoundation\Response;
 
 class EventController extends Controller
 {
@@ -126,6 +128,20 @@ class EventController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Event $event)
+    {
+        if (Auth::id() !== $event->user_id) {
+            return response()->json(['message' => 'Unauthorized'], Response::HTTP_FORBIDDEN);
+        }
+
+        $event->delete();
+
+        return response()->json(['message' => 'イベントが削除されました。'], Response::HTTP_OK);
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateEventRequest $request, Event $event)
@@ -177,14 +193,6 @@ class EventController extends Controller
             Log::error('Error updating event: ' . $e->getMessage());
             return response()->json(['message' => 'イベントの更新中にエラーが発生しました。', 'error' => $e->getMessage()], 500);
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Event $event)
-    {
-        //
     }
 
     /**

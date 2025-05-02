@@ -1,8 +1,9 @@
 <x-modal name="editEventModal" maxWidth="xl" focusable>
     <form id="editEventForm">
+        @csrf
         <div class="px-6 py-4">
             <div class="text-lg font-medium text-gray-900">
-                {{ __('イベントを編集') }}
+                {{ __('イベントを編集 ') }}
             </div>
 
             <div class="mt-4">
@@ -11,7 +12,8 @@
 
                 <div class="mb-3">
                     <x-input-label for="editEventTitle" value="タイトル" />
-                    <x-text-input id="editEventTitle" class="block mt-1 w-full" type="text" name="title" required />
+                    <x-text-input id="editEventTitle" class="block mt-1 w-full" type="text" name="title"
+                        required />
                     <x-input-error :messages="$errors->get('title')" class="mt-2" />
                 </div>
                 <div class="mb-3">
@@ -59,14 +61,19 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-end px-6 py-3 bg-gray-100 text-end">
-            <x-secondary-button x-on:click="$dispatch('close')">
-                {{ __('キャンセル') }}
-            </x-secondary-button>
+        <div class="flex items-center justify-between px-6 py-3 bg-gray-100 text-end">
+            <x-danger-button id="deleteEventButton" type="button">
+                {{ __('削除') }}
+            </x-danger-button>
+            <div>
+                <x-primary-button type="submit" class="mr-3">
+                    {{ __('更新') }}
+                </x-primary-button>
 
-            <x-primary-button class="ms-3">
-                {{ __('更新') }}
-            </x-primary-button>
+                <x-secondary-button x-on:click="$dispatch('close')">
+                    {{ __('キャンセル') }}
+                </x-secondary-button>
+            </div>
         </div>
     </form>
 </x-modal>
