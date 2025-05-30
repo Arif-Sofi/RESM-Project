@@ -7,7 +7,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+Route::get('/set-locale/{locale}', [App\Http\Controllers\LocalizationController::class, 'setLocale'])->name('setLocale');
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -22,3 +22,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/events', [App\Http\Controllers\EventController::class, 'apiEvents'])->name('api.events');});
 
 require __DIR__.'/auth.php';
+
