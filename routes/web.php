@@ -19,7 +19,14 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('events', controller: 'App\Http\Controllers\EventController');
     Route::delete('/events/{event}', [\App\Http\Controllers\EventController::class, 'destroy'])->name('events.destroy');
-    Route::get('/api/events', [App\Http\Controllers\EventController::class, 'apiEvents'])->name('api.events');});
+    Route::get('/api/events', [App\Http\Controllers\EventController::class, 'apiEvents'])->name('api.events');
+
+    Route::resource('bookings', controller: 'App\Http\Controllers\BookingController');
+    Route::get('/bookings/room/{room}', [App\Http\Controllers\BookingController::class, 'getBookingsByRoom']);
+    Route::post('/bookings/check-clash', [App\Http\Controllers\BookingController::class, 'checkBookingClash']);
+    Route::resource('rooms', controller: 'App\Http\Controllers\RoomController');
+});
+
+
 
 require __DIR__.'/auth.php';
-
