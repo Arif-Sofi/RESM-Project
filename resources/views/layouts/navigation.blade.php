@@ -18,7 +18,7 @@
                     <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.index')">
                         {{ __('navigation.event calendar') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.index')">
+                    <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.index')">
                         {{ __('navigation.bookings') }}
                     </x-nav-link>
                 </div>

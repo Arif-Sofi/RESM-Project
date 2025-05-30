@@ -66,4 +66,12 @@ class User extends Authenticatable
         // 第4引数: 関連モデルの外部キー名 (event_id)
         return $this->belongsToMany(Event::class, 'event_staff_pivot', 'user_id', 'event_id');
     }
+
+    /**
+     * このユーザーが作成した部屋を取得 (Roomモデルとのリレーション)
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
 }
