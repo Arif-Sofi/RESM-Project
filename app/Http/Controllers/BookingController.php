@@ -44,13 +44,13 @@ class BookingController extends Controller
 
         Booking::create([
             'room_id' => $request->room_id,
-            'user_id' => Auth::id(), // Assuming authenticated user
+            'user_id' => Auth::id(),
             'start_time' => $startTime,
             'end_time' => $endTime,
             'number_of_student' => $request->number_of_student,
             'equipment_needed' => $request->equipment_needed,
             'purpose' => $request->purpose,
-            'status' => null, // pending
+            'status' => null,
         ]);
 
         return redirect()->route('bookings.index')->with('success', 'Booking created successfully!');
