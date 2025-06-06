@@ -65,9 +65,9 @@
                     <template x-if="previousBookings.length > 0">
                         <ul>
                             <template x-for="booking in previousBookings" :key="booking.id">
-                                <li class="text-sm text-gray-700 dark:text-gray-300">
+                                <li class="text-sm text-gray-700 dark:text-gray-300 mb-2">
                                     <span x-text="new Date(booking.start_time).toLocaleString()"></span> - <span x-text="new Date(booking.end_time).toLocaleString()"></span>
-                                    (<span x-text="booking.purpose"></span>)
+                                    (<span x-text="booking.purpose"></span>) <br>booking made by {{ auth()->user()->name }}
                                 </li>
                             </template>
                         </ul>

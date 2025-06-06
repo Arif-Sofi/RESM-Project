@@ -32,7 +32,8 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
             try {
-                const response = await fetch(`/api/rooms/${this.selectedRoomId}/bookings`);
+                const response = await fetch(`/bookings/room/${this.selectedRoomId}`);
+                //const response = await fetch(`/api/rooms/${this.selectedRoomId}/bookings`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch previous bookings');
                 }
