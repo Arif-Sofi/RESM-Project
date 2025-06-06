@@ -5,6 +5,7 @@ return [
     'honorific' => '様',
     'overtime_message' => 'ログインしました！',
     'quick_links' => 'クイックリンク',
+    'bookings' => '予約',
     'event_calendar' => 'イベントカレンダー',
     'profile_settings' => 'プロフィール設定',
     'upcoming_events' => '今後のイベント',

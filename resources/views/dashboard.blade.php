@@ -27,6 +27,9 @@
                             {{ __('dashboard.quick_links') }}
                         </h3>
                         <div class="space-y-3">
+                            <a href="{{ route('bookings.index') }}" class="block p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                                <span class="text-gray-700 dark:text-gray-300">{{ __('dashboard.bookings') }}</span>
+                            </a>
                             <a href="{{ route('events.index') }}" class="block p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('dashboard.event_calendar') }}</span>
                             </a>

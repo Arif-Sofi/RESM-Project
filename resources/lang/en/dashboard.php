@@ -5,6 +5,7 @@ return [
     'honorific' => '',
     'overtime_message' => 'You\'re logged in!',
     'quick_links' => 'Quick Links',
+    'bookings' => 'Bookings',
     'event_calendar' => 'Event Calendar',
     'profile_settings' => 'Profile Settings',
     'upcoming_events' => 'Upcoming Events',

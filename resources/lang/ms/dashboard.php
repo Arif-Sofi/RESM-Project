@@ -5,6 +5,7 @@ return [
     'honorific' => '',
     'overtime_message' => 'Anda telah log masuk!',
     'quick_links' => 'Pautan Pantas',
+    'bookings' => 'Tempahan',
     'event_calendar' => 'Kalendar Acara',
     'profile_settings' => 'Tetapan Profil',
     'upcoming_events' => 'Acara Akan Datang',
