@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->dateTime('start_time');
             $table->dateTime('end_time');
-            $table->boolean('status')->default(null); // pending (null), confirmed(1), cancelled(0)
+            $table->boolean('status')->default(null)->nullable(); // pending (null), confirmed(1), cancelled(0)
 
             $table->smallInteger('number_of_student');
             $table->string('equipment_needed')->nullable();
