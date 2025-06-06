@@ -1,74 +1,85 @@
 document.addEventListener('alpine:init', () => {
-    Alpine.data('bookingModal', () => ({
+    Alpine.data('roomBookingFlow', () => ({
         currentStep: 1,
         selectedRoomId: null,
         selectedDate: '',
         selectedTime: '',
         previousBookings: [],
-        numberOfStudents: '',
-        equipmentNeeded: '',
-        purpose: '',
         clashDetected: false,
         clashMessage: '',
-        fetchBookings() {
-            if (this.selectedRoomId) {
-                fetch(`/bookings/room/${this.selectedRoomId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        this.previousBookings = data;
-                    })
-                    .catch(error => {
-                        console.error('Error fetching bookings:', error);
-                        this.previousBookings = [];
-                    });
+        numberOfStudents: null,
+        equipmentNeeded: '',
+        purpose: '',
+
+        init() {
+            this.$watch('selectedRoomId', (newRoomId) => {
+                if (newRoomId) {
+                    this.fetchPreviousBookings();
+                } else {
+                    this.previousBookings = [];
+                }
+            });
+
+            this.$root.addEventListener('open-room-booking-flow-modal', (event) => {
+                this.resetForm();
+                this.$dispatch('open-modal', { name: 'room-booking-flow-modal' });
+            });
+        },
+
+        async fetchPreviousBookings() {
+            if (!this.selectedRoomId) {
+                this.previousBookings = [];
+                return;
+            }
+            try {
+                const response = await fetch(`/api/rooms/${this.selectedRoomId}/bookings`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch previous bookings');
+                }
+                this.previousBookings = await response.json();
+            } catch (error) {
+                console.error('Error fetching previous bookings:', error);
+                this.previousBookings = [];
             }
         },
-        checkClash() {
-            this.clashDetected = false;
-            this.clashMessage = '';
+
+        async checkClash() {
             if (!this.selectedDate || !this.selectedTime) {
-                this.clashDetected = true;
-                this.clashMessage = 'Please select both date and time.';
+                alert('日付と時間を選択してください。');
                 return;
             }
 
-            fetch('/bookings/check-clash', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
-                body: JSON.stringify({
-                    room_id: this.selectedRoomId,
-                    date: this.selectedDate,
-                    time: this.selectedTime
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.clash) {
-                    this.clashDetected = true;
-                    this.clashMessage = data.message || 'The selected time clashes with an existing booking.';
-                } else {
-                    this.currentStep = 2;
-                }
-            })
-            .catch(error => {
-                console.error('Error checking clash:', error);
-                this.clashDetected = true;
-                this.clashMessage = 'An error occurred while checking for clashes.';
-            });
-        },
-        init() {
-            this.$watch('selectedRoomId', () => this.fetchBookings());
-            this.$root.addEventListener('open-booking-details-modal', (event) => {
-                console.log('bookingModal component received open-booking-details-modal event!');
-                console.log('Event details:', event.detail);
+            const newBookingStart = new Date(`${this.selectedDate}T${this.selectedTime}:00`);
+            const newBookingEnd = new Date(newBookingStart.getTime() + 60 * 60 * 1000);
 
-                this.selectedRoomId = event.detail.roomId;
-                this.currentStep = 1;
-                this.$nextTick(() => this.fetchBookings());
-                this.$dispatch('open-modal', 'booking-details-modal');
+            const clashes = this.previousBookings.filter(booking => {
+                const existingStart = new Date(booking.start_time);
+                const existingEnd = new Date(booking.end_time);
+
+                return (newBookingStart < existingEnd && newBookingEnd > existingStart);
             });
+
+            if (clashes.length > 0) {
+                this.clashDetected = true;
+                this.clashMessage = '選択された時間は既に予約済みです。別の時間を選択してください。';
+            } else {
+                this.clashDetected = false;
+                this.clashMessage = '';
+                this.currentStep = 3;
+            }
+        },
+
+        resetForm() {
+            this.currentStep = 1;
+            this.selectedRoomId = null;
+            this.selectedDate = '';
+            this.selectedTime = '';
+            this.previousBookings = [];
+            this.clashDetected = false;
+            this.clashMessage = '';
+            this.numberOfStudents = null;
+            this.equipmentNeeded = '';
+            this.purpose = '';
         }
     }));
 });

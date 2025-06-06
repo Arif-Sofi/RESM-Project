@@ -29,7 +29,8 @@ class BookingPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        // dd($user);
+        return true;
     }
 
     /**
