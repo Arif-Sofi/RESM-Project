@@ -9,7 +9,8 @@ Route::get('/', function () {
 
 Route::get('/set-locale/{locale}', [App\Http\Controllers\LocalizationController::class, 'setLocale'])->name('setLocale');
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $bookings = auth()->user()->bookings()->get();
+    return view('dashboard', compact('bookings'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

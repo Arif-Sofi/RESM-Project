@@ -17,4 +17,6 @@ return [
     'last_login' => 'Last Login',
     'minion' => 'Minion',
     'dashboard' => 'Dashboard',
+    'no_bookings_set' => 'No rooms have been booked yet.',
+    'create_booking' => 'Book a Room',
 ];

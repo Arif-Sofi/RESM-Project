@@ -17,4 +17,6 @@ return [
     'last_login' => '最終ログイン',
     'minion' => '雑魚',
     'dashboard' => 'ダッシュボード',
+    'no_bookings_set' => 'まだ部屋は予約されていません',
+    'create_booking' => '部屋を予約する'
 ];
