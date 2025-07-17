@@ -10,11 +10,12 @@
             <x-primary-button x-data="" x-on:click.prevent="$dispatch('open-modal', 'room-booking-flow-modal')">
                 {{ __('Room') }}
             </x-primary-button>
-            <x-secondary-button class="ms-2" x-data="" x-on:click.prevent="$dispatch('open-modal', 'booking-date-time-modal')">
+            <x-secondary-button class="ms-2" x-data="" x-on:click.prevent="$dispatch('open-modal', 'date-booking-flow-modal')">
                 {{ __('Date') }}
             </x-secondary-button>
         </div>
     </div>
 
-    @include('bookings._booking_modal')
+    @include('bookings._room_booking_modal')
+    @include('bookings._date_booking_modal')
 </x-app-layout>

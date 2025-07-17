@@ -1,5 +1,6 @@
 import './bootstrap';
-import './room.js';
+import './room-booking.js';
+import './date-booking.js';
 
 import Alpine from 'alpinejs';
 
