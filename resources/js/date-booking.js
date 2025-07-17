@@ -39,7 +39,7 @@ document.addEventListener('alpine:init', () => {
                 this.previousBookings = await response.json();
                 //this.previousBookings = jsonData.filter(item => item.start_time === "selectedDate" || item.end_time === "selectedDate");
                 console.log('Selected date:', this.selectedDate); // debugging line
-                console.log('Previous bookings fetched:', this.previousBookings.start_time); // debugging line
+                console.log('Previous bookings fetched:', this.previousBookings); // debugging line
             } catch (error) {
                 console.error('Error fetching previous bookings:', error);
                 this.previousBookings = [];
