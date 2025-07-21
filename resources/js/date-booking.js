@@ -3,7 +3,8 @@ document.addEventListener('alpine:init', () => {
         currentStep: 1,
         selectedRoomId: null,
         selectedDate: '',
-        selectedTime: '',
+        selectedStartTime: '',
+        selectedEndTime: '',
         previousBookings: [],
         clashDetected: false,
         clashMessage: '',
@@ -52,13 +53,13 @@ document.addEventListener('alpine:init', () => {
         },
 
         async checkClash() {
-            if (!this.selectedDate || !this.selectedTime) {
+            if (!this.selectedDate || !this.selectedStartTime || !this.selectedStartTime) {
                 alert('日付と時間を選択してください。');
                 return;
             }
 
-            const newBookingStart = new Date(`${this.selectedDate}T${this.selectedTime}:00`);
-            const newBookingEnd = new Date(newBookingStart.getTime() + 60 * 60 * 1000);
+            const newBookingStart = new Date(`${this.selectedDate}T${this.selectedStartTime}:00`);
+            const newBookingEnd = new Date(`${this.selectedDate}T${this.selectedEndTime}:00`);
 
             const clashes = this.previousBookings.filter(booking => {
                 const existingStart = new Date(booking.start_time);
@@ -81,7 +82,8 @@ document.addEventListener('alpine:init', () => {
             this.currentStep = 1;
             this.selectedRoomId = null;
             this.selectedDate = '';
-            this.selectedTime = '';
+            this.selectedStartTime = '';
+            this.selectedEndTime = '';
             this.previousBookings = [];
             this.clashDetected = false;
             this.clashMessage = '';

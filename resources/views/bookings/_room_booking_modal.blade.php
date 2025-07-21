@@ -46,9 +46,9 @@
             {{-- フォーム送信用の隠しフィールド --}}
             <input type="hidden" name="room_id" x-model="selectedRoomId">
             {{-- start_time と end_time は DateオブジェクトからISO形式で文字列化 --}}
-            <input type="hidden" name="start_time" :value="selectedDate && selectedTime ? new Date(selectedDate + 'T' + selectedTime + ':00').toISOString().slice(0, 19).replace('T', ' ') : ''">
+            <input type="hidden" name="start_time" :value="selectedDate && selectedStartTime ? new Date(selectedDate + 'T' + selectedStartTime + ':00').toISOString().slice(0, 19).replace('T', ' ') : ''">
             {{-- 終了時刻は開始時刻から1時間後と仮定（必要に応じて時間入力フィールドを追加） --}}
-            <input type="hidden" name="end_time" :value="selectedDate && selectedTime ? new Date(new Date(selectedDate + 'T' + selectedTime + ':00').getTime() + 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ') : ''">
+            <input type="hidden" name="end_time" :value="selectedDate && selectedEndTime ? new Date(selectedDate + 'T' + selectedEndTime + ':00').toISOString().slice(0, 19).replace('T', ' ') : ''">
 
             <!-- Step 2: 日付と時間選択 -->
             <div x-show="currentStep === 2">
@@ -83,8 +83,11 @@
                         <x-text-input id="booking_date" name="booking_date" type="date" class="mt-1 block w-full" x-model="selectedDate" />
                     </div>
                     <div class="mb-4">
-                        <x-input-label for="booking_time" :value="__('Time')" />
-                        <x-text-input id="booking_time" name="booking_time" type="time" class="mt-1 block w-full" x-model="selectedTime" />
+                        <x-input-label for="start_time" :value="__('Start time')" />
+                        <x-text-input id="start_time" name="start_time" type="time" class="mt-1 block w-full" x-model="selectedStartTime" />
+                        <br>
+                        <x-input-label for="end_time" :value="__('End time')" />
+                        <x-text-input id="end_time" name="end_time" type="time" class="mt-1 block w-full" x-model="selectedEndTime" />
                     </div>
                     <p x-show="clashDetected" class="text-sm text-red-600 dark:text-red-400 mt-2" x-text="clashMessage"></p>
                 </div>

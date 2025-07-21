@@ -34,8 +34,12 @@ class BookingController extends Controller
      */
     public function store(StoreBookingRequest $request)
     {
+        if (!$request->has('room_id') || !$request->has('start_time') || !$request->has('end_time')) {
+            return back()->withErrors(['booking' => 'Please select a room and specify the booking time.']);
+        }
+
         $startTime = Carbon::parse($request->input('start_time'));
-        $endTime = Carbon::parse($request->input('end_time')); // Assuming end_time is also passed or calculated
+        $endTime = Carbon::parse($request->input('end_time'));
 
         // Server-side clash validation to prevent race conditions
         if ($this->isClash($request->room_id, $startTime, $endTime)) {
