@@ -13,7 +13,15 @@ document.addEventListener('alpine:init', () => {
 
         init() {
             this.$watch('selectedRoomId', (newRoomId) => {
-                if (newRoomId) {
+                if (newRoomId && this.selectedDate !== '' && this.selectedDate !== null) {
+                    this.fetchPreviousBookings();
+                } else {
+                    this.previousBookings = [];
+                }
+            });
+
+            this.$watch('selectedDate', (newDate) => {
+                if (newDate && this.selectedRoomId) {
                     this.fetchPreviousBookings();
                 } else {
                     this.previousBookings = [];
@@ -32,14 +40,11 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
             try {
-                const response = await fetch(`/bookings/room/${this.selectedRoomId}`);
+                const response = await fetch(`/bookings/room-and-date/${this.selectedRoomId}?date=${this.selectedDate}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch previous bookings');
                 }
                 this.previousBookings = await response.json();
-                //this.previousBookings = jsonData.filter(item => item.start_time === "selectedDate" || item.end_time === "selectedDate");
-                console.log('Selected date:', this.selectedDate); // debugging line
-                console.log('Previous bookings fetched:', this.previousBookings); // debugging line
             } catch (error) {
                 console.error('Error fetching previous bookings:', error);
                 this.previousBookings = [];

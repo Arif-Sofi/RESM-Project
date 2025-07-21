@@ -99,6 +99,22 @@ class BookingController extends Controller
     }
 
     /**
+     * Get bookings for a specific room on a specific date.
+     */
+    public function getBookingsByRoomAndDate(Room $room, Request $request)
+    {
+        $query = $room->bookings();
+        if ($request->has('date') && Carbon::parse($request->query('date'))->isValid()) {
+            $selectedDate = Carbon::parse(time: $request->query('date'))->toDateString();
+            $query->whereDate('start_time', operator: $selectedDate);
+        }
+
+        $bookings = $query->orderBy('start_time')->get();
+
+        return $bookings;
+    }
+
+    /**
      * Check for booking clashes.
      */
     public function checkBookingClash(Request $request)
