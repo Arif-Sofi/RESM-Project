@@ -53,7 +53,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         async checkClash() {
-            if (!this.selectedDate || !this.selectedStartTime || !this.selectedStartTime) {
+            if (!this.selectedDate || !this.selectedStartTime || !this.selectedEndTime) {
                 alert('日付と時間を選択してください。');
                 return;
             }
