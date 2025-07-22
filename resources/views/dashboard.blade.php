@@ -87,7 +87,20 @@
                                     </p>
                                     <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
                                         Status:
-                                        {{ $booking->status === null ? 'Pending' : ($booking->status ? 'Approved' : 'Disapproved') }}
+                                    {{-- $booking->status === null ? 'Pending' : ($booking->status ? 'Approved' : 'Disapproved') --}}
+                                        @if ($booking->status === null)
+                                            <span class="text-yellow-500 dark:text-yellow-400">
+                                                {{ __('Pending') }}
+                                            </span>
+                                        @elseif ($booking->status)
+                                            <span class="text-green-500 dark:text-green-400">
+                                                {{ __('Approved') }}
+                                            </span>
+                                        @else
+                                            <span class="text-red-500 dark:text-red-400">
+                                                {{ __('Disapproved') }}
+                                            </span>
+                                        @endif
                                     </p>
                                 </div>
                             @endforeach
