@@ -2,7 +2,7 @@
 
 return [
     'dashboard' => 'Papan Pemuka',
-    'event ealendar' => 'Kalendar Acara',
+    'event calendar' => 'Kalendar Acara',
     'bookings' => 'Tempahan',
     'Pprofile' => 'Profil',
     'logout' => 'Log Keluar',
