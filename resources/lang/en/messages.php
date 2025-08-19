@@ -10,4 +10,12 @@ return [
     "edit" => "Edit",
     "view" => "View",
     "search" => "Search",
+    "add_new_event" => "Add New Event",
+    "deselect_all_staff" => "Deselect All Staff",
+    "select_all_staff" => "Select All Staff",
+    "event_staff" => "Event Staff (Multiple Selection Allowed)",
+    "title" => "Title",
+    "description" => "Description",
+    "start_date" => "Start Date",
+    "multiple_select_desc" => "Hold down the Ctrl (or Command) key while clicking to select multiple staff.",
 ];

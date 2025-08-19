@@ -35,7 +35,7 @@
                         alert('部屋を選択してください。');
                     }
                 ">
-                    {{ __('Next') }}
+                    {{ __('messages.next') }}
                 </x-primary-button>
             </div>
         </div>
