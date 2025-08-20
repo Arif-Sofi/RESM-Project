@@ -15,64 +15,28 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Improved styles for better layout -->
+        <!-- Styles -->
         <style>
-            html, body {
-                width: 100%;
-                height: 100%;
+            body {
+                background-image: url('{{ asset('images/sksu.png') }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                height: 100vh;
                 margin: 0;
-                padding: 0;
-                overflow-x: hidden;
-                font-family: 'Figtree', 'Noto Sans JP', sans-serif;
-            }
-
-            /* Fix for body in standard view */
-            body:not(.auth-split-screen) {
-                display: block;
-            }
-
-            /* Special handling for login page with split screen */
-            body.auth-split-screen {
-                display: flex;
-            }
-
-            /* Standard authentication container */
-            .auth-container {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 1rem;
-                background-color: #f3f4f6;
-            }
-
-            .auth-card {
-                width: 100%;
-                max-width: 32rem;
-                padding: 2rem;
-                background-color: white;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-                border-radius: 0.5rem;
             }
         </style>
     </head>
-    <body class="font-sans text-gray-900 antialiased {{ Route::currentRouteName() === 'login' ? 'auth-split-screen' : '' }}">
-        @if(Route::currentRouteName() === 'login')
-            <!-- Special layout for login page with split screen -->
-            {{ $slot }}
-        @else
-            <!-- Standard centered layout for other auth pages -->
-            <div class="auth-container bg-gray-100">
-                <div class="mb-6">
+    <body class="font-sans text-gray-900 antialiased">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-black bg-opacity-50">
+            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+                <div class="flex justify-center mb-4">
                     <a href="/">
-                        <x-application-logo class="w-20 h-20" />
+                        <img src="{{ asset('images/SKSU-logo.png') }}" alt="Logo" class="w-30 h-30">
                     </a>
                 </div>
-                <div class="auth-card">
-                    {{ $slot }}
-                </div>
+                {{ $slot }}
             </div>
-        @endif
+        </div>
     </body>
 </html>
