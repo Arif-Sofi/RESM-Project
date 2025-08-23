@@ -19,6 +19,7 @@
         "vite": "^6.2.4"
     },
     "dependencies": {
+        "@alpinejs/collapse": "^3.14.9",
         "bootstrap": "^5.3.5"
     }
 }
