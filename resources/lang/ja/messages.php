@@ -17,5 +17,7 @@ return [
     "title" => "タイトル",
     "description" => "説明",
     "start_date" => "開始日時",
-    "multiple_select_desc" => "Ctrl (または Command) キーを押しながらクリックすると複数選択できます。"
+    "multiple_select_desc" => "Ctrl (または Command) キーを押しながらクリックすると複数選択できます。",
+    "room" => "部屋",
+    "date" => "日時",
 ];

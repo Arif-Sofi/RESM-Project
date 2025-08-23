@@ -18,4 +18,6 @@ return [
     "description" => "Description",
     "start_date" => "Start Date",
     "multiple_select_desc" => "Hold down the Ctrl (or Command) key while clicking to select multiple staff.",
+    "room" => "Room",
+    "date" => "Date",
 ];

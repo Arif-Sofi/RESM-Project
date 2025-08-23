@@ -18,4 +18,6 @@ return [
     "description" => "Huraian",
     "start_date" => "Tarikh Mula",
     "multiple_select_desc" => "Tekan Ctrl (atau Command) sambil klik untuk memilih beberapa staff.",
+    "room" => "Bilik",
+    "date" => "Tarikh",
 ];
