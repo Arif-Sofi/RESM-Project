@@ -49,12 +49,11 @@
             <!-- User's Booked Events Card -->
             <div class="mt-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-4">
-                        {{ __('Booked Rooms') }}
-                    </h3>
-
                     <!-- Booked Rooms list -->
                     @if ($bookings->isEmpty())
+                        <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-4">
+                            {{ __('Booked Rooms') }}
+                        </h3>
                         <div
                             class="border border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 flex flex-col items-center justify-center">
                             <p class="text-gray-500 dark:text-gray-400 text-center">
@@ -66,44 +65,54 @@
                             </a>
                         </div>
                     @else
-                        <div class="space-y-4">
-                            @foreach ($bookings as $booking)
-                                <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow">
-                                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                                        {{ $booking->room->name }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">
-                                        {{ $booking->start_time->format('Y-m-d H:i') }} -
-                                        {{ $booking->end_time->format('H:i') }}
-                                    </p>
-                                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
-                                        Purpose: {{ $booking->purpose ?? 'No purpose'}}
-                                    </p>
-                                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
-                                        No of student: {{ $booking->number_of_student }}
-                                    </p>
-                                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
-                                        Equipment needed: {{ $booking->equipment_needed ?? 'No equipment needed'}}
-                                    </p>
-                                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
-                                        Status:
-                                    {{-- $booking->status === null ? 'Pending' : ($booking->status ? 'Approved' : 'Disapproved') --}}
-                                        @if ($booking->status === null)
-                                            <span class="text-yellow-500 dark:text-yellow-400">
-                                                {{ __('Pending') }}
-                                            </span>
-                                        @elseif ($booking->status)
-                                            <span class="text-green-500 dark:text-green-400">
-                                                {{ __('Approved') }}
-                                            </span>
-                                        @else
-                                            <span class="text-red-500 dark:text-red-400">
-                                                {{ __('Disapproved') }}
-                                            </span>
-                                        @endif
-                                    </p>
+                        <div x-data="{ open: true }">
+                            <button @click="open = !open">
+                                <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-4">
+                                    {{ __('Booked Rooms') }}
+                                </h3>
+                            </button>
+                            <div x-show="open" x-collapse>
+                                <div class="space-y-4">
+                                    @foreach ($bookings as $booking)
+                                        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow">
+                                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                                {{ $booking->room->name }}
+                                            </p>
+                                            <p class="text-xs text-gray-600 dark:text-gray-400">
+                                                {{ $booking->start_time->format('Y-m-d H:i') }} -
+                                                {{ $booking->end_time->format('H:i') }}
+                                            </p>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                                                Purpose: {{ $booking->purpose ?? 'No purpose' }}
+                                            </p>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                                                No of student: {{ $booking->number_of_student }}
+                                            </p>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                                                Equipment needed:
+                                                {{ $booking->equipment_needed ?? 'No equipment needed' }}
+                                            </p>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                                                Status:
+                                                {{-- $booking->status === null ? 'Pending' : ($booking->status ? 'Approved' : 'Disapproved') --}}
+                                                @if ($booking->status === null)
+                                                    <span class="text-yellow-500 dark:text-yellow-400">
+                                                        {{ __('Pending') }}
+                                                    </span>
+                                                @elseif ($booking->status)
+                                                    <span class="text-green-500 dark:text-green-400">
+                                                        {{ __('Approved') }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-red-500 dark:text-red-400">
+                                                        {{ __('Disapproved') }}
+                                                    </span>
+                                                @endif
+                                            </p>
+                                        </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            </div>
                         </div>
                     @endif
                 </div>
