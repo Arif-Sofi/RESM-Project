@@ -11,8 +11,8 @@ return [
     "view" => "表示",
     "search" => "検索",
     "add_new_event" => "新しいイベントを追加",
-    "deselect_all_staff" => "全スタッフの選択を解除",
-    "select_all_staff" => "全スタッフを選択",
+    "deselect_all_staff" => "全スタッフの選択を解除する",
+    "select_all_staff" => "全スタッフを選択する",
     "event_staff" => "参加スタッフ (複数選択可)",
     "title" => "タイトル",
     "description" => "説明",
@@ -20,4 +20,6 @@ return [
     "multiple_select_desc" => "Ctrl (または Command) キーを押しながらクリックすると複数選択できます。",
     "room" => "部屋",
     "date" => "日時",
+    "room_select" => "部屋を選択する",
+    "room_choose" => "以下のリストから部屋を選択してください。",
 ];
