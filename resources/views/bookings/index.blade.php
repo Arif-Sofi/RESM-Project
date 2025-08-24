@@ -34,11 +34,13 @@
                         <div class="space-y-4">
                             @foreach ($rooms as $room)
                                 <label class="block cursor-pointer p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                    <input type="radio" name="selected_room" value="{{ $room->id }}" x-model="selectedRoomId" class="mr-3">
-                                    <div class="inline-block">
-                                        <span class="font-semibold text-gray-900 dark:text-gray-100 text-lg">{{ $room->name }}</span>
-                                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">{{ $room->description }}</p>
-                                        <p class="text-gray-500 dark:text-gray-500 text-sm">{{ $room->location_details }}</p>
+                                    <div class="flex items-center">
+                                        <input type="radio" name="selected_room" value="{{ $room->id }}" x-model="selectedRoomId" class="mr-4">
+                                        <div>
+                                            <span class="font-semibold text-gray-900 dark:text-gray-100 text-lg">{{ $room->name }}</span>
+                                            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">{{ $room->description }}</p>
+                                            <p class="text-gray-500 dark:text-gray-500 text-sm">{{ $room->location_details }}</p>
+                                        </div>
                                     </div>
                                 </label>
                             @endforeach
@@ -52,7 +54,7 @@
                                 if (selectedRoomId) {
                                     currentStep = 2;
                                 } else {
-                                    alert('部屋を選択してください。');
+                                    alert('{{ __('messages.room_choose')}}');
                                 }
                             ">
                                 {{ __('messages.next') }}
