@@ -20,4 +20,6 @@ return [
     "multiple_select_desc" => "Tekan Ctrl (atau Command) sambil klik untuk memilih beberapa staff.",
     "room" => "Bilik",
     "date" => "Tarikh",
+    "room_select" => "Pilih Bilik",
+    "room_choose" => "Pilih bilik dari senarai di bawah.",
 ];

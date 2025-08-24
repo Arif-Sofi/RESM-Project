@@ -20,4 +20,6 @@ return [
     "multiple_select_desc" => "Hold down the Ctrl (or Command) key while clicking to select multiple staff.",
     "room" => "Room",
     "date" => "Date",
+    "room_select" => "Select a Room",
+    "room_choose" => "Choose a room from the list below.",
 ];
