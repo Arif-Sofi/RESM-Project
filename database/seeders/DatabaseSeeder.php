@@ -15,18 +15,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(RoleSeeder::class);
+
         User::factory()->count(15)->create([
             'email_verified_at' => now()
         ]);
 
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
         User::create([
             'name' => 'test',
+            'role_id' => 2,
             'email' => '123@123.com',
             'email_verified_at' => now(),
             'password' => Hash::make('123'),
@@ -35,6 +32,7 @@ class DatabaseSeeder extends Seeder
 
             User::create([
             'name' => 'admin',
+            'role_id' => 1,
             'email' => 'admin@admin.com',
             'email_verified_at' => now(),
             'password' => Hash::make('admin'),
