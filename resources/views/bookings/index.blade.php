@@ -8,7 +8,7 @@
     <div class="w-full py-12">
         <div class="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Container for the entire inline booking flow -->
-            <div x-data="inlineBookingFlow()">
+            <div x-data="roomBookingFlow()">
                 <!-- Booking Type Selection Buttons -->
                 <div class="mb-8">
                     <x-primary-button x-on:click.prevent="showRoomBooking()">
