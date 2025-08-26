@@ -9,9 +9,17 @@ use App\Models\Room;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Services\BookingService;
 
 class BookingController extends Controller
 {
+    protected $bookingService;
+
+    public function __construct(BookingService $bookingService)
+    {
+        $this->bookingService = $bookingService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -34,6 +42,7 @@ class BookingController extends Controller
      */
     public function store(StoreBookingRequest $request)
     {
+        // dd($request->all());
         if (!$request->has('room_id') || !$request->has('start_time') || !$request->has('end_time')) {
             return back()->withErrors(['booking' => 'Please select a room and specify the booking time.']);
         }
@@ -42,7 +51,7 @@ class BookingController extends Controller
         $endTime = Carbon::parse($request->input('end_time'));
 
         // Server-side clash validation to prevent race conditions
-        if ($this->isClash($request->room_id, $startTime, $endTime)) {
+        if ($this->bookingService->isClash($request->room_id, $startTime, $endTime)) {
             return back()->withErrors(['booking' => 'The selected time slot is no longer available. Please choose another time.']);
         }
 
@@ -57,7 +66,7 @@ class BookingController extends Controller
             'status' => null, // pending
         ]);
 
-        return redirect()->route('bookings.index')->with('success', 'Booking created successfully!');
+        return redirect()->route('dashboard')->with('success', 'Booking created successfully!');
     }
 
     /**
@@ -116,45 +125,5 @@ class BookingController extends Controller
         $bookings = $query->orderBy('start_time')->get();
 
         return $bookings;
-    }
-
-    /**
-     * Check for booking clashes.
-     */
-    public function checkBookingClash(Request $request)
-    {
-        $request->validate([
-            'room_id' => 'required|exists:rooms,id',
-            'date' => 'required|date',
-            'time' => 'required|date_format:H:i',
-        ]);
-
-        $startTime = Carbon::parse($request->date . ' ' . $request->time);
-        // Assuming a default booking duration, e.g., 1 hour
-        $endTime = $startTime->copy()->addHour();
-
-        $clash = $this->isClash($request->room_id, $startTime, $endTime);
-
-        return response()->json([
-            'clash' => $clash,
-            'message' => $clash ? 'The selected time clashes with an existing booking.' : 'No clash detected.'
-        ]);
-    }
-
-    /**
-     * Helper function to check for booking clashes.
-     */
-    private function isClash($roomId, Carbon $startTime, Carbon $endTime)
-    {
-        return Booking::where('room_id', $roomId)
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->whereBetween('start_time', [$startTime, $endTime->subSecond()]) // Check if new booking starts within existing
-                      ->orWhereBetween('end_time', [$startTime->addSecond(), $endTime]) // Check if new booking ends within existing
-                      ->orWhere(function ($query) use ($startTime, $endTime) { // Check if new booking encompasses existing
-                          $query->where('start_time', '<=', $startTime)
-                                ->where('end_time', '>=', $endTime);
-                      });
-            })
-            ->exists();
     }
 }
