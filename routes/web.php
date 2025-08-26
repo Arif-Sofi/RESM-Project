@@ -23,7 +23,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('bookings', controller: 'App\Http\Controllers\BookingController');
     Route::get('/bookings/room/{room}', [App\Http\Controllers\BookingController::class, 'getBookingsByRoom']);
     Route::get('/bookings/room-and-date/{room}', [App\Http\Controllers\BookingController::class, 'getBookingsByRoomAndDate']);
-    Route::post('/bookings/check-clash', [App\Http\Controllers\BookingController::class, 'checkBookingClash']);
     Route::resource('rooms', controller: 'App\Http\Controllers\RoomController');
 });
 
