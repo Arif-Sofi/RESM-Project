@@ -22,11 +22,16 @@ document.addEventListener('alpine:init', () => {
                     this.previousBookings = [];
                 }
             });
+
+            this.$root.addEventListener('close-room-booking', () => {
+                this.showRoomBookingFlow = false;
+            });
         },
 
         showRoomBooking() {
             this.showRoomBookingFlow = !this.showRoomBookingFlow;
             if (this.showRoomBookingFlow) {
+                this.$dispatch('close-date-booking');
                 this.resetForm();
             }
         },

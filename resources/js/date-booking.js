@@ -1,5 +1,6 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('dateBookingFlow', () => ({
+        showDateBookingFlow: false,
         currentStep: 1,
         selectedRoomId: null,
         selectedDate: '',
@@ -29,10 +30,27 @@ document.addEventListener('alpine:init', () => {
                 }
             });
 
-            this.$root.addEventListener('open-room-booking-flow-modal', (event) => {
-                this.resetForm();
-                this.$dispatch('open-modal', { name: 'room-booking-flow-modal' });
+            // this.$root.addEventListener('open-room-booking-flow-modal', (event) => {
+            //     this.resetForm();
+            //     this.$dispatch('open-modal', { name: 'room-booking-flow-modal' });
+            // });
+
+            this.$root.addEventListener('close-date-booking', () => {
+                this.showDateBookingFlow = false;
             });
+        },
+
+        showDateBooking() {
+            this.showDateBookingFlow = !this.showDateBookingFlow;
+            if (this.showDateBookingFlow) {
+                this.$dispatch('close-room-booking');
+                this.resetForm();
+            }
+        },
+
+        hideDateBooking() {
+            this.showDateBookingFlow = false;
+            this.resetForm();
         },
 
         async fetchPreviousBookings() {

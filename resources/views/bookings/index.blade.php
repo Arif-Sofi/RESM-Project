@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
     <div class="w-full py-12">
-        <div class="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8" x-data="dateBookingFlow()">
             <!-- Container for the entire inline booking flow -->
             <div x-data="roomBookingFlow()">
                 <!-- Booking Type Selection Buttons -->
@@ -14,7 +14,7 @@
                         {{ __('messages.room') }}
                     </x-primary-button>
                     <x-secondary-button class="ms-2"
-                        x-on:click.prevent="$dispatch('open-modal', 'date-booking-flow-modal')">
+                        x-on:click.prevent="showDateBooking()">
                         {{ __('messages.date') }}
                     </x-secondary-button>
                 </div>
@@ -22,7 +22,8 @@
                 <!-- Inline Room Booking Content -->
                 @include('bookings._room_booking_modal')
             </div>
+            @include('bookings._date_booking_modal')
         </div>
 
-        @include('bookings._date_booking_modal')
+
 </x-app-layout>

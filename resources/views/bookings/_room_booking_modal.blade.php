@@ -60,11 +60,11 @@
         <!-- Step 2: Date and Time Selection -->
         <div x-show="currentStep === 2">
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                {{ __('Select Date and Time') }}
+                {{ __('messages.date_select') }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {{ __('Previous bookings for this room:') }}
+                {{ __('messages.booking_previous') }}
             </p>
 
             <!-- Previous Bookings Display -->
@@ -132,11 +132,11 @@
         <!-- Step 3: Booking Details -->
         <div x-show="currentStep === 3">
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                {{ __('Booking Details') }}
+                {{ __('messages.booking_details') }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 mb-6">
-                {{ __('Please provide additional details for your booking.') }}
+                {{ __('messages.booking_additional_detail') }}
             </p>
 
             <div class="space-y-4">

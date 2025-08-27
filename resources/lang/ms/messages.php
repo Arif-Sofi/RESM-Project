@@ -22,4 +22,9 @@ return [
     "date" => "Tarikh",
     "room_select" => "Pilih Bilik",
     "room_choose" => "Pilih bilik dari senarai di bawah.",
+    "date_select" => "Pilih Tarikh dan Masa",
+    "date_choose" => "Pilih tarikh di bawah.",
+    "booking_previous" => "Tempahan sebelum ini:",
+    "booking_details" => "Butiran Tempahan",
+    "booking_additional_detail" => "Sila berikan butiran tambahan untuk tempahan ini",
 ];

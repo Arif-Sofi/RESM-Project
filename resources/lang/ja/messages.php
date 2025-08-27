@@ -22,4 +22,9 @@ return [
     "date" => "日時",
     "room_select" => "部屋を選択する",
     "room_choose" => "以下のリストから部屋を選択してください。",
+    "date_select" => "日時を選択する",
+    "date_choose" => "以下のフィールドから日時を選択してください。",
+    "booking_previous" => "過去の予約：",
+    "booking_details" => "予約の詳細",
+    "booking_additional_detail" => "予約の追加情報を入力してください。",
 ];

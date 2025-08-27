@@ -22,4 +22,9 @@ return [
     "date" => "Date",
     "room_select" => "Select a Room",
     "room_choose" => "Choose a room from the list below.",
+    "date_select" => "Select a Date and Time",
+    "date_choose" => "Choose a date from the field below.",
+    "booking_previous" => "Previous bookings",
+    "booking_details" => "Booking Details",
+    "booking_additional_detail" => "Please provide additional details for your booking.",
 ];
