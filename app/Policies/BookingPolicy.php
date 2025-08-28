@@ -38,7 +38,7 @@ class BookingPolicy
      */
     public function update(User $user, Booking $booking): bool
     {
-        return $user->role->id === 1;
+        return $user->isAdmin();
     }
 
     /**
