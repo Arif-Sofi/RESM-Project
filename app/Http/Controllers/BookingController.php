@@ -126,4 +126,17 @@ class BookingController extends Controller
 
         return $bookings;
     }
+
+    public function bookingApprove(Booking $booking)
+    {
+        $booking->status = 1;
+        $booking->save();
+        return redirect()->route('dashboard')->with('success', 'Booking approved successfully!');
+    }
+    public function bookingdisapprove(Booking $booking)
+    {
+        $booking->status = 0;
+        $booking->save();
+        return redirect()->route('dashboard')->with('success', 'Booking disapproved successfully!');
+    }
 }
