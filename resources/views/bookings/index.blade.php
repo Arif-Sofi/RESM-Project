@@ -19,11 +19,16 @@
                     </x-secondary-button>
                 </div>
 
-                <!-- Inline Room Booking Content -->
+                <!-- Room Booking Content -->
                 @include('bookings._room_booking_modal')
             </div>
+            <!-- Date Booking Content -->
             @include('bookings._date_booking_modal')
+
+            <!-- Bookings Table -->
+            @include('bookings._table_booking_modal')
         </div>
+    </div>
 
 
 </x-app-layout>

@@ -10,9 +10,12 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Services\BookingService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BookingController extends Controller
 {
+    //for authorize() with BookingPolicy
+    use AuthorizesRequests;
     protected $bookingService;
 
     public function __construct(BookingService $bookingService)
@@ -26,7 +29,16 @@ class BookingController extends Controller
     public function index()
     {
         $rooms = Room::all();
-        return view('bookings.index', compact('rooms'));
+        $user = Auth::user();
+        if ($user->role->id === 1) {
+            // Admin sees all bookings
+            $bookings = Booking::with(['user', 'room'])->get();
+        } else {
+            // Regular user sees only their own bookings
+            $bookings = Booking::where('user_id', $user->id)->with('room')->get();
+        }
+
+        return view('bookings.index', compact('rooms', 'bookings'));
     }
 
     /**
@@ -127,16 +139,19 @@ class BookingController extends Controller
         return $bookings;
     }
 
-    public function bookingApprove(Booking $booking)
+    public function approve(Booking $booking)
     {
-        $booking->status = 1;
-        $booking->save();
-        return redirect()->route('dashboard')->with('success', 'Booking approved successfully!');
+        // Authorize the 'update' action on the booking (in BookingPolicy).
+        // Only the admin (user ID 1) will pass this check.
+        $this->authorize('update', $booking);
+        $booking->update(['status' => 1]);
+        return redirect()->route('bookings.index')->with('success', 'Booking approved successfully!');
     }
-    public function bookingdisapprove(Booking $booking)
+
+    public function reject(Booking $booking)
     {
-        $booking->status = 0;
-        $booking->save();
-        return redirect()->route('dashboard')->with('success', 'Booking disapproved successfully!');
+        $this->authorize('update', $booking);
+        $booking->update(['status' => 0]);
+        return redirect()->route('bookings.index')->with('success', 'Booking rejected successfully!');
     }
 }
