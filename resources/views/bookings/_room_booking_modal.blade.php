@@ -1,4 +1,4 @@
-<div x-show="showRoomBookingFlow" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+<div x-show="showRoomBookingFlow" x-transition class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
     <!-- Step 1: Room Selection -->
     <div x-show="currentStep === 1">
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
