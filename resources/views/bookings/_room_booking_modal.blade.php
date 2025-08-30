@@ -84,7 +84,7 @@
                                     Purpose: <span x-text="booking.purpose"></span>
                                 </div>
                                 <div class="text-gray-500 dark:text-gray-500 text-xs">
-                                    Booked by: {{ auth()->user()->name }}
+                                    Booked by: <span x-text="booking.user ? booking.user.name : 'Unknown User'"></span>
                                 </div>
                             </li>
                         </template>
