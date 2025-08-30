@@ -6,4 +6,5 @@ return [
     'bookings' => '予約',
     'profile' => 'プロフィール',
     'logout' => 'ログアウト',
+    'qr' => 'QRコードジェネレーター',
 ];

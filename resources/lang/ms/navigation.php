@@ -6,4 +6,5 @@ return [
     'bookings' => 'Tempahan',
     'Pprofile' => 'Profil',
     'logout' => 'Log Keluar',
+    'qr' => 'Penjana Kod QR',
 ];

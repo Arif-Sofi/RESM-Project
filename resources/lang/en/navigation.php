@@ -6,4 +6,5 @@ return [
     'bookings' => 'Bookings',
     'profile' => 'Profile',
     'logout' => 'Log Out',
+    'qr' => 'QR Code Generator',
 ];
