@@ -131,7 +131,7 @@ class BookingController extends Controller
         $query = $room->bookings();
         if ($request->has('date') && Carbon::parse($request->query('date'))->isValid()) {
             $selectedDate = Carbon::parse(time: $request->query('date'))->toDateString();
-            $query->whereDate('start_time', operator: $selectedDate);
+            $query->with('user')->whereDate('start_time', operator: $selectedDate);
         }
 
         $bookings = $query->orderBy('start_time')->get();

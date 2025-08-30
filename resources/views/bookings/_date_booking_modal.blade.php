@@ -60,7 +60,9 @@
             </h2>
 
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 mb-4">
-                {{ __('messages.booking_previous') }} {{ __(' ')}} <span x-text="selectedDate"></span> {{ __(':') }}
+                {{ __('messages.booking_previous') }} {{ __(' ')}} <span x-text="selectedDate"></span>
+                {{ __(' from ')}} <span x-text="selectedStartTime"></span>{{ __(' - ')}}
+                <span x-text="selectedEndTime"></span> {{ __(':') }}
             </p>
 
             {{-- 既存予約の表示 --}}
@@ -80,7 +82,7 @@
                                 Purpose: <span x-text="booking.purpose"></span>
                             </div>
                             <div class="text-gray-500 dark:text-gray-500 text-xs">
-                                Booked by: {{ auth()->user()->name }}
+                                Booked by: <span x-text="booking.user ? booking.user.name : 'Unknown User'"></span>
                             </div>
                         </li>
                     </template>
