@@ -118,7 +118,7 @@ class BookingController extends Controller
      */
     public function getBookingsByRoom(Room $room)
     {
-        $bookings = $room->bookings()->orderBy('start_time')->get();
+        $bookings = $room->bookings()->with('user')->orderBy('start_time')->get();
         return $bookings;
         // return response()->json($bookings);
     }

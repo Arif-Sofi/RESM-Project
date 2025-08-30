@@ -88,7 +88,7 @@
             </template>
             <template x-if="previousBookings.length === 0">
                 <p class="text-sm text-gray-500 text-center py-4">
-                    {{ __('No previous bookings found for this room.') }}</p>
+                    {{ __('Select a Room to see previous bookings.') }}</p>
             </template>
             </div>
 
