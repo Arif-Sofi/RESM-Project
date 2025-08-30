@@ -1,5 +1,5 @@
 @if (auth()->user()->isAdmin() AND (!$booking->status OR $booking->status === null))
-    <form action="{{ route('booking.approve', $booking) }}" method="POST">
+    <form action="{{ route('bookings.approve', $booking) }}" method="POST">
         @csrf
         <x-primary-button type="submit" class="h-12 w-28 justify-center">
             Approve
@@ -7,7 +7,7 @@
     </form>
 @endif
 @if (auth()->user()->isAdmin() AND ($booking->status OR $booking->status === null))
-    <form action="{{ route('booking.disapprove', $booking) }}" method="POST">
+    <form action="{{ route('bookings.reject', $booking) }}" method="POST">
         @csrf
         <x-secondary-button type="submit" class="h-12 w-28 justify-center">
             Disapprove
