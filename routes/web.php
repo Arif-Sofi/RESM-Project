@@ -1,11 +1,17 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LocalizationController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\QrCodeController;
+
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
 
-Route::get('/set-locale/{locale}', [App\Http\Controllers\LocalizationController::class, 'setLocale'])->name('setLocale');
+Route::get('/set-locale/{locale}', [LocalizationController::class, 'setLocale'])->name('setLocale');
 Route::get('/dashboard', function () {
     $bookings = auth()->user()->bookings()->get();
     return view('dashboard', compact('bookings'));
@@ -17,15 +23,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('events', controller: 'App\Http\Controllers\EventController');
-    Route::delete('/events/{event}', [\App\Http\Controllers\EventController::class, 'destroy'])->name('events.destroy');
-    Route::get('/api/events', [App\Http\Controllers\EventController::class, 'apiEvents'])->name('api.events');
+    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    Route::get('/api/events', [EventController::class, 'apiEvents'])->name('api.events');
 
     Route::resource('bookings', controller: 'App\Http\Controllers\BookingController');
-    Route::get('/bookings/room/{room}', [App\Http\Controllers\BookingController::class, 'getBookingsByRoom']);
-    Route::get('/bookings/room-and-date/{room}', [App\Http\Controllers\BookingController::class, 'getBookingsByRoomAndDate']);
-    Route::patch('/bookings/{booking}/approve', [App\Http\Controllers\BookingController::class, 'approve'])->name('bookings.approve');
-    Route::patch('/bookings/{booking}/reject', [App\Http\Controllers\BookingController::class, 'reject'])->name('bookings.reject');
+    Route::get('/bookings/room/{room}', [BookingController::class, 'getBookingsByRoom']);
+    Route::get('/bookings/room-and-date/{room}', [BookingController::class, 'getBookingsByRoomAndDate']);
+    Route::patch('/bookings/{booking}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
+    Route::patch('/bookings/{booking}/reject', [BookingController::class, 'reject'])->name('bookings.reject');
     Route::resource('rooms', controller: 'App\Http\Controllers\RoomController');
+
+    Route::get("/qr-code", [QrCodeController::class, "index"])->name("qr.index");
+    Route::post("qr-code/generate", [QrCodeController::class, "generate"])->name("qr.generate");
 });
 
 
