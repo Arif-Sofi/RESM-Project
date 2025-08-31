@@ -32,7 +32,7 @@
                 {{ __('messages.cancel') }}
             </x-secondary-button>
             <x-primary-button class="ms-3" x-on:click="
-                if (selectedDate!='') {
+                if (selectedDate!='' && selectedStartTime!='' && selectedEndTime!='') {
                     currentStep = 2;
                 } else {
                     alert('{{ __('messages.date_select')}}');
