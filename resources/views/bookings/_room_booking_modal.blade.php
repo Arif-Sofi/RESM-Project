@@ -52,7 +52,7 @@
         <input type="hidden" name="room_id" x-model="selectedRoomId">
         <input type="hidden" name="start_time"
             :value="selectedDate && selectedStartTime ? new Date(selectedDate + 'T' + selectedStartTime + ':00')
-                .toISOString().slice(0, 19).replace('T', ' ') : ''">
+                .toISOString().slice(0, 19).replace('T', ' ') : ''"> <!-- 2025-10-27T14:30:00.000Z converts to 2025-10-27 14:30:00-->
         <input type="hidden" name="end_time"
             :value="selectedDate && selectedEndTime ? new Date(selectedDate + 'T' + selectedEndTime + ':00')
                 .toISOString().slice(0, 19).replace('T', ' ') : ''">
@@ -99,17 +99,17 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
                     <x-input-label for="booking_date" :value="__('Date')" />
-                    <x-text-input id="booking_date" name="booking_date" type="date" class="mt-1 block w-full"
+                    <x-text-input id="booking_date" type="date" class="mt-1 block w-full"
                         x-model="selectedDate" />
                 </div>
                 <div>
                     <x-input-label for="start_time" :value="__('Start time')" />
-                    <x-text-input id="start_time" name="start_time" type="time" class="mt-1 block w-full"
+                    <x-text-input id="start_time" type="time" class="mt-1 block w-full"
                         x-model="selectedStartTime" />
                 </div>
                 <div>
                     <x-input-label for="end_time" :value="__('End time')" />
-                    <x-text-input id="end_time" name="end_time" type="time" class="mt-1 block w-full"
+                    <x-text-input id="end_time" type="time" class="mt-1 block w-full"
                         x-model="selectedEndTime" />
                 </div>
             </div>
