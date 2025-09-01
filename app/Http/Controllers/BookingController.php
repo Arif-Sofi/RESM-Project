@@ -11,6 +11,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Services\BookingService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Mail\BookingConfirmationMail;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -67,7 +69,7 @@ class BookingController extends Controller
             return back()->withErrors(['booking' => 'The selected time slot is no longer available. Please choose another time.']);
         }
 
-        Booking::create([
+        $booking = Booking::create([
             'room_id' => $request->room_id,
             'user_id' => Auth::id(), // Assuming authenticated user
             'start_time' => $startTime,
@@ -77,6 +79,9 @@ class BookingController extends Controller
             'purpose' => $request->purpose,
             'status' => null, // pending
         ]);
+
+        // Send the email notification
+        Mail::to(Auth::user()->email)->send(new BookingConfirmationMail($booking));
 
         return redirect()->route('dashboard')->with('success', 'Booking created successfully!');
     }
