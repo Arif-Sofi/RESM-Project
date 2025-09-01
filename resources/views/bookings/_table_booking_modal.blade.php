@@ -37,13 +37,13 @@
                         <!-- Start Time -->
                         <div class="col-span-1 order-3 md:order-none">
                             <div class="md:hidden font-bold text-gray-500 dark:text-gray-400">{{ __('Start Time') }}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ \Carbon\Carbon::parse($booking->start_time)->timezone('Asia/Kuala_Lumpur')->format('M d, Y H:i') }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ $booking->start_time }}</div>
                         </div>
 
                         <!-- End Time -->
                         <div class="col-span-2 md:col-span-1 order-5 md:order-none">
                             <div class="md:hidden font-bold text-gray-500 dark:text-gray-400">{{ __('End Time') }}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ \Carbon\Carbon::parse($booking->end_time)->timezone('Asia/Kuala_Lumpur')->format('M d, Y H:i') }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ $booking->end_time }}</div>
                         </div>
 
                         <!-- Status -->
