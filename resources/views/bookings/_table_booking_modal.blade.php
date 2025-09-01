@@ -1,4 +1,24 @@
-<div class="mt-8">
+<div class="mt-8" x-data="{
+    viewBookingData: {
+        room_name: '',
+        user_name: '',
+        number_students: '',
+        equiptment_needed: '',
+        purpose: '',
+        start_time: '',
+        end_time: ''
+    },
+    setViewBookingData(booking) {
+        this.viewBookingData.room_name = booking.room.name;
+        this.viewBookingData.user_name = booking.user.name;
+        this.viewBookingData.number_students = booking.number_of_student;
+        this.viewBookingData.equiptment_needed = booking.equipment_needed;
+        this.viewBookingData.purpose = booking.purpose;
+        this.viewBookingData.start_time = new Date(booking.start_time).toISOString().slice(0, 16).replace('T', ' ');
+        this.viewBookingData.end_time = new Date(booking.end_time).toISOString().slice(10, 16).replace('T', ' ');
+        $dispatch('open-modal', 'view-booking-modal');
+    }
+}">
     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 leading-tight">
         {{ auth()->user()->isAdmin() ? __('All Bookings') : __('My Bookings') }}
     </h3>
@@ -37,13 +57,13 @@
                         <!-- Start Time -->
                         <div class="col-span-1 order-3 md:order-none">
                             <div class="md:hidden font-bold text-gray-500 dark:text-gray-400">{{ __('Start Time') }}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ $booking->start_time }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ $booking->start_time->format('Y-m-d H:i') }}</div>
                         </div>
 
                         <!-- End Time -->
                         <div class="col-span-2 md:col-span-1 order-5 md:order-none">
                             <div class="md:hidden font-bold text-gray-500 dark:text-gray-400">{{ __('End Time') }}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ $booking->end_time }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ $booking->end_time->format('Y-m-d H:i') }}</div>
                         </div>
 
                         <!-- Status -->
@@ -56,7 +76,7 @@
                         <div class="col-span-1 md:col-span-1 order-4 md:order-none">
                             <div class="md:hidden font-bold text-gray-500 dark:text-gray-400">{{ __('Actions') }}</div>
                             <div class="text-sm font-medium flex space-x-2">
-                                <a href="{{ route('bookings.show', $booking) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">{{ __('View') }}</a>
+                                <a href="#" x-on:click.prevent="setViewBookingData({{ json_encode($booking) }})" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">{{ __('View') }}</a>
                                 @if (auth()->user()->isAdmin())
                                     <form action="{{ route('bookings.approve', $booking) }}" method="POST" class="inline">
                                         @csrf
@@ -80,4 +100,6 @@
             @endforelse
         </div>
     </div>
+
+    @include('bookings._view_booking_modal')
 </div>

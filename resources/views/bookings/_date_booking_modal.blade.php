@@ -74,9 +74,9 @@
                         <li
                             class="text-sm text-gray-700 dark:text-gray-300 p-2 bg-white dark:bg-gray-800 rounded border">
                             <div class="font-medium">
-                                <span x-text="new Date(booking.start_time).toLocaleString()"></span>
+                                <span x-text="new Date(booking.start_time).toISOString().slice(0, 19).replace('T', ' ')"></span>
                                 -
-                                <span x-text="new Date(booking.end_time).toLocaleString()"></span>
+                                <span x-text="new Date(booking.end_time).toISOString().slice(10, 19).replace('T', ' ')"></span>
                             </div>
                             <div class="text-gray-600 dark:text-gray-400">
                                 Purpose: <span x-text="booking.purpose"></span>
