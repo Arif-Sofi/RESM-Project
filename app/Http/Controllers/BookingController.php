@@ -34,10 +34,10 @@ class BookingController extends Controller
         $user = Auth::user();
         if ($user->role->id === 1) {
             // Admin sees all bookings
-            $bookings = Booking::with(['user', 'room'])->get();
+            $bookings = Booking::with(['user', 'room'])->orderBy('created_at', 'desc')->get();
         } else {
             // Regular user sees only their own bookings
-            $bookings = Booking::where('user_id', $user->id)->with(['user', 'room'])->get();
+            $bookings = Booking::where('user_id', $user->id)->with(['user', 'room'])->orderBy('created_at', 'desc')->get();
         }
 
         return view('bookings.index', compact('rooms', 'bookings'));
