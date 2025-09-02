@@ -61,8 +61,8 @@ class BookingController extends Controller
             return back()->withErrors(['booking' => 'Please select a room and specify the booking time.']);
         }
 
-        $startTime = Carbon::parse($request->input('start_time'))->timezone('Asia/Kuala_Lumpur');
-        $endTime = Carbon::parse($request->input('end_time'))->timezone('Asia/Kuala_Lumpur');
+        $startTime = Carbon::parse($request->input('start_time'));
+        $endTime = Carbon::parse($request->input('end_time'));
 
         // Server-side clash validation to prevent race conditions
         if ($this->bookingService->isClash($request->room_id, $startTime, $endTime)) {

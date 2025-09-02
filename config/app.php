@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('SKSU Room Booking', 'SKSU Room Booking'),
+    'name' => env('APP_NAME', 'SKSU Room Booking'),
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'Asia/Kuala_Lumpur'),
 
     /*
     |--------------------------------------------------------------------------
