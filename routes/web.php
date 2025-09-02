@@ -13,7 +13,7 @@ Route::redirect('/', '/login');
 
 Route::get('/set-locale/{locale}', [LocalizationController::class, 'setLocale'])->name('setLocale');
 Route::get('/dashboard', function () {
-    $bookings = auth()->user()->bookings()->get();
+    $bookings = auth()->user()->bookings()->orderBy('created_at', 'desc')->get();
     return view('dashboard', compact('bookings'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 

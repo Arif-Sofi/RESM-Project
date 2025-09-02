@@ -69,7 +69,7 @@
                         <!-- Status -->
                         <div class="col-span-2 md:col-span-1 order-6 md:order-none">
                             <div class="md:hidden font-bold text-gray-500 dark:text-gray-400">{{ __('Status') }}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-300">{{ $booking->status ?? 'Pending' }}</div>
+                            <div class="text-sm text-yellow-500 dark:text-yellow-400">{{ $booking->status ?? 'Pending' }}</div>
                         </div>
 
                         <!-- Actions -->
