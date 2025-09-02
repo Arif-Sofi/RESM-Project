@@ -9,8 +9,8 @@
         end_time: ''
     },
     setViewBookingData(booking) {
-        this.viewBookingData.room_name = booking.room.name;
-        this.viewBookingData.user_name = booking.user.name;
+        this.viewBookingData.room_name = booking.room ? booking.room.name : 'N/A';
+        this.viewBookingData.user_name = booking.user ? booking.user.name : 'N/A';
         this.viewBookingData.number_students = booking.number_of_student;
         this.viewBookingData.equiptment_needed = booking.equipment_needed;
         this.viewBookingData.purpose = booking.purpose;

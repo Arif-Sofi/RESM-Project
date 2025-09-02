@@ -37,7 +37,7 @@ class BookingController extends Controller
             $bookings = Booking::with(['user', 'room'])->get();
         } else {
             // Regular user sees only their own bookings
-            $bookings = Booking::where('user_id', $user->id)->with('room')->get();
+            $bookings = Booking::where('user_id', $user->id)->with(['user', 'room'])->get();
         }
 
         return view('bookings.index', compact('rooms', 'bookings'));
