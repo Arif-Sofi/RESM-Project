@@ -30,6 +30,9 @@ class Booking extends Model
         'status' => 'boolean',
     ];
 
+    /*
+    changes timezone to Asia/Kuala_Lumpur when retrieving from database(UTC)
+    */
     protected function startTime(): Attribute
     {
         return Attribute::make(

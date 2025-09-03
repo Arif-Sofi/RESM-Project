@@ -14,8 +14,8 @@
         this.viewBookingData.number_students = booking.number_of_student;
         this.viewBookingData.equiptment_needed = booking.equipment_needed;
         this.viewBookingData.purpose = booking.purpose;
-        this.viewBookingData.start_time = new Date(booking.start_time).toISOString().slice(0, 16).replace('T', ' ');
-        this.viewBookingData.end_time = new Date(booking.end_time).toISOString().slice(10, 16).replace('T', ' ');
+        this.viewBookingData.start_time = new Date(booking.start_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+        this.viewBookingData.end_time = new Date(booking.end_time).toLocaleTimeString([], { timeStyle: 'short' });
         $dispatch('open-modal', 'view-booking-modal');
     }
 }">
