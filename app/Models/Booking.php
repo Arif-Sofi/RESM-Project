@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Carbon\Carbon;
 
 class Booking extends Model
 {
@@ -27,6 +29,20 @@ class Booking extends Model
         'end_time' => 'datetime',
         'status' => 'boolean',
     ];
+
+    protected function startTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn(string $value) => Carbon::parse($value)->timezone('Asia/Kuala_Lumpur'),
+        );
+    }
+
+    protected function endTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn(string $value) => Carbon::parse($value)->timezone('Asia/Kuala_Lumpur'),
+        );
+    }
 
     /**
      * この予約を行ったユーザーを取得するリレーション。
