@@ -90,7 +90,7 @@
                                     </form>
                                 @endif
                                 {{-- Delete Booking --}}
-                                @if ($booking->user->id == auth()->user()->id)
+                                @if ($booking->user->id == auth()->user()->id || auth()->user()->isAdmin())
                                     @include('bookings._delete_modal', ['booking' => $booking])
                                 @endif
                             </div>
