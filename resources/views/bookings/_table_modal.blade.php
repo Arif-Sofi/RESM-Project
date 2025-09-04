@@ -89,6 +89,10 @@
                                         <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600">{{ __('Reject') }}</button>
                                     </form>
                                 @endif
+                                {{-- Delete Booking --}}
+                                @if ($booking->user->id == auth()->user()->id)
+                                    @include('bookings._delete_modal', ['booking' => $booking])
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -101,5 +105,5 @@
         </div>
     </div>
 
-    @include('bookings._view_booking_modal')
+    @include('bookings._view_modal')
 </div>

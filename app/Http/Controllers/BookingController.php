@@ -115,7 +115,9 @@ class BookingController extends Controller
      */
     public function destroy(Booking $booking)
     {
-        //
+        $this->authorize('delete', $booking);
+        $booking->delete();
+        return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully!');
     }
 
     /**

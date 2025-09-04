@@ -46,7 +46,11 @@ class BookingPolicy
      */
     public function delete(User $user, Booking $booking): bool
     {
-        return false;
+        if ($user->isAdmin() OR $user->id === $booking->user->id) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
