@@ -20,13 +20,13 @@
                 </div>
 
                 <!-- Room Booking Content -->
-                @include('bookings._room_booking_modal')
+                @include('bookings._room_modal')
             </div>
             <!-- Date Booking Content -->
-            @include('bookings._date_booking_modal')
+            @include('bookings._date_modal')
 
             <!-- Bookings Table -->
-            @include('bookings._table_booking_modal')
+            @include('bookings._table_modal')
         </div>
     </div>
 
