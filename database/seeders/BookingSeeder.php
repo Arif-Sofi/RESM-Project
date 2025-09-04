@@ -28,6 +28,11 @@ class BookingSeeder extends Seeder
 
         $roomIds = Room::pluck('id')->toArray();
         $userIds = User::pluck('id')->toArray();
+        $userIds = array_filter($userIds, function ($id) {
+            $user = User::find($id);
+            return !$user->isAdmin();
+        });
+
 
         if (empty($roomIds)) {
             $this->command->info('Warning: No rooms found. Please seed rooms first.');
@@ -41,7 +46,7 @@ class BookingSeeder extends Seeder
         $statuses = [0, 1, null];
         $attempts = 0; // 無限ループを避けるための試行回数カウンター・Clashを確認する際に使用
         $maxAttempts = 50;
-        $numberOfBookingsToGenerate = 10;
+        $numberOfBookingsToGenerate = 30;
 
         for ($i = 0; $i < $numberOfBookingsToGenerate; ) {
             if ($attempts >= $maxAttempts) {
