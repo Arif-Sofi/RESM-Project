@@ -10,7 +10,7 @@
         </p>
 
         <div class="space-y-4">
-            <div class="grid sm:grid-cols-6 gap-4">
+            <div class="grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
                 @foreach ($rooms as $room)
                     <label
                         class="block cursor-pointer p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
