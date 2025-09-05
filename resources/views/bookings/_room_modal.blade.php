@@ -10,23 +10,25 @@
         </p>
 
         <div class="space-y-4">
-            @foreach ($rooms as $room)
-                <label
-                    class="block cursor-pointer p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                    <div class="flex items-center">
-                        <input type="radio" name="selected_room" value="{{ $room->id }}" x-model="selectedRoomId"
-                            class="mr-4">
-                        <div>
-                            <span
-                                class="font-semibold text-gray-900 dark:text-gray-100 text-lg">{{ $room->name }}</span>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                                {{ $room->description }}</p>
-                            <p class="text-gray-500 dark:text-gray-500 text-sm">
-                                {{ $room->location_details }}</p>
+            <div class="grid sm:grid-cols-6 gap-4">
+                @foreach ($rooms as $room)
+                    <label
+                        class="block cursor-pointer p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center">
+                            <input type="radio" name="selected_room" value="{{ $room->id }}"
+                                x-model="selectedRoomId" class="mr-4">
+                            <div>
+                                <span
+                                    class="font-semibold text-gray-900 dark:text-gray-100 text-lg">{{ $room->name }}</span>
+                                <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                                    {{ $room->description }}</p>
+                                <p class="text-gray-500 dark:text-gray-500 text-sm">
+                                    {{ $room->location_details }}</p>
+                            </div>
                         </div>
-                    </div>
-                </label>
-            @endforeach
+                    </label>
+                @endforeach
+            </div>
         </div>
 
         <div class="mt-6 flex justify-end space-x-3">
@@ -52,7 +54,8 @@
         <input type="hidden" name="room_id" x-model="selectedRoomId">
         <input type="hidden" name="start_time"
             :value="selectedDate && selectedStartTime ? new Date(selectedDate + 'T' + selectedStartTime + ':00')
-                .toISOString().slice(0, 19).replace('T', ' ') : ''"> <!-- 2025-10-27T14:30:00.000Z converts to 2025-10-27 14:30:00-->
+                .toISOString().slice(0, 19).replace('T', ' ') : ''">
+        <!-- 2025-10-27T14:30:00.000Z converts to 2025-10-27 14:30:00-->
         <input type="hidden" name="end_time"
             :value="selectedDate && selectedEndTime ? new Date(selectedDate + 'T' + selectedEndTime + ':00')
                 .toISOString().slice(0, 19).replace('T', ' ') : ''">
@@ -76,9 +79,11 @@
                             <li
                                 class="text-sm text-gray-700 dark:text-gray-300 p-2 bg-white dark:bg-gray-800 rounded border">
                                 <div class="font-medium">
-                                    <span x-text="new Date(booking.start_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })"></span>
+                                    <span
+                                        x-text="new Date(booking.start_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })"></span>
                                     -
-                                    <span x-text="new Date(booking.end_time).toLocaleTimeString([], { timeStyle: 'short' })"></span>
+                                    <span
+                                        x-text="new Date(booking.end_time).toLocaleTimeString([], { timeStyle: 'short' })"></span>
                                 </div>
                                 <div class="text-gray-600 dark:text-gray-400">
                                     Purpose: <span x-text="booking.purpose"></span>
@@ -99,8 +104,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
                     <x-input-label for="booking_date" :value="__('Date')" />
-                    <x-text-input id="booking_date" type="date" class="mt-1 block w-full"
-                        x-model="selectedDate" />
+                    <x-text-input id="booking_date" type="date" class="mt-1 block w-full" x-model="selectedDate" />
                 </div>
                 <div>
                     <x-input-label for="start_time" :value="__('Start time')" />
@@ -109,8 +113,7 @@
                 </div>
                 <div>
                     <x-input-label for="end_time" :value="__('End time')" />
-                    <x-text-input id="end_time" type="time" class="mt-1 block w-full"
-                        x-model="selectedEndTime" />
+                    <x-text-input id="end_time" type="time" class="mt-1 block w-full" x-model="selectedEndTime" />
                 </div>
             </div>
 
