@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\BookingService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Mail\BookingConfirmationMail;
+use App\Mail\BookingApprovedMail;
+use App\Mail\BookingRejectedMail;
 use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
@@ -152,6 +154,8 @@ class BookingController extends Controller
         // Only the admin (user ID 1) will pass this check.
         $this->authorize('update', $booking);
         $booking->update(['status' => 1]);
+
+        Mail::to($booking->user->email)->send(new BookingApprovedMail($booking));
         return redirect()->route('bookings.index')->with('success', 'Booking approved successfully!');
     }
 
@@ -159,6 +163,8 @@ class BookingController extends Controller
     {
         $this->authorize('update', $booking);
         $booking->update(['status' => 0]);
+
+        Mail::to($booking->user->email)->send(new BookingRejectedMail($booking));
         return redirect()->route('bookings.index')->with('success', 'Booking rejected successfully!');
     }
 }
