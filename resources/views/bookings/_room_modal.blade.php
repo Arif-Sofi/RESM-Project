@@ -71,51 +71,8 @@
             </p>
 
             <!-- Previous Bookings Display -->
-            <div
-                class="mb-6 max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
-                <template x-if="previousBookings.length > 0">
-                    <ul class="space-y-2">
-                        <template x-for="booking in previousBookings" :key="booking.id">
-                            <li
-                                class="text-sm text-gray-700 dark:text-gray-300 p-2 bg-white dark:bg-gray-800 rounded border">
-                                <div class="font-medium">
-                                    <span
-                                        x-text="new Date(booking.start_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })"></span>
-                                    -
-                                    <span
-                                        x-text="new Date(booking.end_time).toLocaleTimeString([], { timeStyle: 'short' })"></span>
-                                </div>
-                                <div class="text-gray-600 dark:text-gray-400">
-                                    Purpose: <span x-text="booking.purpose"></span>
-                                </div>
-                                <div class="text-gray-500 dark:text-gray-500 text-xs">
-                                    Booked by: <span x-text="booking.user ? booking.user.name : 'Unknown User'"></span>
-                                </div>
-                            </li>
-                        </template>
-                    </ul>
-                </template>
-                <template x-if="previousBookings.length === 0">
-                    <p class="text-sm text-gray-500 text-center py-4">
-                        {{ __('No previous bookings found for this room.') }}</p>
-                </template>
-            </div>
+            @include('bookings.calendar._calendar', ['previousBookings' => $previousBookings ?? []])
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div>
-                    <x-input-label for="booking_date" :value="__('Date')" />
-                    <x-text-input id="booking_date" type="date" class="mt-1 block w-full" x-model="selectedDate" />
-                </div>
-                <div>
-                    <x-input-label for="start_time" :value="__('Start time')" />
-                    <x-text-input id="start_time" type="time" class="mt-1 block w-full"
-                        x-model="selectedStartTime" />
-                </div>
-                <div>
-                    <x-input-label for="end_time" :value="__('End time')" />
-                    <x-text-input id="end_time" type="time" class="mt-1 block w-full" x-model="selectedEndTime" />
-                </div>
-            </div>
 
             <div x-show="clashDetected"
                 class="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded-lg">
