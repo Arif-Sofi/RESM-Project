@@ -22,6 +22,7 @@
         "@alpinejs/collapse": "^3.14.9",
         "@fullcalendar/core": "^6.1.19",
         "@fullcalendar/daygrid": "^6.1.19",
-        "bootstrap": "^5.3.5"
+        "bootstrap": "^5.3.5",
+        "jquery": "^3.7.1"
     }
 }

@@ -1,6 +1,6 @@
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-<script>
+<script type="module">
     document.addEventListener('DOMContentLoaded', function() {
         const previousBookings = @json($previousBookings ?? []);
         // FullCalendar用イベント配列に変換
@@ -41,4 +41,13 @@
         });
         calendar.render();
     });
+
+    $(document).ready(function() {
+    $('input[type="radio"][name="selected_room"]').on('change', function() {
+
+        const selected_room = $(this);
+        const room_id = selected_room.val();
+        console.log('Selected room ID:', room_id);
+    });
+});
 </script>
