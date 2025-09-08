@@ -1,3 +1,6 @@
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
 <div x-show="showRoomBookingFlow" x-transition class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
     <!-- Step 1: Room Selection -->
     <div x-show="currentStep === 1">
@@ -48,6 +51,10 @@
         </div>
     </div>
 
+    <!-- Previous Bookings Display -->
+    <hr class="my-6 border-gray-300 dark:border-gray-700">
+    <div id="calendar"></div>
+
     <!-- Step 2 & 3 Form -->
     <form method="POST" action="{{ route('bookings.store') }}" x-show="currentStep === 2 || currentStep === 3">
         @csrf
@@ -70,9 +77,21 @@
                 {{ __('messages.booking_previous') }}
             </p>
 
-            <!-- Previous Bookings Display -->
-            @include('bookings.calendar._calendar', ['previousBookings' => $previousBookings ?? []])
-
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <x-input-label for="booking_date" :value="__('Date')" />
+                    <x-text-input id="booking_date" type="date" class="mt-1 block w-full" x-model="selectedDate" />
+                </div>
+                <div>
+                    <x-input-label for="start_time" :value="__('Start time')" />
+                    <x-text-input id="start_time" type="time" class="mt-1 block w-full"
+                        x-model="selectedStartTime" />
+                </div>
+                <div>
+                    <x-input-label for="end_time" :value="__('End time')" />
+                    <x-text-input id="end_time" type="time" class="mt-1 block w-full" x-model="selectedEndTime" />
+                </div>
+            </div>
 
             <div x-show="clashDetected"
                 class="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded-lg">
