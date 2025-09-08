@@ -41,7 +41,7 @@ class BookingController extends Controller
             // Regular user sees only their own bookings
             $bookings = Booking::where('user_id', $user->id)->with(['user', 'room'])->orderBy('created_at', 'desc')->get();
         }
-
+        
         return view('bookings.index', compact('rooms', 'bookings'));
     }
 
