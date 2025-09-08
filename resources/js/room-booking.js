@@ -30,7 +30,7 @@ document.addEventListener("alpine:init", () => {
         },
 
         initCalendar() {
-            // console.log("Initializing calendar with bookings:", [...this.previousBookings][0].purpose);
+            // console.log("Initializing calendar with bookings:", this.previousBookings.length > 0 ? this.previousBookings[0].purpose : "No bookings");
             const events = this.previousBookings.map((b) => ({
                 id: b.id,
                 title: b.purpose + (b.room_id ? ` (Room ${b.room_id})` : ""),
