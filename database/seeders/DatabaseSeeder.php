@@ -39,6 +39,14 @@ class DatabaseSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
+            User::create([
+            'name' => 'Arif Sofi',
+            'role_id' => 2,
+            'email' => 'muhammadarifhakimi@graduate.utm.my',
+            'email_verified_at' => now(),
+            'password' => Hash::make('123'),
+            'remember_token' => Str::random(10),
+        ]);
 
         $this->call([
             RoomSeeder::class,
