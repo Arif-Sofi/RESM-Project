@@ -28,7 +28,6 @@ class Booking extends Model
     protected $casts = [
         'start_time' => 'datetime',
         'end_time' => 'datetime',
-        'status' => 'boolean',
     ];
 
     /*
@@ -45,6 +44,21 @@ class Booking extends Model
     {
         return Attribute::make(
             get: fn(string $value) => Carbon::parse($value)->timezone('Asia/Kuala_Lumpur'),
+        );
+    }
+
+    /**
+     * Convert status from database (null, 0, 1) to string ('pending', 'rejected', 'approved')
+     */
+    protected function status(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                if ($value === null) return 'pending';
+                if ($value == 1) return 'approved';
+                if ($value == 0) return 'rejected';
+                return 'pending'; // default
+            }
         );
     }
 

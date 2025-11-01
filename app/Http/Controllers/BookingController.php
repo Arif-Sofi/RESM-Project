@@ -15,6 +15,7 @@ use App\Mail\BookingConfirmationMail;
 use App\Mail\BookingApprovedMail;
 use App\Mail\BookingRejectedMail;
 use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
 
 class BookingController extends Controller
 {
@@ -32,17 +33,28 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $rooms = Room::all();
-        $user = Auth::user();
-        if ($user->role->id === 1) {
-            // Admin sees all bookings
-            $bookings = Booking::with(['user', 'room'])->orderBy('created_at', 'desc')->get();
-        } else {
-            // Regular user sees only their own bookings
-            $bookings = Booking::where('user_id', $user->id)->with(['user', 'room'])->orderBy('created_at', 'desc')->get();
-        }
+        $rooms = Room::select('id', 'name', 'capacity', 'building', 'floor', 'has_projector', 'has_whiteboard', 'equipment', 'description')
+            ->orderBy('name')
+            ->get();
 
-        return view('bookings.index', compact('rooms', 'bookings'));
+        // Get bookings for the current week
+        $startOfWeek = now()->startOfWeek();
+        $endOfWeek = now()->endOfWeek();
+
+        $bookings = Booking::with(['room:id,name', 'user:id,name'])
+            ->whereBetween('start_time', [$startOfWeek, $endOfWeek])
+            ->whereIn('status', [null, 1]) // pending or approved only
+            ->orderBy('start_time')
+            ->get();
+
+        return Inertia::render('Bookings/Index', [
+            'rooms' => $rooms,
+            'bookings' => $bookings,
+            'initialDateRange' => [
+                'start' => $startOfWeek->toISOString(),
+                'end' => $endOfWeek->toISOString(),
+            ],
+        ]);
     }
 
     /**
@@ -58,25 +70,22 @@ class BookingController extends Controller
      */
     public function store(StoreBookingRequest $request)
     {
-        // dd($request->all());
-        if (!$request->has('room_id') || !$request->has('start_time') || !$request->has('end_time')) {
-            return back()->withErrors(['booking' => 'Please select a room and specify the booking time.']);
-        }
-
         $startTime = Carbon::parse($request->input('start_time'));
         $endTime = Carbon::parse($request->input('end_time'));
 
         // Server-side clash validation to prevent race conditions
         if ($this->bookingService->isClash($request->room_id, $startTime, $endTime)) {
-            return back()->withErrors(['booking' => 'The selected time slot is no longer available. Please choose another time.']);
+            return back()->withErrors([
+                'start_time' => 'This time slot conflicts with an existing booking. Please choose another time.'
+            ]);
         }
 
         $booking = Booking::create([
             'room_id' => $request->room_id,
-            'user_id' => Auth::id(), // Assuming authenticated user
+            'user_id' => Auth::id(),
             'start_time' => $startTime,
             'end_time' => $endTime,
-            'number_of_student' => $request->number_of_student,
+            'number_of_student' => $request->number_of_students ?? $request->number_of_student, // Support both field names
             'equipment_needed' => $request->equipment_needed,
             'purpose' => $request->purpose,
             'status' => null, // pending
@@ -86,7 +95,7 @@ class BookingController extends Controller
         // Send the email notification
         Mail::to(Auth::user()->email)->send(new BookingConfirmationMail($booking));
 
-        return redirect()->route('dashboard')->with('success', 'Booking created successfully!');
+        return back()->with('success', 'Booking created successfully! Awaiting approval.');
     }
 
     /**

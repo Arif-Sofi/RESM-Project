@@ -15,18 +15,25 @@ class BookingService
      * @param Carbon $newEndTime
      * @return bool true if there is a clash, false otherwise.
      */
-    public function isClash(int $roomId, Carbon $newStartTime, Carbon $newEndTime): bool
+    public function isClash(int $roomId, Carbon $newStartTime, Carbon $newEndTime, ?int $excludeBookingId = null): bool
     {
-        $clashingEvents = Booking::where('room_id', $roomId)
+        $query = Booking::where('room_id', $roomId)
+            ->whereIn('status', [null, 1]) // Only check pending or approved bookings
             ->where(function ($query) use ($newStartTime, $newEndTime) {
                 $query
                     ->whereBetween('start_time', [$newStartTime, $newEndTime])
                     ->orWhereBetween('end_time', [$newStartTime, $newEndTime])
                     ->orWhere(function ($query) use ($newStartTime, $newEndTime) {
-                        $query->where('start_time', '<', $newStartTime)->where('end_time', '>', $newEndTime);
+                        $query->where('start_time', '<=', $newStartTime)
+                              ->where('end_time', '>=', $newEndTime);
                     });
-            })->exists();
+            });
 
-        return $clashingEvents;
+        // Exclude a specific booking (useful for updates)
+        if ($excludeBookingId) {
+            $query->where('id', '!=', $excludeBookingId);
+        }
+
+        return $query->exists();
     }
 }
