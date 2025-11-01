@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "RESM Database",
+      "Group": "Servers",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "resm_db",
+      "Username": "resm_user",
+      "SSLMode": "prefer",
+      "Favorite": true
+    }
+  }
+}
