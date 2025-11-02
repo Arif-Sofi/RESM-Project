@@ -1,4 +1,9 @@
 <x-guest-layout>
+    <div class="flex justify-center mb-4">
+        <a href="/">
+            <img src="{{ asset('images/SKSU-logo.png') }}" alt="Logo" class="w-30 h-30">
+        </a>
+    </div>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
