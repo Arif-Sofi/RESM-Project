@@ -19,4 +19,5 @@ return [
     'dashboard' => 'Dashboard',
     'no_bookings_set' => 'No rooms have been booked yet.',
     'create_booking' => 'Book a Room',
+    'admin_noti' => 'You are the',
 ];

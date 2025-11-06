@@ -19,4 +19,5 @@ return [
     'dashboard' => 'Papan Pemuka',
     'no_bookings_set' => 'Belum ada bilik yang ditempah lagi',
     'create_booking' => 'Tempah Bilik',
+    'admin_noti' => 'Anda adalah',
 ];

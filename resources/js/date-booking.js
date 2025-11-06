@@ -72,7 +72,7 @@ document.addEventListener('alpine:init', () => {
 
         async checkClash() {
             if (!this.selectedDate || !this.selectedStartTime || !this.selectedEndTime) {
-                alert('日付と時間を選択してください。');
+                alert('Please select a date, the start and end time.');
                 return;
             }
 
@@ -88,7 +88,7 @@ document.addEventListener('alpine:init', () => {
 
             if (clashes.length > 0) {
                 this.clashDetected = true;
-                this.clashMessage = '選択された時間は既に予約済みです。別の時間を選択してください。';
+                this.clashMessage = 'The selected Date & Time clashes with an existing bookings. Please choose a different time.';
             } else {
                 this.clashDetected = false;
                 this.clashMessage = '';
