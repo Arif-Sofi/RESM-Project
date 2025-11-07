@@ -52,12 +52,26 @@ export interface Position {
   width: number;
 }
 
-// Business hours configuration
+// Business hours configuration (default: 6 AM - 7 PM)
 export const BUSINESS_HOURS = {
-  startHour: 8,  // 8 AM
-  endHour: 18,   // 6 PM
+  startHour: 6,  // 6 AM
+  endHour: 19,   // 7 PM (13 hours total)
   slotDuration: 60, // minutes
 };
+
+// Full 24-hour configuration (for "Show 24 Hours" toggle)
+export const FULL_DAY_HOURS = {
+  startHour: 0,  // 12 AM (midnight)
+  endHour: 24,   // 12 AM next day (24-hour format)
+  slotDuration: 60, // minutes
+};
+
+/**
+ * Get hours configuration based on 24-hour toggle
+ */
+export function getHoursConfig(show24Hours: boolean) {
+  return show24Hours ? FULL_DAY_HOURS : BUSINESS_HOURS;
+}
 
 /**
  * Get date range for a given view type and current date
@@ -113,11 +127,11 @@ export function goToPrevious(date: Date, view: ViewType): Date {
 /**
  * Generate time slots for a single day
  */
-export function generateTimeSlots(date: Date): TimeSlot[] {
+export function generateTimeSlots(date: Date, hoursConfig = BUSINESS_HOURS): TimeSlot[] {
   const slots: TimeSlot[] = [];
-  const { startHour, endHour } = BUSINESS_HOURS;
+  const { startHour, endHour } = hoursConfig;
 
-  for (let hour = startHour; hour <= endHour; hour++) {
+  for (let hour = startHour; hour < endHour; hour++) {
     slots.push({
       hour,
       label: format(setHours(setMinutes(date, 0), hour), 'h a'),
@@ -151,9 +165,10 @@ export function calculateEventPosition(
   eventStart: Date,
   eventEnd: Date,
   dayStart: Date,
-  view: ViewType
+  view: ViewType,
+  hoursConfig = BUSINESS_HOURS
 ): Position {
-  const { startHour, endHour } = BUSINESS_HOURS;
+  const { startHour, endHour } = hoursConfig;
 
   // Create boundary times for the day
   const boundaryStart = setHours(setMinutes(dayStart, 0), startHour);
@@ -180,9 +195,9 @@ export function calculateEventPosition(
 /**
  * Check if a time is within business hours
  */
-export function isWithinBusinessHours(date: Date): boolean {
+export function isWithinBusinessHours(date: Date, hoursConfig = BUSINESS_HOURS): boolean {
   const hour = date.getHours();
-  return hour >= BUSINESS_HOURS.startHour && hour < BUSINESS_HOURS.endHour;
+  return hour >= hoursConfig.startHour && hour < hoursConfig.endHour;
 }
 
 /**

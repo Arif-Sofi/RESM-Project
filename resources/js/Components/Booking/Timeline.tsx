@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Room, Booking } from '@/Types/models';
+import { usePage } from '@inertiajs/react';
+import { PageProps } from '@/Types';
 import BookingModal from './BookingModal';
+import BookingDetailsModal from './BookingDetailsModal';
 import CustomTimeline from '@/Components/Timeline/CustomTimeline';
 
 interface Props {
@@ -10,13 +13,19 @@ interface Props {
 }
 
 export default function Timeline({ rooms, bookings, initialDateRange }: Props) {
+  const { auth } = usePage<PageProps>().props;
   const [modalOpen, setModalOpen] = useState(false);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<{
     room: Room;
     start: Date;
     end: Date;
   } | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+
+  // Check if user can approve bookings (admin or teacher)
+  const canApprove = auth.user && ('role' in auth.user) &&
+    ((auth.user as any).role === 'admin' || (auth.user as any).role === 'teacher');
 
   const handleSlotSelect = (room: Room, start: Date, end: Date) => {
     // Check if slot is in the past
@@ -37,8 +46,7 @@ export default function Timeline({ rooms, bookings, initialDateRange }: Props) {
   const handleEventClick = (booking: Booking) => {
     setSelectedBooking(booking);
     setSelectedSlot(null);
-    // TODO: Show booking details modal
-    console.log('Clicked booking:', booking);
+    setDetailsModalOpen(true);
   };
 
   return (
@@ -61,6 +69,18 @@ export default function Timeline({ rooms, bookings, initialDateRange }: Props) {
           room={selectedSlot.room}
           startTime={selectedSlot.start}
           endTime={selectedSlot.end}
+        />
+      )}
+
+      {selectedBooking && (
+        <BookingDetailsModal
+          open={detailsModalOpen}
+          onClose={() => {
+            setDetailsModalOpen(false);
+            setSelectedBooking(null);
+          }}
+          booking={selectedBooking}
+          canApprove={canApprove}
         />
       )}
     </>

@@ -2,18 +2,17 @@ export * from './models';
 export * from './calendar';
 export * from './api';
 
+import { User } from './models';
+
 // Inertia shared props type
 export interface SharedProps {
   auth: {
-    user: {
-      id: number;
-      name: string;
-      email: string;
-    } | null;
+    user: User;
   };
-  flash: {
+  flash?: {
     success?: string;
     error?: string;
+    message?: string;
   };
 }
 

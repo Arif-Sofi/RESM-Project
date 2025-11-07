@@ -3,7 +3,11 @@ import { Link, usePage } from '@inertiajs/react';
 import { PageProps } from '@/Types';
 
 export default function Navbar() {
-  const { auth } = usePage<PageProps>().props;
+  const { auth, url } = usePage<PageProps>().props;
+  const currentPath = url;
+
+  // Helper function to determine active state
+  const isActive = (path: string) => currentPath === path;
 
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200">
@@ -12,8 +16,12 @@ export default function Navbar() {
           <div className="flex">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/bookings" className="text-xl font-bold text-indigo-600">
-                RESM Booking
+              <Link href="/dashboard">
+                <img
+                  src="/images/SKSU-logo.png"
+                  alt="SKSU Logo"
+                  className="h-12 w-auto object-contain"
+                />
               </Link>
             </div>
 
@@ -21,13 +29,21 @@ export default function Navbar() {
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               <Link
                 href="/bookings"
-                className="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                className={
+                  isActive('/bookings')
+                    ? 'border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium'
+                }
               >
                 Book a Room
               </Link>
               <Link
                 href="/my-bookings"
-                className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                className={
+                  isActive('/my-bookings')
+                    ? 'border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium'
+                }
               >
                 My Bookings
               </Link>

@@ -47,10 +47,6 @@ export default function Index({ rooms, bookings, initialDateRange }: Props) {
 
   // Only show rooms that are both filtered AND selected
   const displayRooms = useMemo(() => {
-    if (selectedRoomIds.length === 0) {
-      // If no rooms selected, show all filtered rooms
-      return filteredRooms;
-    }
     return filteredRooms.filter(room => selectedRoomIds.includes(room.id));
   }, [filteredRooms, selectedRoomIds]);
 

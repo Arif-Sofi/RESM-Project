@@ -1,8 +1,14 @@
+export interface Role {
+  id: number;
+  name: string;
+}
+
 export interface User {
   id: number;
   name: string;
   email: string;
-  role?: 'student' | 'teacher' | 'admin';
+  email_verified_at: string | null;
+  role?: Role;
 }
 
 export interface Room {
@@ -24,8 +30,8 @@ export interface Booking {
   user_id: number;
   start_time: string; // ISO 8601
   end_time: string;
-  status: 'pending' | 'approved' | 'rejected' | null;
-  number_of_students: number;
+  status: boolean | null; // true = approved, false = disapproved, null = pending
+  number_of_student: number;
   equipment_needed?: string;
   purpose: string;
   created_at: string;

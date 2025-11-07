@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocalizationController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\BookingController;
@@ -12,10 +13,9 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/login');
 
 Route::get('/set-locale/{locale}', [LocalizationController::class, 'setLocale'])->name('setLocale');
-Route::get('/dashboard', function () {
-    $bookings = auth()->user()->bookings()->orderBy('created_at', 'desc')->get();
-    return view('dashboard', compact('bookings'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/events', [EventController::class, 'apiEvents'])->name('api.events');
 
     Route::resource('bookings', controller: 'App\Http\Controllers\BookingController');
+    Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my');
     Route::get('/bookings/room/{room}', [BookingController::class, 'getBookingsByRoom']);
     Route::get('/bookings/room-and-date/{room}', [BookingController::class, 'getBookingsByRoomAndDate']);
     Route::patch('/bookings/{booking}/approve', [BookingController::class, 'approve'])->name('bookings.approve');

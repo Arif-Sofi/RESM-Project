@@ -37,12 +37,12 @@ class BookingController extends Controller
             ->orderBy('name')
             ->get();
 
-        // Get bookings for the current week
-        $startOfWeek = now()->startOfWeek();
-        $endOfWeek = now()->endOfWeek();
+        // Get bookings for ±2 weeks (1 month total)
+        $startDate = now()->subWeeks(2)->startOfDay();
+        $endDate = now()->addWeeks(2)->endOfDay();
 
-        $bookings = Booking::with(['room:id,name', 'user:id,name'])
-            ->whereBetween('start_time', [$startOfWeek, $endOfWeek])
+        $bookings = Booking::with(['room:id,name,capacity,has_projector,has_whiteboard', 'user:id,name,email'])
+            ->whereBetween('start_time', [$startDate, $endDate])
             ->whereIn('status', [null, 1]) // pending or approved only
             ->orderBy('start_time')
             ->get();
@@ -51,9 +51,37 @@ class BookingController extends Controller
             'rooms' => $rooms,
             'bookings' => $bookings,
             'initialDateRange' => [
-                'start' => $startOfWeek->toISOString(),
-                'end' => $endOfWeek->toISOString(),
+                'start' => now()->startOfDay()->toISOString(),
+                'end' => now()->endOfDay()->toISOString(),
             ],
+        ]);
+    }
+
+    /**
+     * Display the current user's bookings.
+     */
+    public function myBookings()
+    {
+        $now = now();
+
+        // Get all bookings for the current user with room details
+        $allBookings = Booking::with(['room:id,name,capacity,building,floor,has_projector,has_whiteboard,equipment,description', 'user:id,name,email'])
+            ->where('user_id', Auth::id())
+            ->orderBy('start_time', 'desc')
+            ->get();
+
+        // Separate upcoming and past bookings
+        $upcomingBookings = $allBookings->filter(function ($booking) use ($now) {
+            return Carbon::parse($booking->end_time)->isFuture();
+        })->sortBy('start_time')->values();
+
+        $pastBookings = $allBookings->filter(function ($booking) use ($now) {
+            return Carbon::parse($booking->end_time)->isPast();
+        })->sortByDesc('start_time')->values();
+
+        return Inertia::render('Bookings/MyBookings', [
+            'upcomingBookings' => $upcomingBookings,
+            'pastBookings' => $pastBookings,
         ]);
     }
 
@@ -188,7 +216,7 @@ class BookingController extends Controller
         $booking->update(['status' => 1]);
 
         Mail::to($booking->user->email)->send(new BookingApprovedMail($booking));
-        return redirect()->route('bookings.index')->with('success', 'Booking approved successfully!');
+        return back()->with('success', 'Booking approved successfully!');
     }
 
     public function reject(Booking $booking)
@@ -198,6 +226,6 @@ class BookingController extends Controller
         $booking->update(['rejection_reason' => request()->input('reason_reject')]);
 
         Mail::to($booking->user->email)->send(new BookingRejectedMail($booking));
-        return redirect()->route('bookings.index')->with('success', 'Booking rejected successfully!');
+        return back()->with('success', 'Booking rejected successfully!');
     }
 }
