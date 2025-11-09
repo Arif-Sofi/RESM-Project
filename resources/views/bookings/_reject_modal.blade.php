@@ -12,10 +12,10 @@
                 @csrf
                 @method('PATCH')
                 <button type="submit"
-                    class="mr-8 px-4 py-2 bg-red-600 text-white rounded">{{ __('Confirm') }}
+                    class="mr-8 px-4 py-2 bg-red-600 text-white rounded">{{ __('Reject') }}
                 </button>
                 <button type="button" x-on:click="$dispatch('close')"
-                    class="ml-8 px-4 py-2 bg-gray-300 rounded">{{ __('Cancel') }}
+                    class="ml-8 px-4 py-2 bg-gray-300 rounded">{{ __('messages.cancel') }}
                 </button>
             </form>
         </div>

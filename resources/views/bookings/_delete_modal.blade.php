@@ -6,16 +6,16 @@
     <div class="">
         <div class="bg-white dark:bg-gray-800 rounded shadow p-6">
             <p class="mb-4 text-center">
-                {{ __('This action cannot be undone. Are you sure you want to Cancel booking?') }}
+                THIS ACTION CANNOT BE UNDONE. <br>Are you sure you want to Cancel booking?
             </p>
             <form action="{{ route('bookings.destroy', $booking) }}" method="POST" class="flex justify-center">
                 @csrf
                 @method('DELETE')
                 <button type="submit"
-                    class="mr-8 px-4 py-2 bg-red-600 text-white rounded">{{ __('Confirm') }}
+                    class="mr-8 px-4 py-2 bg-red-600 text-white rounded">{{ __('messages.confirm') }}
                 </button>
                 <button type="button" x-on:click="$dispatch('close')"
-                    class="ml-8 px-4 py-2 bg-gray-300 rounded">{{ __('Cancel') }}
+                    class="ml-8 px-4 py-2 bg-gray-300 rounded">{{ __('messages.cancel') }}
                 </button>
             </form>
         </div>
