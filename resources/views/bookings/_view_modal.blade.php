@@ -42,7 +42,7 @@
                 <p id="purpose" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.purpose"></p>
             </div>
             <div>
-                <x-input-label for="start_time" :value="__('Time')" />
+                <x-input-label for="start_time" :value="__('Date & Time')" />
                 <span id="start_time" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.start_time"></span>
                 -
                 <span id="end_time" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.end_time"></span>

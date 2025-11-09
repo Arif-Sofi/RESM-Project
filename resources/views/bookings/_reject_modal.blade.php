@@ -1,16 +1,16 @@
-    <a href="#" x-on:click.prevent="$dispatch('open-modal', 'delete-modal-{{ $booking->id }}');"
-    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600 ml-1">{{ __('Cancel') }}
+<a href="#" x-on:click.prevent="$dispatch('open-modal', 'reject-modal-{{ $booking->id }}');"
+    class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600 ml-1 mr-1">{{ __('Reject') }}
 </a>
 
-<x-modal name="delete-modal-{{ $booking->id }}">
+<x-modal name="reject-modal-{{ $booking->id }}">
     <div class="">
         <div class="bg-white dark:bg-gray-800 rounded shadow p-6">
             <p class="mb-4 text-center">
-                {{ __('This action cannot be undone. Are you sure you want to Cancel booking?') }}
+                {{ __('Are you sure you want to reject this booking?') }}
             </p>
-            <form action="{{ route('bookings.destroy', $booking) }}" method="POST" class="flex justify-center">
+            <form action="{{ route('bookings.reject', $booking) }}" method="POST" class="flex justify-center">
                 @csrf
-                @method('DELETE')
+                @method('PATCH')
                 <button type="submit"
                     class="mr-8 px-4 py-2 bg-red-600 text-white rounded">{{ __('Confirm') }}
                 </button>

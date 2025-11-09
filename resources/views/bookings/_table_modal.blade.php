@@ -79,21 +79,10 @@
                                 <div style="display:flex flex-wrap:wrap">
                                 <a href="#" x-on:click.prevent="setViewBookingData({{ json_encode($booking) }})" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600 mr-1">{{ __('View') }}</a>
                                 @if (auth()->user()->isAdmin())
-                                    <form action="{{ route('bookings.approve', $booking) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-600 ml-1 mr-1">{{ __('Approve') }}</button>
-                                    </form>
-                                    <form action="{{ route('bookings.reject', $booking) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600 ml-1 mr-1">{{ __('Reject') }}</button>
-                                    </form>
+                                    @include('bookings._approve_modal', ['booking' => $booking])
+                                    @include('bookings._reject_modal', ['booking' => $booking])
                                 @endif
-                                {{-- Delete Booking --}}
-                                @if ($booking->user->id == auth()->user()->id || auth()->user()->isAdmin())
-                                    @include('bookings._delete_modal', ['booking' => $booking])
-                                @endif
+                                @include('bookings._delete_modal', ['booking' => $booking])
                                 </div>
                             </div>
                         </div>
