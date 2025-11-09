@@ -1,21 +1,27 @@
 <div class="mt-8" x-data="{
     viewBookingData: {
+        id: '',
         room_name: '',
         user_name: '',
+        user_id: '',
         number_students: '',
         equiptment_needed: '',
         purpose: '',
         start_time: '',
-        end_time: ''
+        end_time: '',
+        status: ''
     },
     setViewBookingData(booking) {
+        this.viewBookingData.id = booking.id;
         this.viewBookingData.room_name = booking.room ? booking.room.name : 'N/A';
         this.viewBookingData.user_name = booking.user ? booking.user.name : 'N/A';
+        this.viewBookingData.user_id = booking.user_id;
         this.viewBookingData.number_students = booking.number_of_student;
         this.viewBookingData.equiptment_needed = booking.equipment_needed;
         this.viewBookingData.purpose = booking.purpose;
         this.viewBookingData.start_time = new Date(booking.start_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
         this.viewBookingData.end_time = new Date(booking.end_time).toLocaleTimeString([], { timeStyle: 'short' });
+        this.viewBookingData.status = booking.status;
         $dispatch('open-modal', 'view-booking-modal');
     }
 }">

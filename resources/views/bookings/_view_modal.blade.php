@@ -48,5 +48,22 @@
                 <span id="end_time" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.end_time"></span>
             </div>
         </div>
+
+        <div class="mt-6 flex justify-end">
+            <x-secondary-button x-on:click="$dispatch('close')">
+                {{ __('messages.close') }}
+            </x-secondary-button>
+
+            @php
+                $userId = auth()->id();
+            @endphp
+            <template x-if="viewBookingData.status === null && viewBookingData.user_id === {{ $userId }}">
+                <a :href="`/bookings/${viewBookingData.id}/edit`" class="ml-3">
+                    <x-primary-button>
+                        {{ __('messages.edit') }}
+                    </x-primary-button>
+                </a>
+            </template>
+        </div>
     </div>
 </x-modal>

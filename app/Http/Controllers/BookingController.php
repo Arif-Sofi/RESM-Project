@@ -41,7 +41,7 @@ class BookingController extends Controller
             // Regular user sees only their own bookings
             $bookings = Booking::where('user_id', $user->id)->with(['user', 'room'])->orderBy('created_at', 'desc')->get();
         }
-        
+
         return view('bookings.index', compact('rooms', 'bookings'));
     }
 
@@ -101,7 +101,9 @@ class BookingController extends Controller
      */
     public function edit(Booking $booking)
     {
-        //
+        $this->authorize('update', $booking);
+        $rooms = Room::all();
+        return view('bookings.edit', compact('booking', 'rooms'));
     }
 
     /**
@@ -109,7 +111,26 @@ class BookingController extends Controller
      */
     public function update(UpdateBookingRequest $request, Booking $booking)
     {
-        //
+        $this->authorize('update', $booking);
+
+        $startTime = Carbon::parse($request->input('start_time'));
+        $endTime = Carbon::parse($request->input('end_time'));
+
+        if ($this->bookingService->isClash($request->room_id, $startTime, $endTime, $booking->id)) {
+            return back()->withErrors(['booking' => 'The selected time slot is no longer available. Please choose another time.'])->withInput();
+        }
+
+        $booking->update([
+            'room_id' => $request->room_id,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'number_of_student' => $request->number_of_student,
+            'equipment_needed' => $request->equipment_needed,
+            'purpose' => $request->purpose,
+            'status' => null, // Reset status to pending after edit
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Booking updated successfully!');
     }
 
     /**

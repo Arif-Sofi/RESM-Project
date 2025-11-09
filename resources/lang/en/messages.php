@@ -3,6 +3,7 @@
 return [
     "confirm" => "Confirm",
     "cancel" => "Cancel",
+    "close" => "Close",
     "next" => "Next",
     "previous" => "Previous",
     "save" => "Save",

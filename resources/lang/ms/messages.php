@@ -3,6 +3,7 @@
 return [
     "confirm" => "Sahkan",
     "cancel" => "Batal",
+    "close" => "Tutup",
     "next" => "Seterusnya",
     "previous" => "Sebelumnya",
     "save" => "Simpan",

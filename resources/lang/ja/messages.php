@@ -3,6 +3,7 @@
 return [
     "confirm" => "確認",
     "cancel" => "キャンセル",
+    "close" => "閉じる",
     "next" => "次へ",
     "previous" => "前へ",
     "save" => "保存",
