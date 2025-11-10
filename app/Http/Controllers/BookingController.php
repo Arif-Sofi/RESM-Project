@@ -130,7 +130,7 @@ class BookingController extends Controller
             'status' => null, // Reset status to pending after edit
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Booking updated successfully!');
+        return redirect()->route('bookings.index')->with('success', 'Booking updated successfully!');
     }
 
     /**
