@@ -80,6 +80,7 @@ class BookingController extends Controller
             'equipment_needed' => $request->equipment_needed,
             'purpose' => $request->purpose,
             'status' => null, // pending
+            'rejection_reason' => null,
         ]);
 
         // Send the email notification
@@ -184,6 +185,7 @@ class BookingController extends Controller
     {
         $this->authorize('update', $booking);
         $booking->update(['status' => 0]);
+        $booking->update(['rejection_reason' => request()->input('reason_reject')]);
 
         Mail::to($booking->user->email)->send(new BookingRejectedMail($booking));
         return redirect()->route('bookings.index')->with('success', 'Booking rejected successfully!');

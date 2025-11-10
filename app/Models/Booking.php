@@ -22,6 +22,7 @@ class Booking extends Model
         'number_of_student',
         'equipment_needed',
         'purpose',
+        'rejection_reason',
     ];
 
     protected $casts = [
