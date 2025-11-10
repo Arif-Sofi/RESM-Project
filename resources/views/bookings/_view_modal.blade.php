@@ -58,7 +58,7 @@
                 $userId = auth()->id();
             @endphp
             <template x-if="viewBookingData.status === null && viewBookingData.user_id === {{ $userId }}">
-                <a :href="`/bookings/${viewBookingData.id}/edit`" class="ml-3">
+                <a href="{{ route('bookings.edit', $booking)}}" class="ml-3">
                     <x-primary-button>
                         {{ __('messages.edit') }}
                     </x-primary-button>
