@@ -1,0 +1,80 @@
+name: Laravel Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, exif, pcntl, bcmath, gd, pdo_pgsql, pgsql, zip
+          coverage: none
+
+      - name: Copy .env.testing
+        run: |
+          cp .env.example .env.testing
+          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env.testing
+          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env.testing
+          sed -i 's/DB_PORT=.*/DB_PORT=5432/' .env.testing
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=testing/' .env.testing
+          sed -i 's/DB_USERNAME=.*/DB_USERNAME=postgres/' .env.testing
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/' .env.testing
+
+      - name: Install Composer Dependencies
+        run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Generate Application Key
+        run: php artisan key:generate --env=testing
+
+      - name: Run Database Migrations
+        run: php artisan migrate --env=testing --force
+
+      - name: Run PHPUnit/Pest Tests
+        run: php artisan test --env=testing
+
+      - name: Run Laravel Pint
+        run: ./vendor/bin/pint --test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Build Frontend Assets
+        run: npm run build
