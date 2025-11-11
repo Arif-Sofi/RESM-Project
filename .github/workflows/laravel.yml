@@ -35,27 +35,34 @@ jobs:
           extensions: mbstring, exif, pcntl, bcmath, gd, pdo_pgsql, pgsql, zip
           coverage: none
 
-      - name: Copy .env.testing
-        run: |
-          cp .env.example .env.testing
-          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=pgsql/' .env.testing
-          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env.testing
-          sed -i 's/DB_PORT=.*/DB_PORT=5432/' .env.testing
-          sed -i 's/DB_DATABASE=.*/DB_DATABASE=testing/' .env.testing
-          sed -i 's/DB_USERNAME=.*/DB_USERNAME=postgres/' .env.testing
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=postgres/' .env.testing
+      - name: Copy .env file
+        run: cp .env.example .env
 
       - name: Install Composer Dependencies
         run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Generate Application Key
-        run: php artisan key:generate --env=testing
+        run: php artisan key:generate
 
       - name: Run Database Migrations
-        run: php artisan migrate --env=testing --force
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: testing
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+        run: php artisan migrate --force
 
       - name: Run PHPUnit/Pest Tests
-        run: php artisan test --env=testing
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: testing
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+        run: php artisan test
 
       - name: Run Laravel Pint
         run: ./vendor/bin/pint --test
