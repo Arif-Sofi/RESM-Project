@@ -16,8 +16,15 @@ class EventFactory extends Factory
      */
     public function definition(): array
     {
+        $startAt = fake()->dateTimeBetween('+1 day', '+30 days');
+        $endAt = fake()->dateTimeBetween($startAt, (clone $startAt)->modify('+4 hours'));
+
         return [
-            //
+            'title' => fake()->sentence(3),
+            'description' => fake()->paragraph(),
+            'start_at' => $startAt,
+            'end_at' => $endAt,
+            'user_id' => \App\Models\User::factory(),
         ];
     }
 }
