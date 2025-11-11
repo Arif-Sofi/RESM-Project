@@ -150,7 +150,8 @@
                 <div class="mb-4">
                     <x-input-label for="number_of_students" :value="__('Number of Students')" />
                     <x-text-input id="number_of_students" name="number_of_student" type="number"
-                        class="mt-1 block w-full" x-model="numberOfStudents" required />
+                        class="mt-1 block w-full" x-model="numberOfStudents" min="0" required
+                        @input="if ($event.target.value < 0) $event.target.value = 0;" />
                 </div>
                 <div class="mb-4">
                     <x-input-label for="equipment_needed" :value="__('Equipment Needed (Optional)')" />
