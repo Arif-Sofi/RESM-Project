@@ -13,7 +13,7 @@
             <div>
                 <x-input-label for="booking_date" :value="__('Date')" />
                 <x-text-input id="booking_date" name="booking_date" type="date" class="mt-1 block w-full"
-                    x-model="selectedDate" />
+                    x-model="selectedDate" min="{{ now()->toDateString() }}"/>
             </div>
             <div>
                 <x-input-label for="start_time" :value="__('Start time')" />
