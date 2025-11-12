@@ -53,15 +53,13 @@
             @php
                 $userId = auth()->id();
             @endphp
-            {{-- <template x-if="viewBookingData.status === null && viewBookingData.user_id === {{ $userId }}"> --}}
-            @can('update', $booking)
+            <template x-if="viewBookingData.status === null && viewBookingData.user_id === {{ $userId }}">
                 <a href="{{ route('bookings.edit', $booking)}}" class="mr-3">
                     <x-primary-button>
                         {{ __('messages.edit') }}
                     </x-primary-button>
                 </a>
-            @endcan
-            {{-- </template> --}}
+            </template>
 
             <x-secondary-button x-on:click="$dispatch('close')">
                 {{ __('messages.close') }}
