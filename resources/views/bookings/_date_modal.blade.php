@@ -1,11 +1,11 @@
-<div x-show="showDateBookingFlow" x-transition class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+<div x-show="showDateBookingFlow" x-transition class="bg-lightbase dark:bg-primary shadow-sm rounded-lg p-6 ring-secondary ring-1">
     <!-- Step 1: 日付選択 -->
     <div x-show="currentStep === 1">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+        <h2 class="text-lg font-medium text-primary dark:text-base mb-4">
             {{ __('messages.date_select') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p class="mt-1 text-sm text-primary dark:text-base mb-4">
             {{ __('messages.date_choose') }}
         </p>
 
@@ -60,11 +60,11 @@
 
         <!-- Step 2: 日付と時間選択 -->
         <div x-show="currentStep === 2">
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <h2 class="text-lg font-medium text-primary dark:text-base">
                 {{ __('messages.room_select') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p class="mt-1 text-sm text-primary dark:text-base mb-4">
                 {{ __('messages.booking_previous') }} {{ __(' ') }} <span x-text="selectedDate"></span>
                 {{ __(' from ') }} <span x-text="selectedStartTime"></span>{{ __(' - ') }}
                 <span x-text="selectedEndTime"></span> {{ __(':') }}
@@ -72,12 +72,12 @@
 
             {{-- 既存予約の表示 --}}
             <div
-                class="mb-6 max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-gray-50 dark:bg-gray-900">
+                class="mb-6 max-h-40 overflow-y-auto border border-secondary dark:border-accent p-4 rounded-lg bg-accent dark:bg-secondary">
                 <template x-if="previousBookings.length > 0">
                     <ul class="space-y-2">
                         <template x-for="booking in previousBookings" :key="booking.id">
                             <li
-                                class="text-sm text-gray-700 dark:text-gray-300 p-2 bg-white dark:bg-gray-800 rounded border">
+                                class="text-sm text-primary dark:text-base p-2 bg-base dark:bg-primary rounded border">
                                 <div class="font-medium">
                                     <span
                                         x-text="new Date(booking.start_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })"></span>
@@ -85,10 +85,10 @@
                                     <span
                                         x-text="new Date(booking.end_time).toLocaleTimeString([], { timeStyle: 'short' })"></span>
                                 </div>
-                                <div class="text-gray-600 dark:text-gray-400">
+                                <div class="text-primary dark:text-base">
                                     Purpose: <span x-text="booking.purpose"></span>
                                 </div>
-                                <div class="text-gray-500 dark:text-gray-500 text-xs">
+                                <div class="text-primary dark:text-base text-xs">
                                     Booked by: <span x-text="booking.user ? booking.user.name : 'Unknown User'"></span>
                                 </div>
                             </li>
@@ -96,7 +96,7 @@
                     </ul>
                 </template>
                 <template x-if="previousBookings.length === 0">
-                    <p class="text-sm text-gray-500 text-center py-4">
+                    <p class="text-sm text-primary dark:text-base text-center py-4">
                         {{ __('Select a Room to see previous bookings.') }}</p>
                 </template>
             </div>
@@ -106,16 +106,16 @@
                     <div class="grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
                         @foreach ($rooms as $room)
                             <label
-                                class="block cursor-pointer p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                class="block cursor-pointer p-4 border bg-base border-secondary dark:border-accent rounded-lg hover:bg-accent dark:hover:bg-secondary transition-colors">
                                 <div class="flex items-center">
                                     <input type="radio" name="selected_room" value="{{ $room->id }}"
                                         x-model="selectedRoomId" class="mr-4">
                                     <div>
                                         <span
-                                            class="font-semibold text-gray-900 dark:text-gray-100 text-lg">{{ $room->name }}</span>
-                                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                                            class="font-semibold text-primary dark:text-base text-lg">{{ $room->name }}</span>
+                                        <p class="text-primary dark:text-base text-sm mt-1">
                                             {{ $room->description }}</p>
-                                        <p class="text-gray-500 dark:text-gray-500 text-sm">
+                                        <p class="text-primary dark:text-base text-sm">
                                             {{ $room->location_details }}</p>
                                     </div>
                                 </div>
@@ -138,11 +138,11 @@
 
         <!-- Step 3: 予約詳細入力 -->
         <div x-show="currentStep === 3">
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <h2 class="text-lg font-medium text-primary dark:text-base">
                 {{ __('messages.booking_details') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <p class="mt-1 text-sm text-primary dark:text-base">
                 {{ __('messages.booking_additional_detail') }}
             </p>
 
@@ -156,13 +156,13 @@
                 <div class="mb-4">
                     <x-input-label for="equipment_needed" :value="__('Equipment Needed (Optional)')" />
                     <textarea id="equipment_needed" name="equipment_needed"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                        class="mt-1 block w-full border-secondary dark:border-accent bg-base dark:bg-primary text-primary dark:text-base focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                         x-model="equipmentNeeded"></textarea>
                 </div>
                 <div class="mb-4">
                     <x-input-label for="purpose" :value="__('Purpose')" />
                     <textarea id="purpose" name="purpose"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                        class="mt-1 block w-full border-secondary dark:border-accent bg-base dark:bg-primary text-primary dark:text-base focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                         x-model="purpose" required></textarea>
                 </div>
             </div>

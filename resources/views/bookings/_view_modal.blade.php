@@ -1,6 +1,6 @@
 <x-modal name="view-booking-modal" :show="$errors->any() || session('status')">
-    <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+    <div class="p-6 bg-base dark:bg-primary">
+        <h2 class="text-lg font-medium text-primary dark:text-base mb-4">
             {{ __('messages.description') }}
         </h2>
 
@@ -23,47 +23,49 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <x-input-label for="room_name" :value="__('Room')" />
-                <p id="room_name" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.room_name"></p>
+                <p id="room_name" class="mt-1 text-primary dark:text-base" x-text="viewBookingData.room_name"></p>
             </div>
             <div>
                 <x-input-label for="user_name" :value="__('User')" />
-                <p id="user_name" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.user_name"></p>
+                <p id="user_name" class="mt-1 text-primary dark:text-base" x-text="viewBookingData.user_name"></p>
             </div>
             <div>
                 <x-input-label for="number_students" :value="__('Number of Students')" />
-                <p id="number_students" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.number_students"></p>
+                <p id="number_students" class="mt-1 text-primary dark:text-base" x-text="viewBookingData.number_students"></p>
             </div>
             <div>
                 <x-input-label for="equipment_needed" :value="__('Equipment Needed')" />
-                <p id="equipment_needed" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.equiptment_needed ? viewBookingData.equiptment_needed : '{{ __('None') }}'"></p>
+                <p id="equipment_needed" class="mt-1 text-primary dark:text-base" x-text="viewBookingData.equiptment_needed ? viewBookingData.equiptment_needed : '{{ __('None') }}'"></p>
             </div>
             <div>
                 <x-input-label for="purpose" :value="__('Purpose')" />
-                <p id="purpose" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.purpose"></p>
+                <p id="purpose" class="mt-1 text-primary dark:text-base" x-text="viewBookingData.purpose"></p>
             </div>
             <div>
                 <x-input-label for="start_time" :value="__('Date & Time')" />
-                <span id="start_time" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.start_time"></span>
+                <span id="start_time" class="mt-1 text-primary dark:text-base" x-text="viewBookingData.start_time"></span>
                 -
-                <span id="end_time" class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewBookingData.end_time"></span>
+                <span id="end_time" class="mt-1 text-primary dark:text-base" x-text="viewBookingData.end_time"></span>
             </div>
         </div>
 
         <div class="mt-6 flex justify-end">
-            <x-secondary-button x-on:click="$dispatch('close')">
-                {{ __('messages.close') }}
-            </x-secondary-button>
-
             @php
                 $userId = auth()->id();
             @endphp
-            <template x-if="viewBookingData.status === null && viewBookingData.user_id === {{ $userId }}">
-                <a href="{{ route('bookings.edit', $booking)}}" class="ml-3">
+            {{-- <template x-if="viewBookingData.status === null && viewBookingData.user_id === {{ $userId }}"> --}}
+            @can('update', $booking)
+                <a href="{{ route('bookings.edit', $booking)}}" class="mr-3">
                     <x-primary-button>
                         {{ __('messages.edit') }}
                     </x-primary-button>
                 </a>
-            </template>
+            @endcan
+            {{-- </template> --}}
+
+            <x-secondary-button x-on:click="$dispatch('close')">
+                {{ __('messages.close') }}
+            </x-secondary-button>
         </div>
     </div>
 </x-modal>
