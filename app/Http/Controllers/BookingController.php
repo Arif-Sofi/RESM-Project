@@ -129,6 +129,7 @@ class BookingController extends Controller
             'equipment_needed' => $request->equipment_needed,
             'purpose' => $request->purpose,
             'status' => null, // Reset status to pending after edit
+            'rejection_reason' => null,
         ]);
 
         return redirect()->route('bookings.index')->with('success', 'Booking updated successfully!');
