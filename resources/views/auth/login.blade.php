@@ -44,7 +44,7 @@
         </div>
 
         <div class="flex items-center justify-center mt-4">
-            <x-primary-button class="w-full justify-center" style="background-color: #727D73; border-radius: 20px;">
+            <x-primary-button class="w-full justify-center" style="background-color: #AAB99A; border-radius: 20px;">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
