@@ -5,6 +5,12 @@ use App\Models\Event;
 use App\Models\Role;
 use App\Models\User;
 
+beforeEach(function () {
+    // Ensure roles exist in the database
+    Role::firstOrCreate(['id' => 1], ['name' => 'Admin']);
+    Role::firstOrCreate(['id' => 2], ['name' => 'Regular User']);
+});
+
 test('isAdmin returns true for admin users', function () {
     $user = User::factory()->create(['role_id' => 1]);
 
@@ -35,6 +41,8 @@ test('user has many events relationship', function () {
 
 test('user belongs to role relationship', function () {
     $user = User::factory()->create(['role_id' => 1]);
+    $user->refresh(); // Refresh to ensure role exists
+    $user->load('role'); // Manually load the relationship for this test
 
     expect($user->role)->toBeInstanceOf(Role::class)
         ->and($user->role->id)->toBe(1);
