@@ -47,7 +47,7 @@ test('authenticated user can create an event', function () {
         'user_id' => $this->user->id,
     ]);
 
-    Mail::assertSent(EventCreatedNotification::class);
+    Mail::assertQueued(EventCreatedNotification::class);
 });
 
 test('user can create event with staff members', function () {
