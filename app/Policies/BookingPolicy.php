@@ -13,7 +13,7 @@ class BookingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true; // All authenticated users can view booking list
     }
 
     /**
@@ -21,7 +21,8 @@ class BookingPolicy
      */
     public function view(User $user, Booking $booking): bool
     {
-        return false;
+        // Admins can view any booking, users can view their own
+        return $user->isAdmin() || $user->id === $booking->user_id;
     }
 
     /**
@@ -38,7 +39,7 @@ class BookingPolicy
      */
     public function update(User $user, Booking $booking): bool
     {
-        if ($user->isAdmin() OR ($user->id === $booking->user->id && $booking->status === null)) {
+        if ($user->isAdmin() OR ($user->id === $booking->user_id && $booking->status === null)) {
             return true;
         }
         return false;
@@ -49,7 +50,7 @@ class BookingPolicy
      */
     public function delete(User $user, Booking $booking): bool
     {
-        if ($user->isAdmin() OR $user->id === $booking->user->id) {
+        if ($user->isAdmin() OR $user->id === $booking->user_id) {
             return true;
         } else {
             return false;
@@ -70,5 +71,23 @@ class BookingPolicy
     public function forceDelete(User $user, Booking $booking): bool
     {
         return false;
+    }
+
+    /**
+     * Determine whether the user can approve the booking.
+     */
+    public function approve(User $user, Booking $booking): bool
+    {
+        // Only admins can approve, and only if booking is pending
+        return $user->isAdmin() && $booking->status === null;
+    }
+
+    /**
+     * Determine whether the user can reject the booking.
+     */
+    public function reject(User $user, Booking $booking): bool
+    {
+        // Only admins can reject, and only if booking is pending
+        return $user->isAdmin() && $booking->status === null;
     }
 }
