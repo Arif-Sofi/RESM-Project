@@ -4,7 +4,7 @@
 
 <x-modal name="approve-modal-{{ $booking->id }}">
     <div class="">
-        <div class="bg-white dark:bg-gray-800 rounded shadow p-6">
+        <div class="bg-base dark:bg-gray-800 rounded shadow p-6">
             <p class="mb-4 text-center">
                 {{ __('Are you sure you want to approve this booking?') }}
             </p>

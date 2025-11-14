@@ -9,6 +9,13 @@ export default {
     ],
     theme: {
       extend: {
+        colors: {
+          'primary': '#727D73',
+          'secondary': '#AAB99A',
+          'accent': '#D0DDD0',
+          'base': '#F0F0D7',
+          'lightbase': '#FAF9EE',
+        },
         fontFamily: {
           sans: ['Figtree', 'Noto Sans JP', 'sans-serif'],
         },

@@ -33,7 +33,7 @@ document.addEventListener("alpine:init", () => {
             // console.log("Initializing calendar with bookings:", this.previousBookings.length > 0 ? this.previousBookings[0].purpose : "No bookings");
             const events = this.previousBookings.map((b) => ({
                 id: b.id,
-                title: b.purpose + (b.room_id ? ` (Room ${b.room_id})` : ""),
+                title: b.purpose, // + (b.room_id ? ` (Room ${b.room_id})` : ""),
                 start: b.start_time,
                 end: b.end_time,
                 backgroundColor:
@@ -64,13 +64,13 @@ document.addEventListener("alpine:init", () => {
                 // slotEventOverlap: false,
                 eventClick: function (info) {
                     const props = info.event.extendedProps;
-                    let details = `目的: ${info.event.title}\n`;
-                    details += `開始: ${info.event.start.toLocaleString()}\n終了: ${
+                    let details = `Purpose: ${info.event.title}\n`;
+                    details += `Start Time: ${info.event.start.toLocaleString()}\nEnd Time: ${
                         info.event.end ? info.event.end.toLocaleString() : ""
                     }\n`;
-                    details += `人数: ${props.number_of_student}\n`;
+                    details += `No. of Students: ${props.number_of_student}\n`;
                     if (props.equipment_needed)
-                        details += `備品: ${props.equipment_needed}\n`;
+                        details += `Equiptment Needed: ${props.equipment_needed}\n`;
                     alert(details);
                 },
             });

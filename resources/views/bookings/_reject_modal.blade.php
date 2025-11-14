@@ -4,17 +4,17 @@
 
 <x-modal name="reject-modal-{{ $booking->id }}">
     <div class="">
-        <div class="bg-white dark:bg-gray-800 rounded shadow p-6">
-            <p class="mb-2 text-center">
+        <div class="bg-base dark:bg-primary rounded shadow p-6">
+            <p class="mb-2 text-center text-primary dark:text-base">
                 {{ __('Are you sure you want to reject this booking?') }}
             </p>
             <form action="{{ route('bookings.reject', $booking) }}" method="POST" class="mt-6">
                 @csrf
                 @method('PATCH')
 
-                <x-input-label for="reason_reject" :value="__('Reason for Rejection')" class="mb-2"/>
+                <x-input-label for="reason_reject" :value="__('Reason for Rejection')" class="mb-2 text-primary dark:text-base"/>
                 <textarea id="reason_reject" name="reason_reject" rows="3"
-                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                    class="mt-1 block w-full border-secondary dark:border-accent bg-white dark:bg-primary text-primary dark:text-base focus:border-primary dark:focus:border-indigo-600 focus:ring-primary dark:focus:ring-indigo-600 rounded-md shadow-sm"
                     x-model="reasonReject" required>
                 </textarea>
 
@@ -23,7 +23,7 @@
                         class="mr-8 px-4 py-2 bg-red-600 text-white rounded">{{ __('Reject') }}
                     </button>
                     <button type="button" x-on:click="$dispatch('close')"
-                        class="ml-8 px-4 py-2 bg-gray-300 rounded">{{ __('messages.cancel') }}
+                        class="ml-8 px-4 py-2 bg-accent rounded">{{ __('messages.cancel') }}
                     </button>
                 </div>
             </form>

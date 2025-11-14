@@ -42,9 +42,7 @@ class BookingPolicy
         if ($user->isAdmin() OR ($user->id === $booking->user_id && $booking->status === null)) {
             return true;
         }
-        else{
-            return false;
-        }
+        return false;
     }
 
     /**
