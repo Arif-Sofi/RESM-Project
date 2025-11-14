@@ -4,7 +4,7 @@
 
 <x-modal name="delete-modal-{{ $booking->id }}">
     <div class="">
-        <div class="bg-white dark:bg-gray-800 rounded shadow p-6">
+        <div class="bg-base dark:bg-gray-800 rounded shadow p-6">
             <p class="mb-4 text-center">
                 THIS ACTION CANNOT BE UNDONE. <br>Are you sure you want to Cancel booking?
             </p>

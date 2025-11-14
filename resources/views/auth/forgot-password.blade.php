@@ -29,7 +29,7 @@
                 </div>
 
                 <div class="flex items-center justify-end mt-4">
-                    <x-primary-button style="background-color: #9333ea; border-radius: 20px;">
+                    <x-primary-button style="background-color: #727D73; border-radius: 20px;">
                         {{ __('Email Password Reset Link') }}
                     </x-primary-button>
                 </div>
