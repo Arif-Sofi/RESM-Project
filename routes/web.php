@@ -29,8 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('bookings', controller: 'App\Http\Controllers\BookingController');
     Route::get('/bookings/room/{room}', [BookingController::class, 'getBookingsByRoom']);
     Route::get('/bookings/room-and-date/{room}', [BookingController::class, 'getBookingsByRoomAndDate']);
-    Route::patch('/bookings/{booking}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
-    Route::patch('/bookings/{booking}/reject', [BookingController::class, 'reject'])->name('bookings.reject');
+    Route::post('/bookings/{booking}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
+    Route::post('/bookings/{booking}/reject', [BookingController::class, 'reject'])->name('bookings.reject');
     Route::resource('rooms', controller: 'App\Http\Controllers\RoomController');
 
     Route::get("/qr-code", [QrCodeController::class, "index"])->name("qr.index");
