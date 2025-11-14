@@ -15,17 +15,22 @@ class BookingService
      * @param Carbon $newEndTime
      * @return bool true if there is a clash, false otherwise.
      */
-    public function isClash(int $roomId, Carbon $newStartTime, Carbon $newEndTime): bool
+    public function isClash(int $roomId, Carbon $newStartTime, Carbon $newEndTime, ?int $excludeBookingId = null): bool
     {
-        $clashingEvents = Booking::where('room_id', $roomId)
-            ->where(function ($query) use ($newStartTime, $newEndTime) {
-                $query
-                    ->whereBetween('start_time', [$newStartTime, $newEndTime])
-                    ->orWhereBetween('end_time', [$newStartTime, $newEndTime])
-                    ->orWhere(function ($query) use ($newStartTime, $newEndTime) {
-                        $query->where('start_time', '<', $newStartTime)->where('end_time', '>', $newEndTime);
-                    });
-            })->exists();
+        $query = Booking::where('room_id', $roomId);
+
+        // Exclude current booking when updating
+        if ($excludeBookingId) {
+            $query->where('id', '!=', $excludeBookingId);
+        }
+
+        // Two bookings clash if they overlap in time
+        // They DON'T clash if: newEnd <= existingStart OR newStart >= existingEnd
+        // So they DO clash if: NOT (newEnd <= existingStart OR newStart >= existingEnd)
+        // Which simplifies to: newStart < existingEnd AND newEnd > existingStart
+        $clashingEvents = $query->where('start_time', '<', $newEndTime)
+                                ->where('end_time', '>', $newStartTime)
+                                ->exists();
 
         return $clashingEvents;
     }

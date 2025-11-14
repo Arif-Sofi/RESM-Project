@@ -59,6 +59,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Alias for createdEvents() for convenience
+     */
+    public function events(): HasMany
+    {
+        return $this->createdEvents();
+    }
+
+    /**
      * このユーザーが参加しているイベントを取得 (Eventモデルとの多対多リレーション)
      */
     public function participatingEvents(): BelongsToMany
@@ -82,10 +90,7 @@ class User extends Authenticatable
     }
 
     public function isAdmin() {
-        if ($this->role->id === 1) {
-            return true;
-        }
-        return false;
+        return $this->role_id === 1;
     }
 
     /**
