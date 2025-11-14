@@ -40,10 +40,10 @@ class EventCreationEmailTest extends TestCase
         $this->actingAs($creator);
 
         // Post to the store route
-        $response = $this->postJson(route('events.store'), $eventData);
+        $response = $this->post(route('events.store'), $eventData);
 
         // Assert that the event was created
-        $response->assertStatus(201);
+        $response->assertRedirect(route('events.index'));
 
         // Assert that the email was queued to the creator
         Mail::assertQueued(EventCreatedNotification::class, function ($mail) use ($creator, $eventData) {

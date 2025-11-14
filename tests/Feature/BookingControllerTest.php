@@ -102,7 +102,7 @@ test('booking creation fails when required fields are missing', function () {
         'purpose' => 'Meeting',
     ]);
 
-    $response->assertSessionHasErrors('booking');
+    $response->assertSessionHasErrors(['room_id', 'start_time', 'end_time']);
 });
 
 test('user can edit their own pending booking', function () {
@@ -198,14 +198,14 @@ test('admin can approve booking', function () {
 
     $booking = Booking::factory()->pending()->create(['user_id' => $this->regularUser->id]);
 
-    $response = $this->patch(route('bookings.approve', $booking));
+    $response = $this->post(route('bookings.approve', $booking));
 
     $response->assertRedirect(route('bookings.index'));
 
     $booking->refresh();
     expect($booking->status)->toBeTrue();
 
-    Mail::assertSent(BookingApprovedMail::class);
+    Mail::assertQueued(BookingApprovedMail::class);
 });
 
 test('regular user cannot approve booking', function () {
@@ -213,7 +213,7 @@ test('regular user cannot approve booking', function () {
 
     $booking = Booking::factory()->pending()->create(['user_id' => $this->admin->id]);
 
-    $response = $this->patch(route('bookings.approve', $booking));
+    $response = $this->post(route('bookings.approve', $booking));
 
     $response->assertStatus(403);
 });
@@ -225,8 +225,8 @@ test('admin can reject booking with reason', function () {
 
     $booking = Booking::factory()->pending()->create(['user_id' => $this->regularUser->id]);
 
-    $response = $this->patch(route('bookings.reject', $booking), [
-        'reason_reject' => 'Room unavailable',
+    $response = $this->post(route('bookings.reject', $booking), [
+        'rejection_reason' => 'Room unavailable',
     ]);
 
     $response->assertRedirect(route('bookings.index'));
@@ -235,7 +235,7 @@ test('admin can reject booking with reason', function () {
     expect($booking->status)->toBeFalse()
         ->and($booking->rejection_reason)->toBe('Room unavailable');
 
-    Mail::assertSent(BookingRejectedMail::class);
+    Mail::assertQueued(BookingRejectedMail::class);
 });
 
 test('regular user cannot reject booking', function () {
@@ -243,8 +243,8 @@ test('regular user cannot reject booking', function () {
 
     $booking = Booking::factory()->pending()->create(['user_id' => $this->admin->id]);
 
-    $response = $this->patch(route('bookings.reject', $booking), [
-        'reason_reject' => 'Some reason',
+    $response = $this->post(route('bookings.reject', $booking), [
+        'rejection_reason' => 'Some reason',
     ]);
 
     $response->assertStatus(403);
