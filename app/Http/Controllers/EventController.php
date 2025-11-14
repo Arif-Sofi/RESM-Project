@@ -87,27 +87,11 @@ class EventController extends Controller
                 Mail::to($staffMember->email)->queue(new EventCreatedNotification($event));
             }
 
-            // 成功レスポンス
-            return response()->json(
-                [
-                    'message' => 'イベントが作成されました。',
-                    'event' => [
-                        'id' => $event->id,
-                        'title' => $event->title,
-                        'start' => $event->start_at ? $event->start_at->toIso8601String() : null,
-                        'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
-                        'description' => $event->description,
-                        'creator' => $event->creator->name ?? 'N/A',
-                        'staff' => $event->load('staff')->staff->pluck('name')->implode(', '),
-                    ],
-                ],
-                201,
-            );
+            return redirect()->route('events.index')->with('success', 'Event created successfully!');
         } catch (\Exception $e) {
-            DB::rollBack(); // エラー発生時はロールバック
+            DB::rollBack();
             Log::error('Error creating event: ' . $e->getMessage());
-            // エラーレスポンス
-            return response()->json(['message' => 'イベントの作成中にエラーが発生しました。', 'error' => $e->getMessage()], 500);
+            return redirect()->back()->withErrors(['error' => 'Failed to create event.'])->withInput();
         }
     }
 
@@ -132,13 +116,9 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        if (Auth::id() !== $event->user_id) {
-            return response()->json(['message' => 'Unauthorized'], Response::HTTP_FORBIDDEN);
-        }
-
+        $this->authorize('delete', $event);
         $event->delete();
-
-        return response()->json(['message' => 'イベントが削除されました。'], Response::HTTP_OK);
+        return redirect()->route('events.index')->with('success', 'Event deleted successfully!');
     }
 
     /**
@@ -146,6 +126,8 @@ class EventController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event)
     {
+        $this->authorize('update', $event);
+
         $validatedData = $request->validated();
         $userTimezone = $request->input('user_timezone', config('app.timezone'));
 
@@ -172,26 +154,11 @@ class EventController extends Controller
 
             DB::commit();
 
-            return response()->json(
-                [
-                    'message' => 'イベントが更新されました。',
-                    'event' => [
-                        'id' => $event->id,
-                        'title' => $event->title,
-                        'start' => $event->start_at ? $event->start_at->toIso8601String() : null,
-                        'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
-                        'description' => $event->description,
-                        'creator' => $event->creator->name ?? 'N/A',
-                        'staff' => $event->load('staff')->staff->pluck('name')->implode(', '),
-                        'staff_ids' => $event->staff->pluck('id')->toArray(),
-                    ],
-                ],
-                200,
-            );
+            return redirect()->route('events.index')->with('success', 'Event updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error updating event: ' . $e->getMessage());
-            return response()->json(['message' => 'イベントの更新中にエラーが発生しました。', 'error' => $e->getMessage()], 500);
+            return redirect()->back()->withErrors(['error' => 'Failed to update event.'])->withInput();
         }
     }
 
