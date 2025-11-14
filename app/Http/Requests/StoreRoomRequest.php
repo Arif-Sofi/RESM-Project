@@ -11,7 +11,7 @@ class StoreRoomRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true; // Authorization handled by policy in controller
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'location_details' => 'nullable|string|max:255',
         ];
     }
 }
