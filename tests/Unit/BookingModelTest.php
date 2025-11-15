@@ -157,12 +157,12 @@ describe('Booking Model Fillable Attributes', function () {
 
 describe('Booking Model Database Constraints', function () {
     test('booking requires room_id foreign key', function () {
-        expect(fn() => Booking::factory()->create(['room_id' => 99999]))
+        expect(fn () => Booking::factory()->create(['room_id' => 99999]))
             ->toThrow(QueryException::class);
     });
 
     test('booking requires user_id foreign key', function () {
-        expect(fn() => Booking::factory()->create(['user_id' => 99999]))
+        expect(fn () => Booking::factory()->create(['user_id' => 99999]))
             ->toThrow(QueryException::class);
     });
 });

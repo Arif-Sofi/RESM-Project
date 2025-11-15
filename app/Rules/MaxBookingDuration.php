@@ -2,12 +2,12 @@
 
 namespace App\Rules;
 
+use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Carbon\Carbon;
 
-class MaxBookingDuration implements ValidationRule, DataAwareRule
+class MaxBookingDuration implements DataAwareRule, ValidationRule
 {
     /**
      * All of the data under validation.
@@ -48,7 +48,7 @@ class MaxBookingDuration implements ValidationRule, DataAwareRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (!isset($this->data['start_time']) || !$value) {
+        if (! isset($this->data['start_time']) || ! $value) {
             return;
         }
 

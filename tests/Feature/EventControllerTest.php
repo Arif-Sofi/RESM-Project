@@ -1,10 +1,10 @@
 <?php
 
+use App\Mail\EventCreatedNotification;
 use App\Models\Event;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\EventCreatedNotification;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

@@ -11,7 +11,9 @@ class Event extends Model
 {
     /** @use HasFactory<\Database\Factories\EventFactory> */
     use HasFactory;
+
     protected $table = 'events';
+
     protected $fillable = [
         'title',
         'description',

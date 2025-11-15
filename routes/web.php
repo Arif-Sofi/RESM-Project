@@ -1,12 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\LocalizationController;
-use App\Http\Controllers\EventController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\LocalizationController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QrCodeController;
-
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -14,6 +12,7 @@ Route::redirect('/', '/login');
 Route::get('/set-locale/{locale}', [LocalizationController::class, 'setLocale'])->name('setLocale');
 Route::get('/dashboard', function () {
     $bookings = auth()->user()->bookings()->orderBy('created_at', 'desc')->get();
+
     return view('dashboard', compact('bookings'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -33,10 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/bookings/{booking}/reject', [BookingController::class, 'reject'])->name('bookings.reject');
     Route::resource('rooms', controller: 'App\Http\Controllers\RoomController');
 
-    Route::get("/qr-code", [QrCodeController::class, "index"])->name("qr.index");
-    Route::post("qr-code/generate", [QrCodeController::class, "generate"])->name("qr.generate");
+    Route::get('/qr-code', [QrCodeController::class, 'index'])->name('qr.index');
+    Route::post('qr-code/generate', [QrCodeController::class, 'generate'])->name('qr.generate');
 });
-
-
 
 require __DIR__.'/auth.php';

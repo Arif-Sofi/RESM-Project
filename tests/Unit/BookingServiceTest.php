@@ -6,7 +6,7 @@ use App\Services\BookingService;
 use Carbon\Carbon;
 
 beforeEach(function () {
-    $this->service = new BookingService();
+    $this->service = new BookingService;
     $this->room = Room::factory()->create();
 });
 

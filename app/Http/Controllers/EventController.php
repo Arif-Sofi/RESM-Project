@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Mail\EventCreatedNotification;
+use App\Models\Event;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-
-use App\Models\User;
-use App\Mail\EventCreatedNotification;
-use Symfony\Component\HttpFoundation\Response;
 
 class EventController extends Controller
 {
@@ -72,7 +69,7 @@ class EventController extends Controller
             $eventDataToCreate = collect($validatedData)->except('staff')->toArray();
             $event = Event::create($eventDataToCreate);
 
-            if (!empty($validatedData['staff'])) {
+            if (! empty($validatedData['staff'])) {
                 $event->staff()->attach($validatedData['staff']);
             }
             DB::commit();
@@ -90,7 +87,8 @@ class EventController extends Controller
             return redirect()->route('events.index')->with('success', 'Event created successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error creating event: ' . $e->getMessage());
+            Log::error('Error creating event: '.$e->getMessage());
+
             return redirect()->back()->withErrors(['error' => 'Failed to create event.'])->withInput();
         }
     }
@@ -118,6 +116,7 @@ class EventController extends Controller
     {
         $this->authorize('delete', $event);
         $event->delete();
+
         return redirect()->route('events.index')->with('success', 'Event deleted successfully!');
     }
 
@@ -157,7 +156,8 @@ class EventController extends Controller
             return redirect()->route('events.index')->with('success', 'Event updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error updating event: ' . $e->getMessage());
+            Log::error('Error updating event: '.$e->getMessage());
+
             return redirect()->back()->withErrors(['error' => 'Failed to update event.'])->withInput();
         }
     }
@@ -178,10 +178,10 @@ class EventController extends Controller
         if ($request->has(key: ['start', 'end'])) {
             $query->where(function ($q) use ($request) {
                 $q->where('start_at', '<=', $request->input('end'))
-                  ->where(function ($q2) use ($request) {
-                      $q2->where('end_at', '>=', $request->input('start'))
-                         ->orWhereNull('end_at');
-                  });
+                    ->where(function ($q2) use ($request) {
+                        $q2->where('end_at', '>=', $request->input('start'))
+                            ->orWhereNull('end_at');
+                    });
             });
         }
 
