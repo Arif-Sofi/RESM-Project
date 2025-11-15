@@ -10,9 +10,6 @@ class BookingService
     /**
      * 指定された会議室、開始時間、終了時間で既存の予約と競合するかどうかを確認します。
      *
-     * @param int $roomId
-     * @param Carbon $newStartTime
-     * @param Carbon $newEndTime
      * @return bool true if there is a clash, false otherwise.
      */
     public function isClash(int $roomId, Carbon $newStartTime, Carbon $newEndTime, ?int $excludeBookingId = null): bool
@@ -29,8 +26,8 @@ class BookingService
         // So they DO clash if: NOT (newEnd <= existingStart OR newStart >= existingEnd)
         // Which simplifies to: newStart < existingEnd AND newEnd > existingStart
         $clashingEvents = $query->where('start_time', '<', $newEndTime)
-                                ->where('end_time', '>', $newStartTime)
-                                ->exists();
+            ->where('end_time', '>', $newStartTime)
+            ->exists();
 
         return $clashingEvents;
     }

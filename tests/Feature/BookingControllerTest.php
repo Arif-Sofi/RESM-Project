@@ -1,13 +1,13 @@
 <?php
 
+use App\Mail\BookingApprovedMail;
+use App\Mail\BookingConfirmationMail;
+use App\Mail\BookingRejectedMail;
 use App\Models\Booking;
 use App\Models\Room;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\BookingConfirmationMail;
-use App\Mail\BookingApprovedMail;
-use App\Mail\BookingRejectedMail;
 
 beforeEach(function () {
     $this->admin = User::factory()->create(['role_id' => 1]);
@@ -257,7 +257,7 @@ test('can get bookings by room', function () {
     $booking2 = Booking::factory()->create(['room_id' => $this->room->id]);
     $otherBooking = Booking::factory()->create();
 
-    $response = $this->get('/bookings/room/' . $this->room->id);
+    $response = $this->get('/bookings/room/'.$this->room->id);
 
     $response->assertStatus(200);
 
@@ -280,7 +280,7 @@ test('can get bookings by room and date', function () {
         'start_time' => Carbon::now()->addDays(2)->setHour(10),
     ]);
 
-    $response = $this->get('/bookings/room-and-date/' . $this->room->id . '?date=' . $targetDate->toDateString());
+    $response = $this->get('/bookings/room-and-date/'.$this->room->id.'?date='.$targetDate->toDateString());
 
     $response->assertStatus(200);
 

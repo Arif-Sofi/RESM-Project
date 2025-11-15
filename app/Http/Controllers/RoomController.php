@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Room;
 use App\Http\Requests\StoreRoomRequest;
 use App\Http\Requests\UpdateRoomRequest;
+use App\Models\Room;
 
 class RoomController extends Controller
 {
@@ -15,6 +15,7 @@ class RoomController extends Controller
     {
         $this->authorize('viewAny', Room::class);
         $rooms = Room::all();
+
         return view('rooms.index', compact('rooms'));
     }
 
@@ -75,6 +76,7 @@ class RoomController extends Controller
     {
         $this->authorize('delete', $room);
         $room->delete();
+
         return redirect()->route('rooms.index')->with('success', 'Room deleted successfully!');
     }
 }

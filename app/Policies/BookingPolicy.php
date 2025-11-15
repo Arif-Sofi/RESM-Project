@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Booking;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class BookingPolicy
 {
@@ -39,9 +38,10 @@ class BookingPolicy
      */
     public function update(User $user, Booking $booking): bool
     {
-        if ($user->isAdmin() OR ($user->id === $booking->user_id && $booking->status === null)) {
+        if ($user->isAdmin() or ($user->id === $booking->user_id && $booking->status === null)) {
             return true;
         }
+
         return false;
     }
 
@@ -50,7 +50,7 @@ class BookingPolicy
      */
     public function delete(User $user, Booking $booking): bool
     {
-        if ($user->isAdmin() OR $user->id === $booking->user_id) {
+        if ($user->isAdmin() or $user->id === $booking->user_id) {
             return true;
         } else {
             return false;

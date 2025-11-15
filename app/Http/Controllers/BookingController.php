@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
-use App\Models\Room;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use App\Services\BookingService;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Mail\BookingConfirmationMail;
 use App\Mail\BookingApproved;
+use App\Mail\BookingConfirmationMail;
 use App\Mail\BookingRejected;
+use App\Models\Booking;
+use App\Models\Room;
+use App\Services\BookingService;
+use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
-    //for authorize() with BookingPolicy
+    // for authorize() with BookingPolicy
     use AuthorizesRequests;
+
     protected $bookingService;
 
     public function __construct(BookingService $bookingService)
@@ -59,7 +60,7 @@ class BookingController extends Controller
     public function store(StoreBookingRequest $request)
     {
         // dd($request->all());
-        if (!$request->has('room_id') || !$request->has('start_time') || !$request->has('end_time')) {
+        if (! $request->has('room_id') || ! $request->has('start_time') || ! $request->has('end_time')) {
             return back()->withErrors(['booking' => 'Please select a room and specify the booking time.']);
         }
 
@@ -104,6 +105,7 @@ class BookingController extends Controller
     {
         $this->authorize('update', $booking);
         $rooms = Room::all();
+
         return view('bookings.edit', compact('booking', 'rooms'));
     }
 
@@ -142,6 +144,7 @@ class BookingController extends Controller
     {
         $this->authorize('delete', $booking);
         $booking->delete();
+
         return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully!');
     }
 
@@ -151,6 +154,7 @@ class BookingController extends Controller
     public function getBookingsByRoom(Room $room)
     {
         $bookings = $room->bookings()->with('user')->orderBy('start_time')->get();
+
         return $bookings;
         // return response()->json($bookings);
     }
@@ -177,6 +181,7 @@ class BookingController extends Controller
         $booking->update(['status' => true]);
 
         Mail::to($booking->user->email)->queue(new BookingApproved($booking));
+
         return redirect()->route('bookings.index')->with('success', 'Booking approved successfully!');
     }
 
@@ -185,10 +190,11 @@ class BookingController extends Controller
         $this->authorize('reject', $booking);
         $booking->update([
             'status' => false,
-            'rejection_reason' => request()->input('rejection_reason')
+            'rejection_reason' => request()->input('rejection_reason'),
         ]);
 
         Mail::to($booking->user->email)->queue(new BookingRejected($booking));
+
         return redirect()->route('bookings.index')->with('success', 'Booking rejected successfully!');
     }
 }

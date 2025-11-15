@@ -5,7 +5,6 @@ use App\Models\Role;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
 
 beforeEach(function () {
     // Ensure roles exist

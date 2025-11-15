@@ -2,13 +2,12 @@
 
 namespace App\Mail;
 
+use App\Models\Event;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Event;
 
 class EventReminderNotification extends Mailable
 {
@@ -27,7 +26,7 @@ class EventReminderNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Event Reminder in 1 Hour: ' . $this->event->name,
+            subject: 'Event Reminder in 1 Hour: '.$this->event->name,
         );
     }
 

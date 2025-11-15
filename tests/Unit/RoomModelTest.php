@@ -35,7 +35,7 @@ describe('Room Model Relationships', function () {
         $booking = Booking::factory()->create(['room_id' => $room->id]);
 
         // Foreign key constraint should prevent deletion
-        expect(fn() => $room->delete())->toThrow(QueryException::class);
+        expect(fn () => $room->delete())->toThrow(QueryException::class);
     });
 });
 
@@ -43,7 +43,7 @@ describe('Room Model Validation and Constraints', function () {
     test('room name must be unique', function () {
         Room::factory()->create(['name' => 'Unique Room']);
 
-        expect(fn() => Room::factory()->create(['name' => 'Unique Room']))
+        expect(fn () => Room::factory()->create(['name' => 'Unique Room']))
             ->toThrow(QueryException::class);
     });
 

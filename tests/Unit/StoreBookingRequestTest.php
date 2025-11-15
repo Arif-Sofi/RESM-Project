@@ -4,7 +4,6 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -14,14 +13,14 @@ beforeEach(function () {
 
 describe('StoreBookingRequest Authorization', function () {
     test('authenticated user is authorized to create booking', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
 
         expect($request->authorize())->toBeTrue();
     });
 
     test('guest user is not authorized to create booking', function () {
         auth()->logout();
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
 
         expect($request->authorize())->toBeFalse();
     });
@@ -29,7 +28,7 @@ describe('StoreBookingRequest Authorization', function () {
 
 describe('StoreBookingRequest Required Fields', function () {
     test('room_id is required', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [],
             $request->rules()
@@ -40,7 +39,7 @@ describe('StoreBookingRequest Required Fields', function () {
     });
 
     test('start_time is required', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             ['room_id' => $this->room->id],
             $request->rules()
@@ -51,7 +50,7 @@ describe('StoreBookingRequest Required Fields', function () {
     });
 
     test('end_time is required', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -65,7 +64,7 @@ describe('StoreBookingRequest Required Fields', function () {
     });
 
     test('purpose is required', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -80,7 +79,7 @@ describe('StoreBookingRequest Required Fields', function () {
     });
 
     test('number_of_student is required', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -98,7 +97,7 @@ describe('StoreBookingRequest Required Fields', function () {
 
 describe('StoreBookingRequest Field Types', function () {
     test('room_id must be an integer', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => 'not-an-integer',
@@ -115,7 +114,7 @@ describe('StoreBookingRequest Field Types', function () {
     });
 
     test('room_id must exist in rooms table', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => 99999, // Non-existent room
@@ -132,7 +131,7 @@ describe('StoreBookingRequest Field Types', function () {
     });
 
     test('start_time must be a valid date', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -149,7 +148,7 @@ describe('StoreBookingRequest Field Types', function () {
     });
 
     test('end_time must be a valid date', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -166,7 +165,7 @@ describe('StoreBookingRequest Field Types', function () {
     });
 
     test('number_of_student must be an integer', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -183,7 +182,7 @@ describe('StoreBookingRequest Field Types', function () {
     });
 
     test('number_of_student must be positive', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -200,7 +199,7 @@ describe('StoreBookingRequest Field Types', function () {
     });
 
     test('number_of_student cannot be zero', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -217,7 +216,7 @@ describe('StoreBookingRequest Field Types', function () {
     });
 
     test('purpose must be a string', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -236,7 +235,7 @@ describe('StoreBookingRequest Field Types', function () {
 
 describe('StoreBookingRequest Business Logic Validation', function () {
     test('end_time must be after start_time', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $startTime = now()->addDay()->setHour(14);
         $endTime = now()->addDay()->setHour(12); // Before start
 
@@ -256,7 +255,7 @@ describe('StoreBookingRequest Business Logic Validation', function () {
     });
 
     test('start_time cannot equal end_time', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $time = now()->addDay()->setHour(14);
 
         $validator = Validator::make(
@@ -275,7 +274,7 @@ describe('StoreBookingRequest Business Logic Validation', function () {
     });
 
     test('start_time must be in the future', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $pastTime = now()->subDay();
 
         $validator = Validator::make(
@@ -294,7 +293,7 @@ describe('StoreBookingRequest Business Logic Validation', function () {
     });
 
     test('booking duration must be reasonable (max 8 hours)', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $startTime = now()->addDay();
         $endTime = now()->addDay()->addHours(10); // 10 hours
 
@@ -315,7 +314,7 @@ describe('StoreBookingRequest Business Logic Validation', function () {
 
 describe('StoreBookingRequest Optional Fields', function () {
     test('equipment_needed is optional', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -332,7 +331,7 @@ describe('StoreBookingRequest Optional Fields', function () {
     });
 
     test('equipment_needed must be string when provided', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -352,7 +351,7 @@ describe('StoreBookingRequest Optional Fields', function () {
 
 describe('StoreBookingRequest Valid Data', function () {
     test('passes with all required fields', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -368,7 +367,7 @@ describe('StoreBookingRequest Valid Data', function () {
     });
 
     test('passes with all fields including optional ones', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -385,7 +384,7 @@ describe('StoreBookingRequest Valid Data', function () {
     });
 
     test('accepts booking at exactly 1 hour duration', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -401,7 +400,7 @@ describe('StoreBookingRequest Valid Data', function () {
     });
 
     test('accepts booking with large number of students', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -419,7 +418,7 @@ describe('StoreBookingRequest Valid Data', function () {
 
 describe('StoreBookingRequest String Length Validation', function () {
     test('purpose must have minimum length', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $validator = Validator::make(
             [
                 'room_id' => $this->room->id,
@@ -436,7 +435,7 @@ describe('StoreBookingRequest String Length Validation', function () {
     });
 
     test('purpose can have reasonable maximum length', function () {
-        $request = new StoreBookingRequest();
+        $request = new StoreBookingRequest;
         $longPurpose = str_repeat('A', 501); // Over 500 characters
 
         $validator = Validator::make(

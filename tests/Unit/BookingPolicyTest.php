@@ -13,7 +13,7 @@ beforeEach(function () {
     $this->admin = User::factory()->create(['role_id' => 1]);
     $this->regularUser = User::factory()->create(['role_id' => 2]);
     $this->anotherUser = User::factory()->create(['role_id' => 2]);
-    $this->policy = new BookingPolicy();
+    $this->policy = new BookingPolicy;
 });
 
 describe('BookingPolicy viewAny Authorization', function () {
