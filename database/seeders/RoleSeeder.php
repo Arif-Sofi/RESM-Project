@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Role;
+use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
@@ -15,12 +14,12 @@ class RoleSeeder extends Seeder
     {
         Role::create([
             'id' => 1,
-            'name' => 'Admin Guru' //更新してください
+            'name' => 'Admin Guru', // 更新してください
         ]);
 
         Role::create([
             'id' => 2,
-            'name' => 'Staff'
+            'name' => 'Staff',
         ]);
 
     }

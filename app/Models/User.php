@@ -3,12 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Mail\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Mail\ResetPasswordNotification;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -24,7 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role_id'
+        'role_id',
     ];
 
     /**
@@ -59,6 +59,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Alias for createdEvents() for convenience
+     */
+    public function events(): HasMany
+    {
+        return $this->createdEvents();
+    }
+
+    /**
      * このユーザーが参加しているイベントを取得 (Eventモデルとの多対多リレーション)
      */
     public function participatingEvents(): BelongsToMany
@@ -77,15 +85,14 @@ class User extends Authenticatable
         return $this->hasMany(Booking::class);
     }
 
-    public function role() {
+    public function role()
+    {
         return $this->belongsTo(Role::class);
     }
 
-    public function isAdmin() {
-        if ($this->role->id === 1) {
-            return true;
-        }
-        return false;
+    public function isAdmin()
+    {
+        return $this->role_id === 1;
     }
 
     /**

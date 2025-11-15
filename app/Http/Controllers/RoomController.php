@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Room;
 use App\Http\Requests\StoreRoomRequest;
 use App\Http\Requests\UpdateRoomRequest;
+use App\Models\Room;
 
 class RoomController extends Controller
 {
@@ -13,7 +13,10 @@ class RoomController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorize('viewAny', Room::class);
+        $rooms = Room::all();
+
+        return view('rooms.index', compact('rooms'));
     }
 
     /**
@@ -29,7 +32,12 @@ class RoomController extends Controller
      */
     public function store(StoreRoomRequest $request)
     {
-        //
+        $this->authorize('create', Room::class);
+
+        $validated = $request->validated();
+        Room::create($validated);
+
+        return redirect()->route('rooms.index')->with('success', 'Room created successfully!');
     }
 
     /**
@@ -53,7 +61,12 @@ class RoomController extends Controller
      */
     public function update(UpdateRoomRequest $request, Room $room)
     {
-        //
+        $this->authorize('update', $room);
+
+        $validated = $request->validated();
+        $room->update($validated);
+
+        return redirect()->route('rooms.index')->with('success', 'Room updated successfully!');
     }
 
     /**
@@ -61,6 +74,9 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
-        //
+        $this->authorize('delete', $room);
+        $room->delete();
+
+        return redirect()->route('rooms.index')->with('success', 'Room deleted successfully!');
     }
 }

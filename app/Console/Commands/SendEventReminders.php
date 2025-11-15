@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
+use App\Mail\EventReminderNotification;
 use App\Models\Event;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\EventReminderNotification;
 
 class SendEventReminders extends Command
 {
@@ -31,8 +31,8 @@ class SendEventReminders extends Command
     {
         $now = Carbon::now();
         $events = Event::whereNull('reminder_sent_at')
-                       ->whereBetween('start_at', [$now->copy()->addMinutes(59), $now->copy()->addMinutes(61)])
-                       ->get();
+            ->whereBetween('start_at', [$now->copy()->addMinutes(59), $now->copy()->addMinutes(61)])
+            ->get();
 
         foreach ($events as $event) {
             // イベントの作成者に送信

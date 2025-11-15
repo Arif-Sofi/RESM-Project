@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('description')->nullable();
-            $table->string('location_details');
+            $table->text('description')->nullable();
+            $table->string('location_details')->nullable();
             $table->timestamps();
         });
     }

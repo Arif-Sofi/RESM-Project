@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
+            $table->foreignId('room_id')->constrained('rooms')->onDelete('restrict');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->dateTime('start_time');
             $table->dateTime('end_time');
             $table->boolean('status')->default(null)->nullable(); // pending (null), confirmed(1), cancelled(0)
 
             $table->smallInteger('number_of_student');
-            $table->string('equipment_needed')->nullable();
-            $table->string('purpose')->nullable();
+            $table->text('equipment_needed')->nullable();
+            $table->text('purpose')->nullable();
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -31,6 +32,21 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * Configure the model factory.
+     */
+    public function configure(): static
+    {
+        return $this->afterMaking(function () {
+            // Ensure roles exist in the database
+            Role::firstOrCreate(['id' => 1], ['name' => 'Admin']);
+            Role::firstOrCreate(['id' => 2], ['name' => 'Regular User']);
+        })->afterCreating(function ($user) {
+            // Load the role relationship after creation
+            $user->load('role');
+        });
     }
 
     /**

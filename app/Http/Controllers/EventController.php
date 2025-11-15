@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Mail\EventCreatedNotification;
+use App\Models\Event;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-
-use App\Models\User;
-use App\Mail\EventCreatedNotification;
-use Symfony\Component\HttpFoundation\Response;
 
 class EventController extends Controller
 {
@@ -72,7 +69,7 @@ class EventController extends Controller
             $eventDataToCreate = collect($validatedData)->except('staff')->toArray();
             $event = Event::create($eventDataToCreate);
 
-            if (!empty($validatedData['staff'])) {
+            if (! empty($validatedData['staff'])) {
                 $event->staff()->attach($validatedData['staff']);
             }
             DB::commit();
@@ -87,27 +84,12 @@ class EventController extends Controller
                 Mail::to($staffMember->email)->queue(new EventCreatedNotification($event));
             }
 
-            // 成功レスポンス
-            return response()->json(
-                [
-                    'message' => 'イベントが作成されました。',
-                    'event' => [
-                        'id' => $event->id,
-                        'title' => $event->title,
-                        'start' => $event->start_at ? $event->start_at->toIso8601String() : null,
-                        'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
-                        'description' => $event->description,
-                        'creator' => $event->creator->name ?? 'N/A',
-                        'staff' => $event->load('staff')->staff->pluck('name')->implode(', '),
-                    ],
-                ],
-                201,
-            );
+            return redirect()->route('events.index')->with('success', 'Event created successfully!');
         } catch (\Exception $e) {
-            DB::rollBack(); // エラー発生時はロールバック
-            Log::error('Error creating event: ' . $e->getMessage());
-            // エラーレスポンス
-            return response()->json(['message' => 'イベントの作成中にエラーが発生しました。', 'error' => $e->getMessage()], 500);
+            DB::rollBack();
+            Log::error('Error creating event: '.$e->getMessage());
+
+            return redirect()->back()->withErrors(['error' => 'Failed to create event.'])->withInput();
         }
     }
 
@@ -132,13 +114,10 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        if (Auth::id() !== $event->user_id) {
-            return response()->json(['message' => 'Unauthorized'], Response::HTTP_FORBIDDEN);
-        }
-
+        $this->authorize('delete', $event);
         $event->delete();
 
-        return response()->json(['message' => 'イベントが削除されました。'], Response::HTTP_OK);
+        return redirect()->route('events.index')->with('success', 'Event deleted successfully!');
     }
 
     /**
@@ -146,6 +125,8 @@ class EventController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event)
     {
+        $this->authorize('update', $event);
+
         $validatedData = $request->validated();
         $userTimezone = $request->input('user_timezone', config('app.timezone'));
 
@@ -172,26 +153,12 @@ class EventController extends Controller
 
             DB::commit();
 
-            return response()->json(
-                [
-                    'message' => 'イベントが更新されました。',
-                    'event' => [
-                        'id' => $event->id,
-                        'title' => $event->title,
-                        'start' => $event->start_at ? $event->start_at->toIso8601String() : null,
-                        'end' => $event->end_at ? $event->end_at->toIso8601String() : null,
-                        'description' => $event->description,
-                        'creator' => $event->creator->name ?? 'N/A',
-                        'staff' => $event->load('staff')->staff->pluck('name')->implode(', '),
-                        'staff_ids' => $event->staff->pluck('id')->toArray(),
-                    ],
-                ],
-                200,
-            );
+            return redirect()->route('events.index')->with('success', 'Event updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error updating event: ' . $e->getMessage());
-            return response()->json(['message' => 'イベントの更新中にエラーが発生しました。', 'error' => $e->getMessage()], 500);
+            Log::error('Error updating event: '.$e->getMessage());
+
+            return redirect()->back()->withErrors(['error' => 'Failed to update event.'])->withInput();
         }
     }
 
@@ -211,10 +178,10 @@ class EventController extends Controller
         if ($request->has(key: ['start', 'end'])) {
             $query->where(function ($q) use ($request) {
                 $q->where('start_at', '<=', $request->input('end'))
-                  ->where(function ($q2) use ($request) {
-                      $q2->where('end_at', '>=', $request->input('start'))
-                         ->orWhereNull('end_at');
-                  });
+                    ->where(function ($q2) use ($request) {
+                        $q2->where('end_at', '>=', $request->input('start'))
+                            ->orWhereNull('end_at');
+                    });
             });
         }
 

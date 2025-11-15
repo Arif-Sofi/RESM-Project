@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
-use Carbon\Carbon;
 
 class Booking extends Model
 {
@@ -37,14 +37,14 @@ class Booking extends Model
     protected function startTime(): Attribute
     {
         return Attribute::make(
-            get: fn(string $value) => Carbon::parse($value)->timezone('Asia/Kuala_Lumpur'),
+            get: fn (string $value) => Carbon::parse($value)->timezone('Asia/Kuala_Lumpur'),
         );
     }
 
     protected function endTime(): Attribute
     {
         return Attribute::make(
-            get: fn(string $value) => Carbon::parse($value)->timezone('Asia/Kuala_Lumpur'),
+            get: fn (string $value) => Carbon::parse($value)->timezone('Asia/Kuala_Lumpur'),
         );
     }
 
@@ -55,6 +55,7 @@ class Booking extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     /**
      * この予約が属する部屋を取得するリレーション。
      */

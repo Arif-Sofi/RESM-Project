@@ -10,6 +10,12 @@
             <div class="calendar-container">
                 <div id="calendar"></div>
             </div>
+            <!-- Event data for testing -->
+            <div class="hidden">
+                @foreach($events as $event)
+                    <span class="event-title">{{ $event->title }}</span>
+                @endforeach
+            </div>
         </div>
     </div>
 
