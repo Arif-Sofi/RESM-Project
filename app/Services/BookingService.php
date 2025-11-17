@@ -21,6 +21,14 @@ class BookingService
             $query->where('id', '!=', $excludeBookingId);
         }
 
+        // Only check approved and pending bookings, not rejected ones
+        // status = true (approved) or status = null (pending) should block the slot
+        // status = false (rejected) should NOT block the slot
+        $query->where(function ($q) {
+            $q->where('status', true)
+              ->orWhereNull('status');
+        });
+
         // Two bookings clash if they overlap in time
         // They DON'T clash if: newEnd <= existingStart OR newStart >= existingEnd
         // So they DO clash if: NOT (newEnd <= existingStart OR newStart >= existingEnd)
