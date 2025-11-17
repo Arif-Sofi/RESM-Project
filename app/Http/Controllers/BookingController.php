@@ -84,10 +84,17 @@ class BookingController extends Controller
             'rejection_reason' => null,
         ]);
 
-        // Send the email notification
-        Mail::to(Auth::user()->email)->send(new BookingConfirmationMail($booking));
+        // Send the email notification (with error handling)
+        try {
+            Mail::to(Auth::user()->email)->send(new BookingConfirmationMail($booking));
+        } catch (\Exception $e) {
+            // Log the error but don't crash the booking creation
+            \Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
+            // Optionally add a flash message
+            session()->flash('warning', 'Booking created but email notification failed to send.');
+        }
 
-        return redirect()->route('dashboard')->with('success', 'Booking created successfully!');
+        return redirect()->route('bookings.my-bookings')->with('success', 'Booking created successfully!');
     }
 
     /**
@@ -196,5 +203,104 @@ class BookingController extends Controller
         Mail::to($booking->user->email)->queue(new BookingRejected($booking));
 
         return redirect()->route('bookings.index')->with('success', 'Booking rejected successfully!');
+    }
+
+    /**
+     * Display user's booking history
+     */
+    public function myBookings()
+    {
+        $user = Auth::user();
+        $bookings = Booking::where('user_id', $user->id)
+            ->with(['user', 'room'])
+            ->orderBy('start_time', 'desc')
+            ->get();
+
+        return view('bookings.my_bookings', compact('bookings'));
+    }
+
+    /**
+     * Display pending bookings for admin approval
+     */
+    public function approvals()
+    {
+        $this->authorize('viewAny', Booking::class);
+
+        $pendingBookings = Booking::whereNull('status')
+            ->with(['user', 'room'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('admin.approvals', compact('pendingBookings'));
+    }
+
+    /**
+     * API: Get all bookings for calendar
+     */
+    public function apiIndex()
+    {
+        $user = Auth::user();
+        if ($user->isAdmin()) {
+            $bookings = Booking::with(['user', 'room'])->orderBy('start_time')->get();
+        } else {
+            $bookings = Booking::with(['user', 'room'])->orderBy('start_time')->get();
+        }
+
+        return response()->json($bookings);
+    }
+
+    /**
+     * API: Check room availability for a time slot
+     */
+    public function checkAvailability(Request $request)
+    {
+        $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
+        ]);
+
+        $isAvailable = !$this->bookingService->isClash(
+            $request->room_id,
+            Carbon::parse($request->start_time),
+            Carbon::parse($request->end_time),
+            $request->booking_id ?? null
+        );
+
+        return response()->json([
+            'available' => $isAvailable,
+            'message' => $isAvailable
+                ? 'This time slot is available'
+                : 'This time slot is already booked'
+        ]);
+    }
+
+    /**
+     * API: Get available rooms for a time slot
+     */
+    public function availableRooms(Request $request)
+    {
+        $request->validate([
+            'start' => 'required|date',
+            'end' => 'required|date|after:start',
+        ]);
+
+        $startTime = Carbon::parse($request->start);
+        $endTime = Carbon::parse($request->end);
+
+        $allRooms = Room::all();
+        $availableRooms = [];
+
+        foreach ($allRooms as $room) {
+            $isAvailable = !$this->bookingService->isClash($room->id, $startTime, $endTime);
+            if ($isAvailable) {
+                $availableRooms[] = $room;
+            }
+        }
+
+        return response()->json([
+            'available_rooms' => $availableRooms,
+            'count' => count($availableRooms)
+        ]);
     }
 }
