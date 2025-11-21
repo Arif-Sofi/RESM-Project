@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Event;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class EventPolicy
 {
@@ -13,7 +12,7 @@ class EventPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true; // Users can view events they created or are staff on (filtered in controller)
     }
 
     /**
@@ -21,7 +20,8 @@ class EventPolicy
      */
     public function view(User $user, Event $event): bool
     {
-        return false;
+        // Users can view events they created or are staff on
+        return $event->user_id === $user->id || $event->staff->contains($user->id);
     }
 
     /**
@@ -29,7 +29,7 @@ class EventPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return true; // Any authenticated user can create events
     }
 
     /**
@@ -37,7 +37,7 @@ class EventPolicy
      */
     public function update(User $user, Event $event): bool
     {
-        return $event->user_id === $user->id;
+        return $event->user_id === $user->id; // Only creator can update
     }
 
     /**
@@ -45,7 +45,7 @@ class EventPolicy
      */
     public function delete(User $user, Event $event): bool
     {
-        return false;
+        return $event->user_id === $user->id; // Only creator can delete
     }
 
     /**

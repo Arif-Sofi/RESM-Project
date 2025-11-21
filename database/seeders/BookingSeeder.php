@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Arr;
-use Faker\Factory as Faker;
 use App\Models\Booking;
 use App\Models\Room;
 use App\Models\User;
 use App\Services\BookingService;
+use Faker\Factory as Faker;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 
 class BookingSeeder extends Seeder
 {
@@ -30,16 +30,18 @@ class BookingSeeder extends Seeder
         $userIds = User::pluck('id')->toArray();
         $userIds = array_filter($userIds, function ($id) {
             $user = User::find($id);
-            return !$user->isAdmin();
-        });
 
+            return ! $user->isAdmin();
+        });
 
         if (empty($roomIds)) {
             $this->command->info('Warning: No rooms found. Please seed rooms first.');
+
             return;
         }
         if (empty($userIds)) {
             $this->command->info('Warning: No users found. Please seed users first.');
+
             return;
         }
 
@@ -48,7 +50,7 @@ class BookingSeeder extends Seeder
         $maxAttempts = 50;
         $numberOfBookingsToGenerate = 30;
 
-        for ($i = 0; $i < $numberOfBookingsToGenerate; ) {
+        for ($i = 0; $i < $numberOfBookingsToGenerate;) {
             if ($attempts >= $maxAttempts) {
                 $this->command->info('Warning: Could not generate all desired bookings due to too many clashes.');
                 break;
@@ -73,7 +75,7 @@ class BookingSeeder extends Seeder
             }
 
             // 新しい予約が既存の予約と競合しないかチェック
-            if (!$this->bookingService->isClash($roomId, $start_time, $end_time)) {
+            if (! $this->bookingService->isClash($roomId, $start_time, $end_time)) {
                 Booking::create([
                     'room_id' => $roomId,
                     'user_id' => Arr::random($userIds),

@@ -16,16 +16,14 @@ return new class extends Migration
             // $table->timestamps(); 通常ピボットテーブルには不要
             $table->primary(['event_id', 'user_id']); // event_id と user_id の組み合わせでユニークにする (複合主キーの代わり)
 
-
             $table->foreignId('event_id')
-                  ->constrained('events')
-                  ->onDelete('cascade'); // イベントが削除されたら関連も削除
+                ->constrained('events')
+                ->onDelete('cascade'); // イベントが削除されたら関連も削除
 
             // usersテーブルのidを参照する外部キー
             $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->onDelete('cascade'); // ユーザーが削除されたら関連も削除
-
+                ->constrained('users')
+                ->onDelete('cascade'); // ユーザーが削除されたら関連も削除
 
         });
     }

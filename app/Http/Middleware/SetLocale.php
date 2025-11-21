@@ -11,14 +11,12 @@ class SetLocale
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
-        //dd($locale = App::getLocale());
-        //dd(session()->get('locale'));
+        // dd($locale = App::getLocale());
+        // dd(session()->get('locale'));
         if (session()->has('locale')) {
             App::setLocale(session()->get('locale'));
         }

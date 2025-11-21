@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
 
         User::factory()->count(15)->create([
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
         ]);
 
         User::create([
@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
-            User::create([
+        User::create([
             'name' => 'admin',
             'role_id' => 1,
             'email' => 'admin@admin.com',
@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
-            User::create([
+        User::create([
             'name' => 'Arif Sofi',
             'role_id' => 2,
             'email' => 'muhammadarifhakimi@graduate.utm.my',

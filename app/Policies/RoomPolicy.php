@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Room;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class RoomPolicy
 {
@@ -13,7 +12,7 @@ class RoomPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true; // All authenticated users can view rooms list
     }
 
     /**
@@ -21,7 +20,7 @@ class RoomPolicy
      */
     public function view(User $user, Room $room): bool
     {
-        return false;
+        return true; // All authenticated users can view room details
     }
 
     /**
@@ -29,7 +28,7 @@ class RoomPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAdmin(); // Only admins can create rooms
     }
 
     /**
@@ -37,7 +36,7 @@ class RoomPolicy
      */
     public function update(User $user, Room $room): bool
     {
-        return false;
+        return $user->isAdmin(); // Only admins can update rooms
     }
 
     /**
@@ -45,7 +44,7 @@ class RoomPolicy
      */
     public function delete(User $user, Room $room): bool
     {
-        return false;
+        return $user->isAdmin(); // Only admins can delete rooms
     }
 
     /**
