@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="w-full py-6">
+    <div class="w-full py-6" x-data="dashboardBookings()">
         <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <!-- Welcome Section -->
@@ -163,9 +163,18 @@
                                     </div>
                                     <div class="flex md:flex-col gap-2">
                                         @if($booking->status === null)
-                                            <a href="{{ route('bookings.edit', $booking) }}" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition text-center">
+                                            <button @click="openEditModal({
+                                                id: {{ $booking->id }},
+                                                room_id: {{ $booking->room_id }},
+                                                date: '{{ $booking->start_time->format('Y-m-d') }}',
+                                                start_time: '{{ $booking->start_time->format('H:i') }}',
+                                                end_time: '{{ $booking->end_time->format('H:i') }}',
+                                                number_of_student: {{ $booking->number_of_student }},
+                                                equipment_needed: '{{ $booking->equipment_needed }}',
+                                                purpose: {{ json_encode($booking->purpose) }}
+                                            })" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition text-center">
                                                 {{ __('Edit') }}
-                                            </a>
+                                            </button>
                                         @endif
                                         @if(auth()->user()->isAdmin())
                                             @include('_approve-disapprove', ['booking' => $booking])
@@ -178,6 +187,117 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Edit Modal -->
+            @include('bookings._edit_modal')
         </div>
     </div>
+
+    <script>
+    function dashboardBookings() {
+        return {
+            showEditModal: false,
+            editBookingId: null,
+            editBookingData: {
+                room_id: '',
+                date: '',
+                start_time: '',
+                end_time: '',
+                number_of_student: '',
+                equipment_needed: '',
+                purpose: ''
+            },
+            editClashError: '',
+            editErrors: {},
+            editGeneralError: '',
+            isSubmitting: false,
+            rooms: @json(\App\Models\Room::all()),
+
+            openEditModal(booking) {
+                this.editBookingId = booking.id;
+
+                this.editBookingData = {
+                    room_id: booking.room_id,
+                    date: booking.date,
+                    start_time: booking.start_time,
+                    end_time: booking.end_time,
+                    number_of_student: booking.number_of_student,
+                    equipment_needed: booking.equipment_needed || '',
+                    purpose: booking.purpose
+                };
+
+                this.editErrors = {};
+                this.editClashError = '';
+                this.editGeneralError = '';
+                this.showEditModal = true;
+            },
+
+            closeEditModal() {
+                this.showEditModal = false;
+                this.editBookingId = null;
+                this.editErrors = {};
+                this.editClashError = '';
+                this.editGeneralError = '';
+            },
+
+            async updateBooking() {
+                if (this.isSubmitting) return;
+
+                this.isSubmitting = true;
+                this.editErrors = {};
+                this.editClashError = '';
+                this.editGeneralError = '';
+
+                // Prepare datetime values in SQL format
+                const startDateTime = new Date(this.editBookingData.date + 'T' + this.editBookingData.start_time + ':00')
+                    .toISOString().slice(0, 19).replace('T', ' ');
+                const endDateTime = new Date(this.editBookingData.date + 'T' + this.editBookingData.end_time + ':00')
+                    .toISOString().slice(0, 19).replace('T', ' ');
+
+                try {
+                    const response = await fetch(`/bookings/${this.editBookingId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            room_id: this.editBookingData.room_id,
+                            start_time: startDateTime,
+                            end_time: endDateTime,
+                            number_of_student: this.editBookingData.number_of_student,
+                            equipment_needed: this.editBookingData.equipment_needed,
+                            purpose: this.editBookingData.purpose
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        if (data.errors) {
+                            this.editErrors = data.errors;
+                        }
+                        if (data.message) {
+                            if (data.message.includes('no longer available')) {
+                                this.editClashError = data.message;
+                            } else {
+                                this.editGeneralError = data.message;
+                            }
+                        }
+                        this.isSubmitting = false;
+                        return;
+                    }
+
+                    // Success - reload the page to show updated data
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Update error:', error);
+                    this.editGeneralError = 'An error occurred while updating the booking.';
+                    this.isSubmitting = false;
+                }
+            }
+        }
+    }
+    </script>
 </x-app-layout>

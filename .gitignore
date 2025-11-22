@@ -23,3 +23,5 @@ yarn-error.log
 /.zed
 /temp
 CLAUDE.md
+.playwright-mcp
+.claude
