@@ -104,10 +104,11 @@
                             <div id="calendar" class="min-h-[600px]"></div>
                         </div>
 
-                        <!-- Booking Form (shows when date/room selected) -->
-                        <div x-show="showBookingForm" x-transition class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                            @include('bookings._booking_form')
-                        </div>
+                        <!-- Edit Booking Modal -->
+                        @include('bookings._edit_modal')
+
+                        <!-- Create Booking Modal -->
+                        @include('bookings._create_modal')
 
                         <!-- Available Rooms (shows when time slot selected) -->
                         <div x-show="selectedDate && !selectedRoom && availableRooms.length > 0" x-transition class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">

@@ -61,7 +61,11 @@ class BookingController extends Controller
     {
         // dd($request->all());
         if (! $request->has('room_id') || ! $request->has('start_time') || ! $request->has('end_time')) {
-            return back()->withErrors(['booking' => 'Please select a room and specify the booking time.']);
+            $error = 'Please select a room and specify the booking time.';
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $error], 422);
+            }
+            return back()->withErrors(['booking' => $error]);
         }
 
         $startTime = Carbon::parse($request->input('start_time'));
@@ -69,7 +73,11 @@ class BookingController extends Controller
 
         // Server-side clash validation to prevent race conditions
         if ($this->bookingService->isClash($request->room_id, $startTime, $endTime)) {
-            return back()->withErrors(['booking' => 'The selected time slot is no longer available. Please choose another time.']);
+            $error = 'The selected time slot is no longer available. Please choose another time.';
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $error], 422);
+            }
+            return back()->withErrors(['booking' => $error]);
         }
 
         $booking = Booking::create([
@@ -91,7 +99,18 @@ class BookingController extends Controller
             // Log the error but don't crash the booking creation
             \Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
             // Optionally add a flash message
-            session()->flash('warning', 'Booking created but email notification failed to send.');
+            if (! $request->expectsJson()) {
+                session()->flash('warning', 'Booking created but email notification failed to send.');
+            }
+        }
+
+        // Return JSON for AJAX requests
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Booking created successfully!',
+                'booking' => $booking->load(['room', 'user'])
+            ], 201);
         }
 
         return redirect()->route('bookings.my-bookings')->with('success', 'Booking created successfully!');
@@ -127,6 +146,12 @@ class BookingController extends Controller
         $endTime = Carbon::parse($request->input('end_time'));
 
         if ($this->bookingService->isClash($request->room_id, $startTime, $endTime, $booking->id)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The selected time slot is no longer available. Please choose another time.'
+                ], 422);
+            }
             return back()->withErrors(['booking' => 'The selected time slot is no longer available. Please choose another time.'])->withInput();
         }
 
@@ -140,6 +165,14 @@ class BookingController extends Controller
             'status' => null, // Reset status to pending after edit
             'rejection_reason' => null,
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Booking updated successfully!',
+                'booking' => $booking->load(['room', 'user'])
+            ]);
+        }
 
         return redirect()->route('bookings.index')->with('success', 'Booking updated successfully!');
     }
@@ -160,7 +193,7 @@ class BookingController extends Controller
      */
     public function getBookingsByRoom(Room $room)
     {
-        $bookings = $room->bookings()->with('user')->orderBy('start_time')->get();
+        $bookings = $room->bookings()->with(['user', 'room'])->orderBy('start_time')->get();
 
         return $bookings;
         // return response()->json($bookings);
@@ -174,10 +207,10 @@ class BookingController extends Controller
         $query = $room->bookings();
         if ($request->has('date') && Carbon::parse($request->query('date'))->isValid()) {
             $selectedDate = Carbon::parse(time: $request->query('date'))->toDateString();
-            $query->with('user')->whereDate('start_time', operator: $selectedDate);
+            $query->with(['user', 'room'])->whereDate('start_time', operator: $selectedDate);
         }
 
-        $bookings = $query->orderBy('start_time')->get();
+        $bookings = $query->with(['user', 'room'])->orderBy('start_time')->get();
 
         return $bookings;
     }
@@ -247,6 +280,14 @@ class BookingController extends Controller
         }
 
         return response()->json($bookings);
+    }
+
+    /**
+     * API: Get a single booking with relationships
+     */
+    public function apiShow(Booking $booking)
+    {
+        return response()->json($booking->load(['user', 'room']));
     }
 
     /**
