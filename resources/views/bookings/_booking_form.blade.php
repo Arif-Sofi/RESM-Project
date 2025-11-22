@@ -53,8 +53,9 @@
                 <label for="start_time_display" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
                     {{ __('Start Time') }} <span class="text-red-500">*</span>
                 </label>
-                <!-- Hidden input that sends the full datetime -->
-                <input type="hidden" name="start_time" :value="selectedStartTime">
+                <!-- Hidden input that sends the full datetime in UTC -->
+                <input type="hidden" name="start_time"
+                    :value="selectedDate && selectedStartTime ? (new Date(selectedDate + 'T' + formatTimeForInput(selectedStartTime) + ':00').toISOString().slice(0, 19).replace('T', ' ')) : ''">
                 <input type="time" id="start_time_display" x-bind:value="formatTimeForInput(selectedStartTime)" @change="updateStartTime($event); checkAvailability()" required
                     class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full">
                 @error('start_time')
@@ -67,8 +68,9 @@
                 <label for="end_time_display" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
                     {{ __('End Time') }} <span class="text-red-500">*</span>
                 </label>
-                <!-- Hidden input that sends the full datetime -->
-                <input type="hidden" name="end_time" :value="selectedEndTime">
+                <!-- Hidden input that sends the full datetime in UTC -->
+                <input type="hidden" name="end_time"
+                    :value="selectedDate && selectedEndTime ? (new Date(selectedDate + 'T' + formatTimeForInput(selectedEndTime) + ':00').toISOString().slice(0, 19).replace('T', ' ')) : ''">
                 <input type="time" id="end_time_display" x-bind:value="formatTimeForInput(selectedEndTime)" @change="updateEndTime($event); checkAvailability()" required
                     class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full">
                 @error('end_time')

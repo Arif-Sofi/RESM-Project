@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/bookings', [BookingController::class, 'apiIndex'])->name('api.bookings');
     Route::post('/api/bookings/check-availability', [BookingController::class, 'checkAvailability'])->name('api.bookings.check-availability');
     Route::get('/api/bookings/available-rooms', [BookingController::class, 'availableRooms'])->name('api.bookings.available-rooms');
+    Route::get('/api/bookings/{booking}', [BookingController::class, 'apiShow'])->name('api.bookings.show');
 
     // Rooms routes
     Route::resource('rooms', controller: 'App\Http\Controllers\RoomController');

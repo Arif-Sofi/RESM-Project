@@ -1,4 +1,4 @@
-<div x-data="bookingsList()" class="p-6">
+<div class="p-6">
     <!-- Filters -->
     <div class="mb-6 flex flex-col md:flex-row gap-4">
         <div class="flex-1">
@@ -30,7 +30,7 @@
 
     <!-- Results Count -->
     <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        <span x-text="`Showing ${filteredBookings.length} of ${allBookings.length} bookings`"></span>
+        <span x-text="`Showing ${filteredBookings.length} of ${bookings.length} bookings`"></span>
     </div>
 
     <!-- Bookings Table - Desktop -->
@@ -52,8 +52,8 @@
                 <template x-for="booking in filteredBookings" :key="booking.id">
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="booking.room.name"></div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400" x-text="booking.room.location_details"></div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="booking.room?.name || 'Unknown Room'"></div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400" x-text="booking.room?.location_details || ''"></div>
                         </td>
                         @can('viewAny', App\Models\Booking::class)
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -84,15 +84,15 @@
                                 {{ __('View') }}
                             </button>
                             <template x-if="booking.user_id === {{ Auth::id() }} && booking.status === null">
-                                <a :href="`/bookings/${booking.id}/edit`" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3">
+                                <button @click="openEditModal(booking)" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3">
                                     {{ __('Edit') }}
-                                </a>
+                                </button>
                             </template>
                         </td>
                     </tr>
                     <!-- Expandable Details Row -->
                     <tr x-show="expandedBooking === booking.id" x-transition class="bg-gray-50 dark:bg-gray-900">
-                        <td :colspan="canViewAll ? 6 : 5" class="px-6 py-4">
+                        <td colspan="{{ auth()->user()->can('viewAny', App\Models\Booking::class) ? '6' : '5' }}" class="px-6 py-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('Booking Details') }}</h4>
@@ -144,7 +144,7 @@
                     </tr>
                 </template>
                 <tr x-show="filteredBookings.length === 0">
-                    <td :colspan="canViewAll ? 6 : 5" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    <td colspan="{{ auth()->user()->can('viewAny', App\Models\Booking::class) ? '6' : '5' }}" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                         {{ __('No bookings found') }}
                     </td>
                 </tr>
@@ -158,8 +158,8 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                 <div class="flex justify-between items-start mb-3">
                     <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-gray-100" x-text="booking.room.name"></h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400" x-text="booking.room.location_details"></p>
+                        <h3 class="font-semibold text-gray-900 dark:text-gray-100" x-text="booking.room?.name || 'Unknown Room'"></h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400" x-text="booking.room?.location_details || ''"></p>
                     </div>
                     <span x-show="booking.status === null" class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
                         {{ __('Pending') }}
@@ -208,93 +208,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    function bookingsList() {
-        return {
-            allBookings: @json($bookings),
-            searchQuery: '',
-            statusFilter: 'all',
-            sortBy: 'date_desc',
-            expandedBooking: null,
-            canViewAll: {{ Auth::user()->isAdmin() ? 'true' : 'false' }},
-
-            get filteredBookings() {
-                let filtered = this.allBookings;
-
-                // Filter by search
-                if (this.searchQuery) {
-                    const query = this.searchQuery.toLowerCase();
-                    filtered = filtered.filter(booking =>
-                        booking.room.name.toLowerCase().includes(query) ||
-                        booking.purpose?.toLowerCase().includes(query) ||
-                        booking.user?.name.toLowerCase().includes(query) ||
-                        booking.user?.email.toLowerCase().includes(query)
-                    );
-                }
-
-                // Filter by status
-                if (this.statusFilter !== 'all') {
-                    if (this.statusFilter === 'pending') {
-                        filtered = filtered.filter(b => b.status === null);
-                    } else if (this.statusFilter === 'approved') {
-                        filtered = filtered.filter(b => b.status === true);
-                    } else if (this.statusFilter === 'rejected') {
-                        filtered = filtered.filter(b => b.status === false);
-                    }
-                }
-
-                // Sort
-                if (this.sortBy === 'date_desc') {
-                    filtered.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
-                } else if (this.sortBy === 'date_asc') {
-                    filtered.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
-                } else if (this.sortBy === 'room') {
-                    filtered.sort((a, b) => a.room.name.localeCompare(b.room.name));
-                } else if (this.sortBy === 'status') {
-                    filtered.sort((a, b) => {
-                        const statusOrder = { null: 0, true: 1, false: 2 };
-                        return statusOrder[a.status] - statusOrder[b.status];
-                    });
-                }
-
-                return filtered;
-            },
-
-            toggleDetails(bookingId) {
-                this.expandedBooking = this.expandedBooking === bookingId ? null : bookingId;
-            },
-
-            formatDate(datetime) {
-                return new Date(datetime).toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                });
-            },
-
-            formatTime(datetime) {
-                return new Date(datetime).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            },
-
-            showRejectModal(booking) {
-                const reason = prompt('{{ __('Please enter rejection reason:') }}');
-                if (reason) {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/bookings/${booking.id}/reject`;
-                    form.innerHTML = `
-                        @csrf
-                        <input type="hidden" name="rejection_reason" value="${reason}">
-                    `;
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            }
-        }
-    }
-</script>
