@@ -16,6 +16,11 @@
 
         <!-- 全幅表示のためのスタイル -->
         <style>
+            /* Alpine.js x-cloak directive - prevents flash during initialization */
+            [x-cloak] {
+                display: none !important;
+            }
+
             html, body {
                 width: 100%;
                 height: 100%;
