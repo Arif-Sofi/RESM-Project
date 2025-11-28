@@ -11,19 +11,19 @@
                 <!-- Booking Type Selection Buttons -->
                 <div class="mb-8">
                     <x-primary-button x-on:click.prevent="showRoomBooking()">
-                        {{ __('messages.room') }}
+                        {{ __('Book A Room') }}
                     </x-primary-button>
-                    <x-secondary-button class="ms-2"
+                    {{-- <x-secondary-button class="ms-2"
                         x-on:click.prevent="showDateBooking()">
                         {{ __('messages.date') }}
-                    </x-secondary-button>
+                    </x-secondary-button> --}}
                 </div>
 
                 <!-- Room Booking Content -->
                 @include('bookings._room_modal')
             </div>
             <!-- Date Booking Content -->
-            @include('bookings._date_modal')
+            {{-- @include('bookings._date_modal') --}}
 
             <!-- Bookings Table -->
             @include('bookings._table_modal')

@@ -34,7 +34,7 @@
             </div>
 
             {{-- 既存予約の表示 --}}
-            <div
+            {{-- <div
                 class="mb-6 max-h-40 overflow-y-auto border border-secondary dark:border-accent p-4 rounded-lg bg-accent dark:bg-secondary">
                 <template x-if="previousBookings.length > 0">
                     <ul class="space-y-2">
@@ -62,7 +62,7 @@
                     <p class="text-sm text-primary dark:text-base text-center py-4">
                         {{ __('Select a Room to see previous bookings.') }}</p>
                 </template>
-            </div>
+            </div> --}}
         </div>
 
         <div class="mt-6 flex justify-end space-x-3">
@@ -81,10 +81,6 @@
             </x-primary-button>
         </div>
     </div>
-
-    <!-- Previous Bookings Display -->
-    <hr class="my-6 border-secondary dark:border-accent">
-    <div id="calendar"></div>
 
     <!-- Step 2 & 3 Form -->
     <form method="POST" action="{{ route('bookings.store') }}" x-show="currentStep === 2 || currentStep === 3">
@@ -159,13 +155,13 @@
                 <div>
                     <x-input-label for="equipment_needed" :value="__('Equipment Needed (Optional)')" />
                     <textarea id="equipment_needed" name="equipment_needed" rows="3"
-                        class="mt-1 block w-full border-secondary dark:border-accent bg-base dark:bg-primary text-primary dark:text-base focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                        class="mt-1 block w-full border-secondary dark:border-accent bg-white dark:bg-primary text-primary dark:text-base focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                         x-model="equipmentNeeded"></textarea>
                 </div>
                 <div>
                     <x-input-label for="purpose" :value="__('Purpose')" />
                     <textarea id="purpose" name="purpose" rows="3"
-                        class="mt-1 block w-full border-secondary dark:border-accent bg-base dark:bg-primary text-primary dark:text-base focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                        class="mt-1 block w-full border-secondary dark:border-accent bg-white dark:bg-primary text-primary dark:text-base focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                         x-model="purpose" required></textarea>
                 </div>
             </div>
@@ -180,4 +176,8 @@
             </div>
         </div>
     </form>
+
+    <!-- Previous Bookings Calendar Display -->
+    <hr class="my-6 border-secondary dark:border-accent">
+    <div id="calendar"></div>
 </div>
