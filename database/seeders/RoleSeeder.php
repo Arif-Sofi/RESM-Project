@@ -14,7 +14,7 @@ class RoleSeeder extends Seeder
     {
         Role::updateOrCreate(
             ['id' => 1],
-            ['name' => 'Admin Guru'] 
+            ['name' => 'Admin Guru']
         );
 
         Role::updateOrCreate(

@@ -10,6 +10,13 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 
 beforeEach(function () {
+    // Seed roles with specific IDs (isAdmin checks role_id === 1)
+    \DB::table('roles')->delete();
+    \DB::table('roles')->insert([
+        ['id' => 1, 'name' => 'Admin', 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 2, 'name' => 'Regular User', 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
     $this->admin = User::factory()->create(['role_id' => 1]);
     $this->regularUser = User::factory()->create(['role_id' => 2]);
     $this->room = Room::factory()->create();
@@ -23,9 +30,12 @@ test('admin can view all bookings', function () {
 
     $response = $this->get(route('bookings.index'));
 
+    // Calendar UI passes bookings as JSON data, not rendered HTML
     $response->assertStatus(200)
-        ->assertSee($adminBooking->purpose)
-        ->assertSee($userBooking->purpose);
+        ->assertViewHas('bookings', function ($bookings) use ($adminBooking, $userBooking) {
+            return $bookings->contains('id', $adminBooking->id)
+                && $bookings->contains('id', $userBooking->id);
+        });
 });
 
 test('regular user can only view their own bookings', function () {
@@ -36,9 +46,12 @@ test('regular user can only view their own bookings', function () {
 
     $response = $this->get(route('bookings.index'));
 
+    // Calendar UI passes bookings as JSON data, not rendered HTML
     $response->assertStatus(200)
-        ->assertSee($theirBooking->purpose)
-        ->assertDontSee($otherBooking->purpose);
+        ->assertViewHas('bookings', function ($bookings) use ($theirBooking, $otherBooking) {
+            return $bookings->contains('id', $theirBooking->id)
+                && ! $bookings->contains('id', $otherBooking->id);
+        });
 });
 
 test('authenticated user can create a booking', function () {
@@ -58,7 +71,7 @@ test('authenticated user can create a booking', function () {
         'purpose' => 'Team meeting',
     ]);
 
-    $response->assertRedirect(route('dashboard'));
+    $response->assertRedirect(route('bookings.my-bookings'));
 
     $this->assertDatabaseHas('bookings', [
         'room_id' => $this->room->id,
@@ -200,7 +213,7 @@ test('admin can approve booking', function () {
 
     $response = $this->post(route('bookings.approve', $booking));
 
-    $response->assertRedirect(route('bookings.index'));
+    $response->assertRedirect(route('admin.approvals'));
 
     $booking->refresh();
     expect($booking->status)->toBeTrue();
@@ -229,7 +242,7 @@ test('admin can reject booking with reason', function () {
         'rejection_reason' => 'Room unavailable',
     ]);
 
-    $response->assertRedirect(route('bookings.index'));
+    $response->assertRedirect(route('admin.approvals'));
 
     $booking->refresh();
     expect($booking->status)->toBeFalse()

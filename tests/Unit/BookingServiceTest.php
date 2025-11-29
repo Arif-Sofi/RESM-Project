@@ -352,7 +352,7 @@ describe('BookingService Multiple Bookings Tests', function () {
 });
 
 describe('BookingService Booking Status Tests', function () {
-    test('isClash checks all bookings regardless of status', function () {
+    test('isClash only checks pending and approved bookings, not rejected', function () {
         // Pending booking
         Booking::factory()->pending()->create([
             'room_id' => $this->room->id,
@@ -386,11 +386,11 @@ describe('BookingService Booking Status Tests', function () {
             Carbon::now()->addDay()->setHour(14)
         ))->toBeTrue();
 
-        // Should detect clash with rejected
+        // Should NOT detect clash with rejected (rejected bookings don't block slots)
         expect($this->service->isClash($this->room->id,
             Carbon::now()->addDay()->setHour(16),
             Carbon::now()->addDay()->setHour(17)
-        ))->toBeTrue();
+        ))->toBeFalse();
     });
 });
 

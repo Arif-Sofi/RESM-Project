@@ -6,9 +6,14 @@ use App\Models\Role;
 use App\Models\User;
 
 beforeEach(function () {
-    // Ensure roles exist in the database
-    Role::firstOrCreate(['id' => 1], ['name' => 'Admin']);
-    Role::firstOrCreate(['id' => 2], ['name' => 'Regular User']);
+    // Seed roles with specific IDs for consistent tests
+    // isAdmin() checks role_id === 1, so we need Admin to have id=1
+    // Delete existing roles and insert with specific IDs using raw DB to bypass fillable
+    \DB::table('roles')->delete();
+    \DB::table('roles')->insert([
+        ['id' => 1, 'name' => 'Admin', 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 2, 'name' => 'Regular User', 'created_at' => now(), 'updated_at' => now()],
+    ]);
 });
 
 test('isAdmin returns true for admin users', function () {

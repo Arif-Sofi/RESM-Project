@@ -74,6 +74,14 @@ class BookingPolicy
     }
 
     /**
+     * Determine whether the user can view the approvals page.
+     */
+    public function viewApprovals(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
      * Determine whether the user can approve the booking.
      */
     public function approve(User $user, Booking $booking): bool

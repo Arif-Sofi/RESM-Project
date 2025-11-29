@@ -11,6 +11,7 @@ class UpdateBookingRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        // Authorization is handled by policy
         return true;
     }
 

@@ -16,6 +16,11 @@
 
         <!-- 全幅表示のためのスタイル -->
         <style>
+            /* Alpine.js x-cloak directive - prevents flash during initialization */
+            [x-cloak] {
+                display: none !important;
+            }
+
             html, body {
                 width: 100%;
                 height: 100%;
@@ -38,6 +43,15 @@
         <div class="min-h-screen bg-base dark:bg-primary w-full">
             @include('layouts.navigation')
 
+            <!-- Breadcrumb -->
+            @isset($breadcrumb)
+                <div class="bg-base dark:bg-primary w-full">
+                    <div class="max-w-[1920px] mx-auto pt-4 px-4 sm:px-6 lg:px-8">
+                        {{ $breadcrumb }}
+                    </div>
+                </div>
+            @endisset
+
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-base dark:bg-primary shadow w-full">
@@ -53,5 +67,31 @@
             </main>
         </div>
         @stack('scripts')
+
+        {{-- Toast Notifications --}}
+        <x-toast />
+
+        {{-- Confirmation Modal --}}
+        <x-confirmation-modal />
+
+        {{-- Flash Message to Toast Bridge --}}
+        @if(session('success') || session('error') || session('warning') || session('info'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                @if(session('success'))
+                    window.showSuccess(@json(session('success')));
+                @endif
+                @if(session('error'))
+                    window.showError(@json(session('error')));
+                @endif
+                @if(session('warning'))
+                    window.showWarning(@json(session('warning')));
+                @endif
+                @if(session('info'))
+                    window.showInfo(@json(session('info')));
+                @endif
+            });
+        </script>
+        @endif
     </body>
 </html>
