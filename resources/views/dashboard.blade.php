@@ -1,9 +1,21 @@
 <x-app-layout>
+    <x-slot name="breadcrumb">
+        <x-breadcrumb :items="[
+            ['label' => __('Dashboard'), 'active' => true]
+        ]" />
+    </x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-base leading-tight">
             {{ __('dashboard.dashboard') }}
         </h2>
     </x-slot>
+
+    <!-- Pass bookings data to JavaScript -->
+    <script>
+        window.dashboardBookingsData = @json($bookings);
+        window.dashboardRoomsData = @json(\App\Models\Room::all());
+    </script>
 
     <div class="w-full py-6" x-data="dashboardBookings()">
         <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,125 +78,157 @@
             <!-- Upcoming Bookings -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center justify-between mb-4">
                         <h3 class="font-bold text-xl text-gray-900 dark:text-gray-100">
                             {{ __('Your Upcoming Bookings') }}
                         </h3>
-                        @if($bookings->isNotEmpty())
                         <a href="{{ route('bookings.my-bookings') }}" class="text-sm text-primary hover:text-primary-dark dark:hover:text-primary-light font-medium">
                             {{ __('View All') }} →
                         </a>
-                        @endif
                     </div>
 
-                    @if($bookings->isEmpty())
-                        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-12 text-center">
-                            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                                {{ __('dashboard.no_bookings_set') }}
-                            </h4>
-                            <p class="text-gray-600 dark:text-gray-400 mb-4">
-                                {{ __('Get started by creating your first room booking') }}
-                            </p>
-                            <a href="{{ route('bookings.index') }}"
-                                class="inline-flex items-center px-6 py-3 bg-primary border border-transparent rounded-md font-semibold text-sm text-white hover:bg-opacity-90 transition">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                {{ __('dashboard.create_booking') }}
-                            </a>
+                    <!-- Filters Row -->
+                    <div class="flex flex-wrap items-center gap-4 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+                        <!-- Show/Hide Rejected Toggle -->
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('Show Rejected') }}:</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" x-model="showRejected" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                            </label>
                         </div>
-                    @else
-                        <div class="space-y-4">
-                            @foreach($bookings as $booking)
-                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-5 hover:shadow-md transition">
-                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                                    <div class="flex-1">
-                                        <div class="flex items-start gap-4">
-                                            <div class="flex-shrink-0">
-                                                <div class="w-12 h-12 rounded-lg flex items-center justify-center
-                                                    @if($booking->status === null) bg-yellow-100 dark:bg-yellow-900/30
-                                                    @elseif($booking->status === true) bg-green-100 dark:bg-green-900/30
-                                                    @else bg-red-100 dark:bg-red-900/30
-                                                    @endif">
-                                                    <svg class="w-6 h-6
-                                                        @if($booking->status === null) text-yellow-600 dark:text-yellow-400
-                                                        @elseif($booking->status === true) text-green-600 dark:text-green-400
-                                                        @else text-red-600 dark:text-red-400
-                                                        @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                            <div class="flex-1">
-                                                <div class="flex items-center gap-2 mb-1">
-                                                    <h4 class="font-semibold text-lg text-gray-900 dark:text-gray-100">{{ $booking->room->name }}</h4>
-                                                    @if($booking->status === null)
-                                                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
-                                                            {{ __('Pending') }}
-                                                        </span>
-                                                    @elseif($booking->status === true)
-                                                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                                                            {{ __('Approved') }}
-                                                        </span>
-                                                    @else
-                                                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">
-                                                            {{ __('Rejected') }}
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                                <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
-                                                    <div class="flex items-center">
-                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                        </svg>
-                                                        {{ $booking->start_time->format('M d, Y') }}
+
+                        <!-- Month Filter Dropdown -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-sm text-gray-600 dark:text-gray-400">{{ __('Month') }}:</label>
+                            <select x-model="monthFilter" class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary">
+                                <option value="all">{{ __('All') }}</option>
+                                <template x-for="option in monthOptions" :key="option.value">
+                                    <option :value="option.value" x-text="option.label"></option>
+                                </template>
+                            </select>
+                        </div>
+
+                        <!-- Results count -->
+                        <div class="text-sm text-gray-500 dark:text-gray-400 ml-auto">
+                            <span x-text="`${filteredBookings.length} ${filteredBookings.length === 1 ? 'booking' : 'bookings'}`"></span>
+                        </div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div x-show="filteredBookings.length === 0" x-transition class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-12 text-center">
+                        <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                            {{ __('dashboard.no_bookings_set') }}
+                        </h4>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            {{ __('Get started by creating your first room booking') }}
+                        </p>
+                        <a href="{{ route('bookings.index') }}"
+                            class="inline-flex items-center px-6 py-3 bg-primary border border-transparent rounded-md font-semibold text-sm text-white hover:bg-opacity-90 transition">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            {{ __('dashboard.create_booking') }}
+                        </a>
+                    </div>
+
+                    <!-- Bookings List - Grouped by Month -->
+                    <div x-show="filteredBookings.length > 0" class="space-y-4">
+                        <template x-for="group in groupedBookings" :key="group.key">
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                                <!-- Month Header (Collapsible) -->
+                                <button @click="toggleMonth(group.key)"
+                                    class="w-full flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                                    <div class="flex items-center gap-3">
+                                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform"
+                                            :class="{ 'rotate-90': isMonthExpanded(group.key) }"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                        <span class="font-semibold text-gray-800 dark:text-gray-200" x-text="group.label"></span>
+                                        <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
+                                            x-text="`${group.bookings.length} 件`"></span>
+                                    </div>
+                                </button>
+
+                                <!-- Bookings in this month -->
+                                <div x-show="isMonthExpanded(group.key)" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    <template x-for="booking in group.bookings" :key="booking.id">
+                                        <div class="p-5 hover:bg-gray-50 dark:hover:bg-gray-750 transition">
+                                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                                <div class="flex-1">
+                                                    <div class="flex items-start gap-4">
+                                                        <div class="flex-shrink-0">
+                                                            <div class="w-12 h-12 rounded-lg flex items-center justify-center"
+                                                                :class="{
+                                                                    'bg-yellow-100 dark:bg-yellow-900/30': booking.status === null,
+                                                                    'bg-green-100 dark:bg-green-900/30': booking.status === true,
+                                                                    'bg-red-100 dark:bg-red-900/30': booking.status === false
+                                                                }">
+                                                                <svg class="w-6 h-6"
+                                                                    :class="{
+                                                                        'text-yellow-600 dark:text-yellow-400': booking.status === null,
+                                                                        'text-green-600 dark:text-green-400': booking.status === true,
+                                                                        'text-red-600 dark:text-red-400': booking.status === false
+                                                                    }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-1">
+                                                            <div class="flex items-center gap-2 mb-1">
+                                                                <h4 class="font-semibold text-lg text-gray-900 dark:text-gray-100" x-text="booking.room?.name || 'Unknown Room'"></h4>
+                                                                <span x-show="booking.status === null" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
+                                                                    {{ __('Pending') }}
+                                                                </span>
+                                                                <span x-show="booking.status === true" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                                                                    {{ __('Approved') }}
+                                                                </span>
+                                                                <span x-show="booking.status === false" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">
+                                                                    {{ __('Rejected') }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                                                <div class="flex items-center">
+                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                    </svg>
+                                                                    <span x-text="formatDate(booking.start_time)"></span>
+                                                                </div>
+                                                                <div class="flex items-center">
+                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                                    </svg>
+                                                                    <span x-text="`${formatTime(booking.start_time)} - ${formatTime(booking.end_time)}`"></span>
+                                                                </div>
+                                                                <div class="flex items-center">
+                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                                                    </svg>
+                                                                    <span x-text="`${booking.number_of_student} students`"></span>
+                                                                </div>
+                                                            </div>
+                                                            <p class="mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-1" x-text="booking.purpose"></p>
+                                                        </div>
                                                     </div>
-                                                    <div class="flex items-center">
-                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                        </svg>
-                                                        {{ $booking->start_time->format('g:i A') }} - {{ $booking->end_time->format('g:i A') }}
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                                        </svg>
-                                                        {{ $booking->number_of_student }} {{ __('students') }}
-                                                    </div>
                                                 </div>
-                                                <p class="mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-1">
-                                                    {{ $booking->purpose }}
-                                                </p>
+                                                <div class="flex md:flex-col gap-2">
+                                                    <template x-if="booking.status === null">
+                                                        <button @click="openEditModal(booking)" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition text-center">
+                                                            {{ __('Edit') }}
+                                                        </button>
+                                                    </template>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="flex md:flex-col gap-2">
-                                        @if($booking->status === null)
-                                            <button @click="openEditModal({
-                                                id: {{ $booking->id }},
-                                                room_id: {{ $booking->room_id }},
-                                                date: '{{ $booking->start_time->format('Y-m-d') }}',
-                                                start_time: '{{ $booking->start_time->format('H:i') }}',
-                                                end_time: '{{ $booking->end_time->format('H:i') }}',
-                                                number_of_student: {{ $booking->number_of_student }},
-                                                equipment_needed: '{{ $booking->equipment_needed }}',
-                                                purpose: {{ json_encode($booking->purpose) }}
-                                            })" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition text-center">
-                                                {{ __('Edit') }}
-                                            </button>
-                                        @endif
-                                        @if(auth()->user()->isAdmin())
-                                            @include('_approve-disapprove', ['booking' => $booking])
-                                        @endif
-                                    </div>
+                                    </template>
                                 </div>
                             </div>
-                            @endforeach
-                        </div>
-                    @endif
+                        </template>
+                    </div>
                 </div>
             </div>
 
@@ -196,6 +240,16 @@
     <script>
     function dashboardBookings() {
         return {
+            // Bookings data
+            bookings: window.dashboardBookingsData || [],
+            rooms: window.dashboardRoomsData || [],
+
+            // Filter state
+            showRejected: false,
+            monthFilter: 'all',
+            expandedMonths: [],  // Track which months are expanded
+
+            // Edit modal state
             showEditModal: false,
             editBookingId: null,
             editBookingData: {
@@ -211,16 +265,120 @@
             editErrors: {},
             editGeneralError: '',
             isSubmitting: false,
-            rooms: @json(\App\Models\Room::all()),
+
+            // Filtered bookings getter
+            get filteredBookings() {
+                let filtered = this.bookings;
+
+                // Filter by rejected status
+                if (!this.showRejected) {
+                    filtered = filtered.filter(b => b.status !== false);
+                }
+
+                // Filter by month
+                if (this.monthFilter !== 'all') {
+                    filtered = filtered.filter(b => {
+                        const bookingDate = new Date(b.start_time);
+                        const [year, month] = this.monthFilter.split('-');
+                        return bookingDate.getFullYear() === parseInt(year) &&
+                               bookingDate.getMonth() + 1 === parseInt(month);
+                    });
+                }
+
+                return filtered;
+            },
+
+            // Month options getter (next 6 months)
+            get monthOptions() {
+                const options = [];
+                const now = new Date();
+                for (let i = 0; i < 6; i++) {
+                    const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
+                    options.push({
+                        value: `${date.getFullYear()}-${date.getMonth() + 1}`,
+                        label: date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' })
+                    });
+                }
+                return options;
+            },
+
+            // Grouped bookings by month
+            get groupedBookings() {
+                const groups = {};
+
+                this.filteredBookings.forEach(booking => {
+                    const date = new Date(booking.start_time);
+                    const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+                    const label = date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
+
+                    if (!groups[key]) {
+                        groups[key] = {
+                            key: key,
+                            label: label,
+                            bookings: []
+                        };
+                    }
+                    groups[key].bookings.push(booking);
+                });
+
+                // Sort by date (newest first) and return as array
+                return Object.values(groups).sort((a, b) => {
+                    const [aYear, aMonth] = a.key.split('-').map(Number);
+                    const [bYear, bMonth] = b.key.split('-').map(Number);
+                    return (bYear * 12 + bMonth) - (aYear * 12 + aMonth);
+                });
+            },
+
+            // Initialize expanded months (first month expanded by default)
+            init() {
+                if (this.groupedBookings.length > 0) {
+                    this.expandedMonths = [this.groupedBookings[0].key];
+                }
+            },
+
+            // Toggle month expansion
+            toggleMonth(key) {
+                const index = this.expandedMonths.indexOf(key);
+                if (index === -1) {
+                    this.expandedMonths.push(key);
+                } else {
+                    this.expandedMonths.splice(index, 1);
+                }
+            },
+
+            // Check if month is expanded
+            isMonthExpanded(key) {
+                return this.expandedMonths.includes(key);
+            },
+
+            // Date formatting helpers
+            formatDate(datetime) {
+                return new Date(datetime).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            },
+
+            formatTime(datetime) {
+                return new Date(datetime).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            },
 
             openEditModal(booking) {
                 this.editBookingId = booking.id;
 
+                const startDate = new Date(booking.start_time);
+                const endDate = new Date(booking.end_time);
+
                 this.editBookingData = {
                     room_id: booking.room_id,
-                    date: booking.date,
-                    start_time: booking.start_time,
-                    end_time: booking.end_time,
+                    date: startDate.toISOString().split('T')[0],
+                    start_time: startDate.toTimeString().slice(0, 5),
+                    end_time: endDate.toTimeString().slice(0, 5),
                     number_of_student: booking.number_of_student,
                     equipment_needed: booking.equipment_needed || '',
                     purpose: booking.purpose
