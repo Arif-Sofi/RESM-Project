@@ -65,6 +65,7 @@ class BookingController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => $error], 422);
             }
+
             return back()->withErrors(['booking' => $error]);
         }
 
@@ -77,6 +78,7 @@ class BookingController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => $error], 422);
             }
+
             return back()->withErrors(['booking' => $error]);
         }
 
@@ -97,7 +99,7 @@ class BookingController extends Controller
             Mail::to(Auth::user()->email)->send(new BookingConfirmationMail($booking));
         } catch (\Exception $e) {
             // Log the error but don't crash the booking creation
-            \Log::error('Failed to send booking confirmation email: ' . $e->getMessage());
+            \Log::error('Failed to send booking confirmation email: '.$e->getMessage());
             // Optionally add a flash message
             if (! $request->expectsJson()) {
                 session()->flash('warning', 'Booking created but email notification failed to send.');
@@ -109,7 +111,7 @@ class BookingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Booking created successfully!',
-                'booking' => $booking->load(['room', 'user'])
+                'booking' => $booking->load(['room', 'user']),
             ], 201);
         }
 
@@ -149,9 +151,10 @@ class BookingController extends Controller
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'The selected time slot is no longer available. Please choose another time.'
+                    'message' => 'The selected time slot is no longer available. Please choose another time.',
                 ], 422);
             }
+
             return back()->withErrors(['booking' => 'The selected time slot is no longer available. Please choose another time.'])->withInput();
         }
 
@@ -170,7 +173,7 @@ class BookingController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Booking updated successfully!',
-                'booking' => $booking->load(['room', 'user'])
+                'booking' => $booking->load(['room', 'user']),
             ]);
         }
 
@@ -301,7 +304,7 @@ class BookingController extends Controller
             'end_time' => 'required|date|after:start_time',
         ]);
 
-        $isAvailable = !$this->bookingService->isClash(
+        $isAvailable = ! $this->bookingService->isClash(
             $request->room_id,
             Carbon::parse($request->start_time),
             Carbon::parse($request->end_time),
@@ -312,7 +315,7 @@ class BookingController extends Controller
             'available' => $isAvailable,
             'message' => $isAvailable
                 ? 'This time slot is available'
-                : 'This time slot is already booked'
+                : 'This time slot is already booked',
         ]);
     }
 
@@ -333,7 +336,7 @@ class BookingController extends Controller
         $availableRooms = [];
 
         foreach ($allRooms as $room) {
-            $isAvailable = !$this->bookingService->isClash($room->id, $startTime, $endTime);
+            $isAvailable = ! $this->bookingService->isClash($room->id, $startTime, $endTime);
             if ($isAvailable) {
                 $availableRooms[] = $room;
             }
@@ -341,7 +344,7 @@ class BookingController extends Controller
 
         return response()->json([
             'available_rooms' => $availableRooms,
-            'count' => count($availableRooms)
+            'count' => count($availableRooms),
         ]);
     }
 }

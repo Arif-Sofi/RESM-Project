@@ -26,7 +26,7 @@ class BookingService
         // status = false (rejected) should NOT block the slot
         $query->where(function ($q) {
             $q->where('status', true)
-              ->orWhereNull('status');
+                ->orWhereNull('status');
         });
 
         // Two bookings clash if they overlap in time

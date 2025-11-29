@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Check if Docker container is running
+if docker compose ps --status running 2>/dev/null | grep -q "resm_app"; then
+    echo "Running Pint via Docker..."
+    docker compose exec -T app ./vendor/bin/pint
+else
+    # Fallback to local pint
+    if [ -f "./vendor/bin/pint" ]; then
+        echo "Running Pint locally..."
+        ./vendor/bin/pint
+    else
+        echo "Error: Neither Docker container nor local vendor/bin/pint found"
+        echo "Please run 'docker compose up -d' or 'composer install'"
+        exit 1
+    fi
+fi
+
+git add -u
