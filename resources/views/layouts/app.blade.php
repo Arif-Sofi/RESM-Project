@@ -67,5 +67,31 @@
             </main>
         </div>
         @stack('scripts')
+
+        {{-- Toast Notifications --}}
+        <x-toast />
+
+        {{-- Confirmation Modal --}}
+        <x-confirmation-modal />
+
+        {{-- Flash Message to Toast Bridge --}}
+        @if(session('success') || session('error') || session('warning') || session('info'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                @if(session('success'))
+                    window.showSuccess(@json(session('success')));
+                @endif
+                @if(session('error'))
+                    window.showError(@json(session('error')));
+                @endif
+                @if(session('warning'))
+                    window.showWarning(@json(session('warning')));
+                @endif
+                @if(session('info'))
+                    window.showInfo(@json(session('info')));
+                @endif
+            });
+        </script>
+        @endif
     </body>
 </html>
