@@ -3,21 +3,22 @@
     <div class="mb-6 flex flex-col md:flex-row gap-4">
         <div class="flex-1">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Search') }}</label>
-            <input type="text" x-model="searchQuery" placeholder="{{ __('Search by room, user, or purpose...') }}"
+            <input type="text" x-model="searchQuery" @input="resetPagination()" placeholder="{{ __('Search by room, user, or purpose...') }}"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary">
         </div>
         <div class="w-full md:w-48">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Status') }}</label>
-            <select x-model="statusFilter"
+            <select x-model="statusFilter" @change="resetPagination()"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary">
                 <option value="all">{{ __('All Statuses') }}</option>
                 <option value="pending">{{ __('Pending') }}</option>
                 <option value="approved">{{ __('Approved') }}</option>
+                <option value="rejected">{{ __('Rejected') }}</option>
             </select>
         </div>
         <div class="w-full md:w-48">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Sort By') }}</label>
-            <select x-model="sortBy"
+            <select x-model="sortBy" @change="resetPagination()"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary">
                 <option value="date_desc">{{ __('Date (Newest)') }}</option>
                 <option value="date_asc">{{ __('Date (Oldest)') }}</option>
@@ -29,7 +30,8 @@
 
     <!-- Results Count -->
     <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        <span x-text="`Showing ${filteredBookings.length} of ${bookings.length} bookings`"></span>
+        <span x-text="`Showing ${paginatedBookings.length} of ${filteredBookings.length} bookings`"></span>
+        <span x-show="filteredBookings.length !== bookings.length" x-text="` (${bookings.length} total)`" class="text-gray-400"></span>
     </div>
 
     <!-- Bookings Table - Desktop -->
@@ -77,7 +79,7 @@
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ __('Actions') }}</th>
                 </tr>
             </thead>
-            <template x-for="booking in filteredBookings" :key="booking.id">
+            <template x-for="booking in paginatedBookings" :key="booking.id">
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -133,7 +135,7 @@
 
     <!-- Bookings Cards - Mobile -->
     <div class="md:hidden space-y-4">
-        <template x-for="booking in filteredBookings" :key="booking.id">
+        <template x-for="booking in paginatedBookings" :key="booking.id">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                 <div class="flex justify-between items-start mb-3">
                     <div>
@@ -167,8 +169,27 @@
                 </div>
             </div>
         </template>
-        <div x-show="filteredBookings.length === 0" class="text-center py-12 text-gray-500 dark:text-gray-400">
+        <div x-show="paginatedBookings.length === 0" class="text-center py-12 text-gray-500 dark:text-gray-400">
             {{ __('No bookings found') }}
+        </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div x-show="totalPages > 1" class="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
+        <div class="flex items-center gap-2">
+            <button @click="prevPage()" :disabled="currentPage === 1"
+                class="px-3 py-2 text-sm font-medium rounded-md border transition"
+                :class="currentPage === 1 ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'">
+                {{ __('Previous') }}
+            </button>
+            <button @click="nextPage()" :disabled="currentPage === totalPages"
+                class="px-3 py-2 text-sm font-medium rounded-md border transition"
+                :class="currentPage === totalPages ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'">
+                {{ __('Next') }}
+            </button>
+        </div>
+        <div class="text-sm text-gray-600 dark:text-gray-400">
+            <span x-text="`Page ${currentPage} of ${totalPages}`"></span>
         </div>
     </div>
 </div>
