@@ -463,7 +463,8 @@
             async deleteBooking() {
                 if (!this.editBookingId) return;
 
-                if (!confirm('{{ __("Are you sure you want to delete this booking? This action cannot be undone.") }}')) {
+                const confirmed = await window.confirmDelete('{{ __("this booking") }}');
+                if (!confirmed) {
                     return;
                 }
 

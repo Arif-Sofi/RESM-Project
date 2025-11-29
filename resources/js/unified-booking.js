@@ -380,7 +380,8 @@ export default function (rooms, authUserId) {
         },
 
         async cancelBooking(bookingId) {
-            if (!confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+            const confirmed = await window.confirmCancel('this booking');
+            if (!confirmed) {
                 return;
             }
 
@@ -399,14 +400,14 @@ export default function (rooms, authUserId) {
                     this.bookings = this.bookings.filter(b => b.id !== bookingId);
                     this.closeViewModal();
                     this.loadCalendarEvents();
-                    alert('Booking cancelled successfully!');
+                    window.showSuccess('Booking cancelled successfully!');
                 } else {
                     const data = await response.json();
-                    alert(data.message || 'Failed to cancel booking.');
+                    window.showError(data.message || 'Failed to cancel booking.');
                 }
             } catch (error) {
                 console.error('Error cancelling booking:', error);
-                alert('An error occurred while cancelling the booking.');
+                window.showError('An error occurred while cancelling the booking.');
             }
         },
 
@@ -449,7 +450,8 @@ export default function (rooms, authUserId) {
         async deleteBooking() {
             if (!this.editBookingId) return;
 
-            if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+            const confirmed = await window.confirmDelete('this booking');
+            if (!confirmed) {
                 return;
             }
 
@@ -468,7 +470,7 @@ export default function (rooms, authUserId) {
                 if (response.ok || response.redirected) {
                     this.closeEditModal();
                     this.loadCalendarEvents();
-                    alert('Booking deleted successfully!');
+                    window.showSuccess('Booking deleted successfully!');
                 } else {
                     const data = await response.json();
                     this.editGeneralError = data.message || 'Failed to delete booking.';
@@ -553,8 +555,8 @@ export default function (rooms, authUserId) {
                     this.closeEditModal();
                     this.loadCalendarEvents();
 
-                    // Show success message (you can enhance this with a toast notification)
-                    alert(data.message || 'Booking updated successfully!');
+                    // Show success toast notification
+                    window.showSuccess(data.message || 'Booking updated successfully!');
                 } else {
                     // Validation errors
                     if (data.errors) {
@@ -677,8 +679,8 @@ export default function (rooms, authUserId) {
                     this.closeCreateModal();
                     this.loadCalendarEvents();
 
-                    // Show success message (you can enhance this with a toast notification)
-                    alert(data.message || 'Booking created successfully!');
+                    // Show success toast notification
+                    window.showSuccess(data.message || 'Booking created successfully!');
                 } else {
                     // Validation errors
                     if (data.errors) {

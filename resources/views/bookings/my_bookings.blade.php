@@ -226,7 +226,8 @@
             },
 
             async cancelBooking(bookingId) {
-                if (!confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+                const confirmed = await window.confirmCancel('this booking');
+                if (!confirmed) {
                     return;
                 }
 
@@ -244,14 +245,14 @@
                         // Remove the booking from the local list
                         this.bookings = this.bookings.filter(b => b.id !== bookingId);
                         this.closeViewModal();
-                        alert('Booking cancelled successfully!');
+                        window.showSuccess('Booking cancelled successfully!');
                     } else {
                         const data = await response.json();
-                        alert(data.message || 'Failed to cancel booking.');
+                        window.showError(data.message || 'Failed to cancel booking.');
                     }
                 } catch (error) {
                     console.error('Error cancelling booking:', error);
-                    alert('An error occurred while cancelling the booking.');
+                    window.showError('An error occurred while cancelling the booking.');
                 }
             },
 
@@ -358,7 +359,7 @@
                             this.bookings[index] = data.booking;
                         }
                         this.closeEditModal();
-                        alert(data.message || 'Booking updated successfully!');
+                        window.showSuccess(data.message || 'Booking updated successfully!');
                     } else {
                         if (data.errors) {
                             this.editErrors = data.errors;
@@ -377,7 +378,8 @@
             async deleteBooking() {
                 if (!this.editBookingId) return;
 
-                if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+                const confirmed = await window.confirmDelete('this booking');
+                if (!confirmed) {
                     return;
                 }
 
@@ -397,7 +399,7 @@
                         // Remove the booking from the local list
                         this.bookings = this.bookings.filter(b => b.id !== this.editBookingId);
                         this.closeEditModal();
-                        alert('Booking deleted successfully!');
+                        window.showSuccess('Booking deleted successfully!');
                     } else {
                         const data = await response.json();
                         this.editGeneralError = data.message || 'Failed to delete booking.';

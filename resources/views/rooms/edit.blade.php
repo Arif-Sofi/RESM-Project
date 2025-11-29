@@ -81,9 +81,10 @@
     </div>
 
     <script>
-        document.querySelector('button[onclick*="delete-form"]').addEventListener('click', function(e) {
+        document.querySelector('button[onclick*="delete-form"]').addEventListener('click', async function(e) {
             e.preventDefault();
-            if (confirm('{{ __("Are you sure you want to delete this room? This action cannot be undone.") }}')) {
+            const confirmed = await window.confirmDelete('{{ __("this room") }}');
+            if (confirmed) {
                 document.getElementById('delete-form').submit();
             }
         });
