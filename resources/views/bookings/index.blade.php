@@ -27,11 +27,11 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
                     <div class="flex gap-2">
                         <a href="{{ route('bookings.my-bookings') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-200 uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-gray-600 transition">
-                            {{ __('My Bookings') }}
+                            {{ __('messages.my_bookings') }}
                         </a>
                         @can('viewApprovals', App\Models\Booking::class)
                         <a href="{{ route('admin.approvals') }}" class="inline-flex items-center px-4 py-2 bg-primary dark:bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-80 transition">
-                            {{ __('Pending Approvals') }}
+                            {{ __('messages.pending_approvals') }}
                             @if($pendingCount = App\Models\Booking::whereNull('status')->count())
                             <span class="ml-2 px-2 py-0.5 bg-red-500 text-white rounded-full text-xs">{{ $pendingCount }}</span>
                             @endif
@@ -41,10 +41,10 @@
 
                     <div class="flex gap-2">
                         <button @click="toggleView('calendar')" :class="currentView === 'calendar' ? 'bg-primary text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200'" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-opacity-80 transition">
-                            {{ __('Calendar View') }}
+                            {{ __('messages.calendar_view') }}
                         </button>
                         <button @click="toggleView('list')" :class="currentView === 'list' ? 'bg-primary text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200'" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-opacity-80 transition">
-                            {{ __('List View') }}
+                            {{ __('messages.list_view') }}
                         </button>
                     </div>
                 </div>
@@ -55,16 +55,16 @@
                     <!-- Left Sidebar - Room List -->
                     <div class="lg:col-span-1 space-y-4">
                         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-                            <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-4">{{ __('Rooms') }}</h3>
+                            <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-4">{{ __('messages.rooms') }}</h3>
 
                             <!-- Room Search -->
                             <div class="mb-4">
-                                <input type="text" x-model="roomSearch" placeholder="{{ __('Search rooms...') }}" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary">
+                                <input type="text" x-model="roomSearch" placeholder="{{ __('messages.search_rooms') }}" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary">
                             </div>
 
                             <!-- Show All Rooms Button -->
                             <button @click="clearRoomSelection()" class="w-full mb-2 px-3 py-2 text-left rounded-md text-sm font-medium transition" :class="selectedRooms.length === 0 ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'">
-                                <span class="block font-semibold">{{ __('All Rooms') }}</span>
+                                <span class="block font-semibold">{{ __('messages.all_rooms') }}</span>
                             </button>
 
                             <!-- Selected rooms count -->
@@ -90,19 +90,19 @@
 
                         <!-- Legend -->
                         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-                            <h4 class="font-semibold text-sm text-gray-800 dark:text-gray-200 mb-3">{{ __('Status Legend') }}</h4>
+                            <h4 class="font-semibold text-sm text-gray-800 dark:text-gray-200 mb-3">{{ __('messages.status_legend') }}</h4>
                             <div class="space-y-2 text-xs">
                                 <div class="flex items-center gap-2">
                                     <span class="w-4 h-4 rounded bg-green-500"></span>
-                                    <span class="text-gray-700 dark:text-gray-300">{{ __('Approved') }}</span>
+                                    <span class="text-gray-700 dark:text-gray-300">{{ __('messages.approved') }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="w-4 h-4 rounded bg-yellow-500"></span>
-                                    <span class="text-gray-700 dark:text-gray-300">{{ __('Pending') }}</span>
+                                    <span class="text-gray-700 dark:text-gray-300">{{ __('messages.pending') }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="w-4 h-4 rounded border-2 border-blue-500 bg-transparent"></span>
-                                    <span class="text-gray-700 dark:text-gray-300">{{ __('Your Booking') }}</span>
+                                    <span class="text-gray-700 dark:text-gray-300">{{ __('messages.your_booking') }}</span>
                                 </div>
                             </div>
                         </div>
