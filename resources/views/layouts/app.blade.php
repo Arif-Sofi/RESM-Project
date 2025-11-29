@@ -43,6 +43,15 @@
         <div class="min-h-screen bg-base dark:bg-primary w-full">
             @include('layouts.navigation')
 
+            <!-- Breadcrumb -->
+            @isset($breadcrumb)
+                <div class="bg-base dark:bg-primary w-full">
+                    <div class="max-w-[1920px] mx-auto pt-4 px-4 sm:px-6 lg:px-8">
+                        {{ $breadcrumb }}
+                    </div>
+                </div>
+            @endisset
+
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-base dark:bg-primary shadow w-full">

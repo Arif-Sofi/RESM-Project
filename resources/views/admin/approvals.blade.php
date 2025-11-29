@@ -1,4 +1,10 @@
 <x-app-layout>
+    <x-slot name="breadcrumb">
+        <x-breadcrumb :items="[
+            ['label' => __('Pending Approvals'), 'active' => true]
+        ]" />
+    </x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-base leading-tight">
             {{ __('Pending Approvals') }}
