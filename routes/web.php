@@ -15,8 +15,9 @@ Route::get('/dashboard', function () {
         ->where('start_time', '>=', now())
         ->orderBy('start_time', 'asc')
         ->get();
+    $rooms = \App\Models\Room::all();
 
-    return view('dashboard', compact('bookings'));
+    return view('dashboard', compact('bookings', 'rooms'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

@@ -14,7 +14,7 @@
     <!-- Pass bookings data to JavaScript -->
     <script>
         window.dashboardBookingsData = @json($bookings);
-        window.dashboardRoomsData = @json(\App\Models\Room::all());
+        window.dashboardRoomsData = @json($rooms);
     </script>
 
     <div class="w-full py-6" x-data="dashboardBookings()">
