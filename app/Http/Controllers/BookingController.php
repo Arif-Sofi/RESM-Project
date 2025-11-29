@@ -188,6 +188,13 @@ class BookingController extends Controller
         $this->authorize('delete', $booking);
         $booking->delete();
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Booking deleted successfully!',
+            ]);
+        }
+
         return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully!');
     }
 
@@ -252,7 +259,9 @@ class BookingController extends Controller
             ->orderBy('start_time', 'desc')
             ->get();
 
-        return view('bookings.my_bookings', compact('bookings'));
+        $rooms = Room::all();
+
+        return view('bookings.my_bookings', compact('bookings', 'rooms'));
     }
 
     /**
@@ -260,7 +269,7 @@ class BookingController extends Controller
      */
     public function approvals()
     {
-        $this->authorize('viewAny', Booking::class);
+        $this->authorize('viewApprovals', Booking::class);
 
         $pendingBookings = Booking::whereNull('status')
             ->with(['user', 'room'])
