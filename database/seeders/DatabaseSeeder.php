@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'admin',
             'role_id' => 1,
-            'email' => 'admin@admin.com',
+            'email' => 'sksaujanautama123@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('admin'),
             'remember_token' => Str::random(10),
