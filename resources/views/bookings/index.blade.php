@@ -1,4 +1,10 @@
 <x-app-layout>
+    <x-slot name="breadcrumb">
+        <x-breadcrumb :items="[
+            ['label' => __('Bookings'), 'active' => true]
+        ]" />
+    </x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-base leading-tight">
             {{ __('navigation.bookings') }}
@@ -23,7 +29,7 @@
                         <a href="{{ route('bookings.my-bookings') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-200 uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-gray-600 transition">
                             {{ __('My Bookings') }}
                         </a>
-                        @can('viewAny', App\Models\Booking::class)
+                        @can('viewApprovals', App\Models\Booking::class)
                         <a href="{{ route('admin.approvals') }}" class="inline-flex items-center px-4 py-2 bg-primary dark:bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-80 transition">
                             {{ __('Pending Approvals') }}
                             @if($pendingCount = App\Models\Booking::whereNull('status')->count())
@@ -57,16 +63,26 @@
                             </div>
 
                             <!-- Show All Rooms Button -->
-                            <button @click="selectedRoom = null; loadCalendarEvents()" class="w-full mb-2 px-3 py-2 text-left rounded-md text-sm font-medium transition" :class="selectedRoom === null ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'">
+                            <button @click="clearRoomSelection()" class="w-full mb-2 px-3 py-2 text-left rounded-md text-sm font-medium transition" :class="selectedRooms.length === 0 ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'">
                                 <span class="block font-semibold">{{ __('All Rooms') }}</span>
                             </button>
 
-                            <!-- Room List -->
+                            <!-- Selected rooms count -->
+                            <div x-show="selectedRooms.length > 0" class="mb-2 text-xs text-gray-600 dark:text-gray-400">
+                                <span x-text="`${selectedRooms.length} room(s) selected`"></span>
+                            </div>
+
+                            <!-- Room List (複数選択対応) -->
                             <div class="space-y-2 max-h-[500px] overflow-y-auto">
                                 <template x-for="room in filteredRooms" :key="room.id">
-                                    <button @click="selectRoom(room)" class="w-full px-3 py-3 text-left rounded-md text-sm transition hover:shadow-md" :class="selectedRoom?.id === room.id ? 'bg-primary text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'">
-                                        <span class="block font-semibold" x-text="room.name"></span>
-                                        <span class="block text-xs opacity-75" x-text="room.location_details"></span>
+                                    <button @click="selectRoom(room)" class="w-full px-3 py-3 text-left rounded-md text-sm transition hover:shadow-md" :class="isRoomSelected(room) ? 'bg-primary text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'">
+                                        <div class="flex items-center gap-2">
+                                            <span x-show="isRoomSelected(room)" class="text-white">✓</span>
+                                            <div>
+                                                <span class="block font-semibold" x-text="room.name"></span>
+                                                <span class="block text-xs opacity-75" x-text="room.location_details"></span>
+                                            </div>
+                                        </div>
                                     </button>
                                 </template>
                             </div>
@@ -85,10 +101,6 @@
                                     <span class="text-gray-700 dark:text-gray-300">{{ __('Pending') }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="w-4 h-4 rounded bg-red-500"></span>
-                                    <span class="text-gray-700 dark:text-gray-300">{{ __('Rejected') }}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
                                     <span class="w-4 h-4 rounded border-2 border-blue-500 bg-transparent"></span>
                                     <span class="text-gray-700 dark:text-gray-300">{{ __('Your Booking') }}</span>
                                 </div>
@@ -104,14 +116,8 @@
                             <div id="calendar" class="min-h-[600px]"></div>
                         </div>
 
-                        <!-- Edit Booking Modal -->
-                        @include('bookings._edit_modal')
-
-                        <!-- Create Booking Modal -->
-                        @include('bookings._create_modal')
-
                         <!-- Available Rooms (shows when time slot selected) -->
-                        <div x-show="selectedDate && !selectedRoom && availableRooms.length > 0" x-transition class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+                        <div x-show="selectedDate && selectedRooms.length === 0 && availableRooms.length > 0" x-transition class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
                             <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200 mb-4">
                                 {{ __('Available Rooms for Selected Time') }}
                             </h3>
@@ -132,6 +138,11 @@
                 <div x-show="currentView === 'list'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                     @include('bookings._table_list')
                 </div>
+
+                <!-- Modals (outside of view-specific divs so they're always accessible) -->
+                @include('bookings._view_modal')
+                @include('bookings._edit_modal')
+                @include('bookings._create_modal')
             </div>
         </div>
     </div>

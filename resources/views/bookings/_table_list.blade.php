@@ -13,7 +13,6 @@
                 <option value="all">{{ __('All Statuses') }}</option>
                 <option value="pending">{{ __('Pending') }}</option>
                 <option value="approved">{{ __('Approved') }}</option>
-                <option value="rejected">{{ __('Rejected') }}</option>
             </select>
         </div>
         <div class="w-full md:w-48">
@@ -38,18 +37,48 @@
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ __('Room') }}</th>
+                    <th @click="toggleSort('room')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 select-none">
+                        <div class="flex items-center gap-1">
+                            {{ __('Room') }}
+                            <span x-show="sortBy === 'room_asc'" class="text-primary">↑</span>
+                            <span x-show="sortBy === 'room_desc'" class="text-primary">↓</span>
+                        </div>
+                    </th>
                     @can('viewAny', App\Models\Booking::class)
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ __('User') }}</th>
+                    <th @click="toggleSort('user')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 select-none">
+                        <div class="flex items-center gap-1">
+                            {{ __('User') }}
+                            <span x-show="sortBy === 'user_asc'" class="text-primary">↑</span>
+                            <span x-show="sortBy === 'user_desc'" class="text-primary">↓</span>
+                        </div>
+                    </th>
                     @endcan
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ __('Date & Time') }}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ __('Purpose') }}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ __('Status') }}</th>
+                    <th @click="toggleSort('date')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 select-none">
+                        <div class="flex items-center gap-1">
+                            {{ __('Date & Time') }}
+                            <span x-show="sortBy === 'date_asc'" class="text-primary">↑</span>
+                            <span x-show="sortBy === 'date_desc'" class="text-primary">↓</span>
+                        </div>
+                    </th>
+                    <th @click="toggleSort('purpose')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 select-none">
+                        <div class="flex items-center gap-1">
+                            {{ __('Purpose') }}
+                            <span x-show="sortBy === 'purpose_asc'" class="text-primary">↑</span>
+                            <span x-show="sortBy === 'purpose_desc'" class="text-primary">↓</span>
+                        </div>
+                    </th>
+                    <th @click="toggleSort('status')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 select-none">
+                        <div class="flex items-center gap-1">
+                            {{ __('Status') }}
+                            <span x-show="sortBy === 'status_asc'" class="text-primary">↑</span>
+                            <span x-show="sortBy === 'status_desc'" class="text-primary">↓</span>
+                        </div>
+                    </th>
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ __('Actions') }}</th>
                 </tr>
             </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                <template x-for="booking in filteredBookings" :key="booking.id">
+            <template x-for="booking in filteredBookings" :key="booking.id">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="booking.room?.name || 'Unknown Room'"></div>
@@ -80,7 +109,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button @click="toggleDetails(booking.id)" class="text-primary hover:text-primary-dark dark:hover:text-primary-light mr-3">
+                            <button @click="openViewModal(booking)" class="text-primary hover:text-primary-dark dark:hover:text-primary-light mr-3">
                                 {{ __('View') }}
                             </button>
                             <template x-if="booking.user_id === {{ Auth::id() }} && booking.status === null">
@@ -90,60 +119,10 @@
                             </template>
                         </td>
                     </tr>
-                    <!-- Expandable Details Row -->
-                    <tr x-show="expandedBooking === booking.id" x-transition class="bg-gray-50 dark:bg-gray-900">
-                        <td colspan="{{ auth()->user()->can('viewAny', App\Models\Booking::class) ? '6' : '5' }}" class="px-6 py-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ __('Booking Details') }}</h4>
-                                    <dl class="space-y-2 text-sm">
-                                        <div>
-                                            <dt class="text-gray-500 dark:text-gray-400 inline">{{ __('Students:') }}</dt>
-                                            <dd class="text-gray-900 dark:text-gray-100 inline ml-2" x-text="booking.number_of_student"></dd>
-                                        </div>
-                                        <div>
-                                            <dt class="text-gray-500 dark:text-gray-400 inline">{{ __('Equipment:') }}</dt>
-                                            <dd class="text-gray-900 dark:text-gray-100 inline ml-2" x-text="booking.equipment_needed || 'None'"></dd>
-                                        </div>
-                                        <div>
-                                            <dt class="text-gray-500 dark:text-gray-400">{{ __('Purpose:') }}</dt>
-                                            <dd class="text-gray-900 dark:text-gray-100 mt-1" x-text="booking.purpose"></dd>
-                                        </div>
-                                        <div x-show="booking.status === false && booking.rejection_reason">
-                                            <dt class="text-gray-500 dark:text-gray-400">{{ __('Rejection Reason:') }}</dt>
-                                            <dd class="text-red-600 dark:text-red-400 mt-1" x-text="booking.rejection_reason"></dd>
-                                        </div>
-                                    </dl>
-                                </div>
-                                <div class="flex flex-col gap-2">
-                                    <template x-if="booking.status === null && {{ auth()->user()->isAdmin() ? 'true' : 'false' }}">
-                                        <div class="space-y-2">
-                                            <form :action="`/bookings/${booking.id}/approve`" method="POST">
-                                                @csrf
-                                                <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition text-sm font-medium">
-                                                    {{ __('Approve') }}
-                                                </button>
-                                            </form>
-                                            <button @click="showRejectModal(booking)" class="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition text-sm font-medium">
-                                                {{ __('Reject') }}
-                                            </button>
-                                        </div>
-                                    </template>
-                                    <template x-if="booking.user_id === {{ Auth::id() }}">
-                                        <form :action="`/bookings/${booking.id}`" method="POST" @submit="return confirm('{{ __('Are you sure you want to cancel this booking?') }}')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition text-sm font-medium">
-                                                {{ __('Cancel Booking') }}
-                                            </button>
-                                        </form>
-                                    </template>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </template>
-                <tr x-show="filteredBookings.length === 0">
+                </tbody>
+            </template>
+            <tbody x-show="filteredBookings.length === 0">
+                <tr>
                     <td colspan="{{ auth()->user()->can('viewAny', App\Models\Booking::class) ? '6' : '5' }}" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                         {{ __('No bookings found') }}
                     </td>
@@ -177,28 +156,13 @@
                 </div>
                 <p class="text-sm text-gray-700 dark:text-gray-300 mb-3 line-clamp-2" x-text="booking.purpose"></p>
                 <div class="flex gap-2">
-                    <button @click="toggleDetails(booking.id)" class="flex-1 px-3 py-2 text-sm bg-primary text-white rounded-md hover:bg-opacity-90 transition">
-                        <span x-text="expandedBooking === booking.id ? '{{ __('Hide Details') }}' : '{{ __('View Details') }}'"></span>
+                    <button @click="openViewModal(booking)" class="flex-1 px-3 py-2 text-sm bg-primary text-white rounded-md hover:bg-opacity-90 transition">
+                        {{ __('View Details') }}
                     </button>
-                </div>
-                <!-- Expandable Details -->
-                <div x-show="expandedBooking === booking.id" x-transition class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                    <div class="text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">{{ __('Students:') }}</span>
-                        <span class="text-gray-900 dark:text-gray-100 ml-2" x-text="booking.number_of_student"></span>
-                    </div>
-                    <div class="text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">{{ __('Equipment:') }}</span>
-                        <span class="text-gray-900 dark:text-gray-100 ml-2" x-text="booking.equipment_needed || 'None'"></span>
-                    </div>
-                    <template x-if="booking.status === null && {{ auth()->user()->isAdmin() ? 'true' : 'false' }}">
-                        <div class="flex gap-2 pt-2">
-                            <form :action="`/bookings/${booking.id}/approve`" method="POST" class="flex-1">
-                                @csrf
-                                <button type="submit" class="w-full px-3 py-2 bg-green-600 text-white rounded-md text-sm">{{ __('Approve') }}</button>
-                            </form>
-                            <button @click="showRejectModal(booking)" class="flex-1 px-3 py-2 bg-red-600 text-white rounded-md text-sm">{{ __('Reject') }}</button>
-                        </div>
+                    <template x-if="booking.user_id === {{ Auth::id() }} && booking.status === null">
+                        <button @click="openEditModal(booking)" class="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-opacity-90 transition">
+                            {{ __('Edit') }}
+                        </button>
                     </template>
                 </div>
             </div>

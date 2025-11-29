@@ -4,7 +4,7 @@ export default function (rooms, authUserId) {
         currentView: 'calendar',
         rooms: rooms,
         bookings: [],
-        selectedRoom: null,
+        selectedRooms: [], // 複数Room選択対応
         selectedDate: null,
         selectedStartTime: null,
         selectedEndTime: null,
@@ -14,6 +14,10 @@ export default function (rooms, authUserId) {
         calendar: null,
         clashError: '',
         authUserId: authUserId,
+
+        // View modal state
+        showViewModal: false,
+        viewBookingData: null,
 
         // Edit modal state
         showEditModal: false,
@@ -103,6 +107,19 @@ export default function (rooms, authUserId) {
             this.currentView = view;
         },
 
+        toggleSort(column) {
+            const ascKey = column + '_asc';
+            const descKey = column + '_desc';
+            if (this.sortBy === ascKey) {
+                this.sortBy = descKey;
+            } else if (this.sortBy === descKey) {
+                this.sortBy = ascKey;
+            } else {
+                // Default to descending for date, ascending for others
+                this.sortBy = column === 'date' ? descKey : ascKey;
+            }
+        },
+
         get filteredRooms() {
             if (!this.roomSearch) return this.rooms;
             const search = this.roomSearch.toLowerCase();
@@ -113,12 +130,24 @@ export default function (rooms, authUserId) {
         },
 
         selectRoom(room) {
-            this.selectedRoom = room;
+            // 複数選択対応: クリックでトグル
+            const index = this.selectedRooms.findIndex(r => r.id === room.id);
+            if (index === -1) {
+                this.selectedRooms.push(room);
+            } else {
+                this.selectedRooms.splice(index, 1);
+            }
             this.loadCalendarEvents();
+            // フィルターとして機能 - モーダルは開かない
+        },
 
-            // Open create modal instead of inline form
-            const today = new Date().toISOString().split('T')[0];
-            this.openCreateModal(room, today, null, null);
+        isRoomSelected(room) {
+            return this.selectedRooms.some(r => r.id === room.id);
+        },
+
+        clearRoomSelection() {
+            this.selectedRooms = [];
+            this.loadCalendarEvents();
         },
 
         selectRoomForBooking(room) {
@@ -157,25 +186,45 @@ export default function (rooms, authUserId) {
         },
 
         loadCalendarEvents() {
-            let url = '/api/bookings';
-            if (this.selectedRoom) {
-                url = `/bookings/room/${this.selectedRoom.id}`;
+            if (this.selectedRooms.length === 0) {
+                // 全Roomの予約を取得
+                fetch('/api/bookings')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.bookings = data;
+                        this.updateCalendarEvents();
+                    })
+                    .catch(error => console.error('Error loading bookings:', error));
+            } else if (this.selectedRooms.length === 1) {
+                // 1つのRoomのみ選択
+                fetch(`/bookings/room/${this.selectedRooms[0].id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.bookings = data;
+                        this.updateCalendarEvents();
+                    })
+                    .catch(error => console.error('Error loading bookings:', error));
+            } else {
+                // 複数Roomを選択: 並列でfetchして結合
+                const roomIds = this.selectedRooms.map(r => r.id);
+                Promise.all(roomIds.map(id =>
+                    fetch(`/bookings/room/${id}`).then(r => r.json())
+                ))
+                    .then(results => {
+                        this.bookings = results.flat();
+                        this.updateCalendarEvents();
+                    })
+                    .catch(error => console.error('Error loading bookings:', error));
             }
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    this.bookings = data;
-                    this.updateCalendarEvents();
-                })
-                .catch(error => console.error('Error loading bookings:', error));
         },
 
         updateCalendarEvents() {
-            const events = this.bookings.map(booking => {
+            // Rejectedの予約を除外（approved と pending のみ表示）
+            const filteredBookings = this.bookings.filter(booking => booking.status !== false);
+
+            const events = filteredBookings.map(booking => {
                 let color = '#fbbf24'; // yellow for pending
                 if (booking.status === true) color = '#10b981'; // green for approved
-                if (booking.status === false) color = '#ef4444'; // red for rejected
 
                 let borderColor = color;
                 let borderWidth = 1;
@@ -187,7 +236,7 @@ export default function (rooms, authUserId) {
                 }
 
                 // Handle cases where room or user data might be missing
-                const roomName = booking.room?.name || this.selectedRoom?.name || 'Room';
+                const roomName = booking.room?.name || 'Room';
                 const userName = booking.user?.name || '';
                 const title = userName ? `${roomName} - ${userName}` : roomName;
 
@@ -214,18 +263,14 @@ export default function (rooms, authUserId) {
             const startTime = selectInfo.startStr;
             const endTime = selectInfo.endStr;
 
-            // Store selected date/times for available rooms check
+            // Store selected date/times
             this.selectedDate = date;
             this.selectedStartTime = startTime;
             this.selectedEndTime = endTime;
 
-            // If no room selected, show available rooms section
-            if (!this.selectedRoom) {
-                this.checkAvailableRooms();
-            } else {
-                // Directly open modal with selected room and time
-                this.openCreateModal(this.selectedRoom, date, startTime, endTime);
-            }
+            // 常にモーダルを開く（1つの部屋が選択されていれば事前選択）
+            const preselectedRoom = this.selectedRooms.length === 1 ? this.selectedRooms[0] : null;
+            this.openCreateModal(preselectedRoom, date, startTime, endTime);
 
             this.calendar.unselect();
         },
@@ -238,7 +283,7 @@ export default function (rooms, authUserId) {
                 this.openEditModal(booking);
             } else {
                 // Show read-only details for other bookings
-                const roomName = booking.room?.name || this.selectedRoom?.name || 'Room';
+                const roomName = booking.room?.name || 'Room';
                 const statusText = booking.status === true ? 'Approved' : booking.status === false ? 'Rejected' : 'Pending';
                 alert(`Booking Details:\nRoom: ${roomName}\nTime: ${new Date(booking.start_time).toLocaleString()} - ${new Date(booking.end_time).toLocaleString()}\nStatus: ${statusText}\nPurpose: ${booking.purpose || 'N/A'}`);
             }
@@ -256,10 +301,10 @@ export default function (rooms, authUserId) {
         },
 
         checkAvailability() {
-            if (!this.selectedRoom || !this.selectedStartTime || !this.selectedEndTime) return;
+            if (this.selectedRooms.length === 0 || !this.selectedStartTime || !this.selectedEndTime) return;
 
-            // Handle selectedRoom being either an object or an ID
-            const roomId = typeof this.selectedRoom === 'object' ? this.selectedRoom.id : this.selectedRoom;
+            // Use the first selected room for availability check
+            const roomId = this.selectedRooms[0].id;
 
             fetch(`/api/bookings/check-availability`, {
                 method: 'POST',
@@ -321,6 +366,48 @@ export default function (rooms, authUserId) {
             }
         },
 
+        // View Modal Methods
+        openViewModal(booking) {
+            this.viewBookingData = booking;
+            this.showViewModal = true;
+        },
+
+        closeViewModal() {
+            this.showViewModal = false;
+            this.viewBookingData = null;
+        },
+
+        async cancelBooking(bookingId) {
+            if (!confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/bookings/${bookingId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Remove the booking from the local list
+                    this.bookings = this.bookings.filter(b => b.id !== bookingId);
+                    this.closeViewModal();
+                    this.loadCalendarEvents();
+                    alert('Booking cancelled successfully!');
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Failed to cancel booking.');
+                }
+            } catch (error) {
+                console.error('Error cancelling booking:', error);
+                alert('An error occurred while cancelling the booking.');
+            }
+        },
+
         // Edit Modal Methods
         openEditModal(booking) {
             this.editBookingId = booking.id;
@@ -355,6 +442,41 @@ export default function (rooms, authUserId) {
             this.editClashError = '';
             this.editGeneralError = '';
             this.isSubmitting = false;
+        },
+
+        async deleteBooking() {
+            if (!this.editBookingId) return;
+
+            if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+                return;
+            }
+
+            this.isSubmitting = true;
+
+            try {
+                const response = await fetch(`/bookings/${this.editBookingId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok || response.redirected) {
+                    this.closeEditModal();
+                    this.loadCalendarEvents();
+                    alert('Booking deleted successfully!');
+                } else {
+                    const data = await response.json();
+                    this.editGeneralError = data.message || 'Failed to delete booking.';
+                }
+            } catch (error) {
+                console.error('Error deleting booking:', error);
+                this.editGeneralError = 'An error occurred while deleting the booking.';
+            } finally {
+                this.isSubmitting = false;
+            }
         },
 
         updateEditTimes() {
@@ -575,6 +697,9 @@ export default function (rooms, authUserId) {
         get filteredBookings() {
             let filtered = this.bookings;
 
+            // Hide rejected bookings (same as calendar view)
+            filtered = filtered.filter(booking => booking.status !== false);
+
             // Filter by search
             if (this.searchQuery) {
                 const query = this.searchQuery.toLowerCase();
@@ -598,18 +723,39 @@ export default function (rooms, authUserId) {
             }
 
             // Sort
-            if (this.sortBy === 'date_desc') {
-                filtered.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
-            } else if (this.sortBy === 'date_asc') {
-                filtered.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
-            } else if (this.sortBy === 'room') {
-                filtered.sort((a, b) => a.room.name.localeCompare(b.room.name));
-            } else if (this.sortBy === 'status') {
-                filtered.sort((a, b) => {
-                    const statusOrder = { null: 0, true: 1, false: 2 };
-                    return statusOrder[a.status] - statusOrder[b.status];
-                });
-            }
+            filtered = [...filtered].sort((a, b) => {
+                switch (this.sortBy) {
+                    case 'date_desc':
+                        return new Date(b.start_time) - new Date(a.start_time);
+                    case 'date_asc':
+                        return new Date(a.start_time) - new Date(b.start_time);
+                    case 'room_asc':
+                        return (a.room?.name || '').localeCompare(b.room?.name || '');
+                    case 'room_desc':
+                        return (b.room?.name || '').localeCompare(a.room?.name || '');
+                    case 'user_asc':
+                        return (a.user?.name || '').localeCompare(b.user?.name || '');
+                    case 'user_desc':
+                        return (b.user?.name || '').localeCompare(a.user?.name || '');
+                    case 'purpose_asc':
+                        return (a.purpose || '').localeCompare(b.purpose || '');
+                    case 'purpose_desc':
+                        return (b.purpose || '').localeCompare(a.purpose || '');
+                    case 'status_asc':
+                        const statusOrderAsc = { null: 0, true: 1, false: 2 };
+                        return (statusOrderAsc[a.status] ?? 0) - (statusOrderAsc[b.status] ?? 0);
+                    case 'status_desc':
+                        const statusOrderDesc = { null: 0, true: 1, false: 2 };
+                        return (statusOrderDesc[b.status] ?? 0) - (statusOrderDesc[a.status] ?? 0);
+                    case 'room':
+                        return (a.room?.name || '').localeCompare(b.room?.name || '');
+                    case 'status':
+                        const statusOrd = { null: 0, true: 1, false: 2 };
+                        return (statusOrd[a.status] ?? 0) - (statusOrd[b.status] ?? 0);
+                    default:
+                        return 0;
+                }
+            });
 
             return filtered;
         },
