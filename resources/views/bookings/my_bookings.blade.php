@@ -72,6 +72,10 @@
             sortBy: 'date_desc',
             expandedBooking: null,
 
+            // Pagination state
+            currentPage: 1,
+            pageSize: 20,
+
             // View modal state
             showViewModal: false,
             viewBookingData: null,
@@ -161,6 +165,32 @@
                 });
 
                 return filtered;
+            },
+
+            // Paginated bookings for list view
+            get paginatedBookings() {
+                const startIndex = (this.currentPage - 1) * this.pageSize;
+                return this.filteredBookings.slice(startIndex, startIndex + this.pageSize);
+            },
+
+            get totalPages() {
+                return Math.ceil(this.filteredBookings.length / this.pageSize);
+            },
+
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                }
+            },
+
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                }
+            },
+
+            resetPagination() {
+                this.currentPage = 1;
             },
 
             toggleDetails(bookingId) {
