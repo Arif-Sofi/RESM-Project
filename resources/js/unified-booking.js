@@ -282,10 +282,8 @@ export default function (rooms, authUserId) {
             if (booking.user_id === this.authUserId && booking.status === null) {
                 this.openEditModal(booking);
             } else {
-                // Show read-only details for other bookings
-                const roomName = booking.room?.name || 'Room';
-                const statusText = booking.status === true ? 'Approved' : booking.status === false ? 'Rejected' : 'Pending';
-                alert(`Booking Details:\nRoom: ${roomName}\nTime: ${new Date(booking.start_time).toLocaleString()} - ${new Date(booking.end_time).toLocaleString()}\nStatus: ${statusText}\nPurpose: ${booking.purpose || 'N/A'}`);
+                // Open view modal for read-only details
+                this.openViewModal(booking);
             }
         },
 
