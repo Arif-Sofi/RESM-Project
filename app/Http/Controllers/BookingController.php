@@ -232,7 +232,7 @@ class BookingController extends Controller
 
         Mail::to($booking->user->email)->queue(new BookingApproved($booking));
 
-        return redirect()->route('bookings.index')->with('success', 'Booking approved successfully!');
+        return redirect()->route('admin.approvals')->with('success', 'Booking approved successfully!');
     }
 
     public function reject(Booking $booking)
@@ -245,7 +245,7 @@ class BookingController extends Controller
 
         Mail::to($booking->user->email)->queue(new BookingRejected($booking));
 
-        return redirect()->route('bookings.index')->with('success', 'Booking rejected successfully!');
+        return redirect()->route('admin.approvals')->with('success', 'Booking rejected successfully!');
     }
 
     /**
