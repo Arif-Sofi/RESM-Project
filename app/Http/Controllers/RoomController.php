@@ -24,7 +24,9 @@ class RoomController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', Room::class);
+
+        return view('rooms.create');
     }
 
     /**
@@ -53,7 +55,9 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
-        //
+        $this->authorize('update', $room);
+
+        return view('rooms.edit', compact('room'));
     }
 
     /**
