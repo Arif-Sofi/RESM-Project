@@ -213,7 +213,7 @@ test('admin can approve booking', function () {
 
     $response = $this->post(route('bookings.approve', $booking));
 
-    $response->assertRedirect(route('bookings.index'));
+    $response->assertRedirect(route('admin.approvals'));
 
     $booking->refresh();
     expect($booking->status)->toBeTrue();
@@ -242,7 +242,7 @@ test('admin can reject booking with reason', function () {
         'rejection_reason' => 'Room unavailable',
     ]);
 
-    $response->assertRedirect(route('bookings.index'));
+    $response->assertRedirect(route('admin.approvals'));
 
     $booking->refresh();
     expect($booking->status)->toBeFalse()
