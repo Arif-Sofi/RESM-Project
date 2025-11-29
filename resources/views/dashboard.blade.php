@@ -1,8 +1,6 @@
 <x-app-layout>
     <x-slot name="breadcrumb">
-        <x-breadcrumb :items="[
-            ['label' => __('Dashboard'), 'active' => true]
-        ]" />
+        <x-breadcrumb :items="[]" />
     </x-slot>
 
     <x-slot name="header">
@@ -15,6 +13,10 @@
     <script>
         window.dashboardBookingsData = @json($bookings);
         window.dashboardRoomsData = @json($rooms);
+        window.appLocale = '{{ app()->getLocale() }}';
+        window.localeMap = { 'en': 'en-US', 'ja': 'ja-JP', 'ms': 'ms-MY' };
+        window.bookingCountLabel = '{{ __("messages.bookings") }}';
+        window.studentsLabel = '{{ __("messages.students") }}';
     </script>
 
     <div class="w-full py-6" x-data="dashboardBookings()">
@@ -35,11 +37,11 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>
-                            {{ __('Create New Booking') }}
+                            {{ __('messages.create_new_booking') }}
                         </a>
                         <a href="{{ route('bookings.my-bookings') }}"
                             class="inline-flex items-center px-6 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition">
-                            {{ __('View All My Bookings') }}
+                            {{ __('messages.view_all_my_bookings') }}
                         </a>
                     </div>
                 </div>
@@ -51,8 +53,8 @@
                 <a href="{{ route('admin.approvals') }}" class="block bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg shadow-md hover:shadow-lg transition p-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h4 class="text-white font-bold text-lg mb-1">{{ __('Pending Approvals') }}</h4>
-                            <p class="text-yellow-100 text-sm">{{ __('Review booking requests') }}</p>
+                            <h4 class="text-white font-bold text-lg mb-1">{{ __('messages.pending_approvals') }}</h4>
+                            <p class="text-yellow-100 text-sm">{{ __('messages.review_booking_requests') }}</p>
                         </div>
                         <div class="flex items-center justify-center w-16 h-16 bg-white bg-opacity-30 rounded-full">
                             <span class="text-3xl font-bold text-white">{{ App\Models\Booking::whereNull('status')->count() }}</span>
@@ -62,8 +64,8 @@
                 <a href="{{ route('bookings.index') }}" class="block bg-gradient-to-r from-blue-400 to-blue-500 rounded-lg shadow-md hover:shadow-lg transition p-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h4 class="text-white font-bold text-lg mb-1">{{ __('All Bookings') }}</h4>
-                            <p class="text-blue-100 text-sm">{{ __('View calendar and manage bookings') }}</p>
+                            <h4 class="text-white font-bold text-lg mb-1">{{ __('messages.all_bookings') }}</h4>
+                            <p class="text-blue-100 text-sm">{{ __('messages.view_calendar_and_manage') }}</p>
                         </div>
                         <div class="flex items-center justify-center w-16 h-16 bg-white bg-opacity-30 rounded-full">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,10 +82,10 @@
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-bold text-xl text-gray-900 dark:text-gray-100">
-                            {{ __('Your Upcoming Bookings') }}
+                            {{ __('messages.your_upcoming_bookings') }}
                         </h3>
                         <a href="{{ route('bookings.my-bookings') }}" class="text-sm text-primary hover:text-primary-dark dark:hover:text-primary-light font-medium">
-                            {{ __('View All') }} →
+                            {{ __('messages.view_all') }} →
                         </a>
                     </div>
 
@@ -91,7 +93,7 @@
                     <div class="flex flex-wrap items-center gap-4 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
                         <!-- Show/Hide Rejected Toggle -->
                         <div class="flex items-center gap-3">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('Show Rejected') }}:</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.show_rejected') }}:</span>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" x-model="showRejected" class="sr-only peer">
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
@@ -100,9 +102,9 @@
 
                         <!-- Month Filter Dropdown -->
                         <div class="flex items-center gap-2">
-                            <label class="text-sm text-gray-600 dark:text-gray-400">{{ __('Month') }}:</label>
+                            <label class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.month') }}:</label>
                             <select x-model="monthFilter" class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-primary focus:border-primary">
-                                <option value="all">{{ __('All') }}</option>
+                                <option value="all">{{ __('messages.all') }}</option>
                                 <template x-for="option in monthOptions" :key="option.value">
                                     <option :value="option.value" x-text="option.label"></option>
                                 </template>
@@ -124,7 +126,7 @@
                             {{ __('dashboard.no_bookings_set') }}
                         </h4>
                         <p class="text-gray-600 dark:text-gray-400 mb-4">
-                            {{ __('Get started by creating your first room booking') }}
+                            {{ __('messages.get_started_booking') }}
                         </p>
                         <a href="{{ route('bookings.index') }}"
                             class="inline-flex items-center px-6 py-3 bg-primary border border-transparent rounded-md font-semibold text-sm text-white hover:bg-opacity-90 transition">
@@ -150,7 +152,7 @@
                                         </svg>
                                         <span class="font-semibold text-gray-800 dark:text-gray-200" x-text="group.label"></span>
                                         <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300"
-                                            x-text="`${group.bookings.length} 件`"></span>
+                                            x-text="`${group.bookings.length} ${window.bookingCountLabel}`"></span>
                                     </div>
                                 </button>
 
@@ -182,13 +184,13 @@
                                                             <div class="flex items-center gap-2 mb-1">
                                                                 <h4 class="font-semibold text-lg text-gray-900 dark:text-gray-100" x-text="booking.room?.name || 'Unknown Room'"></h4>
                                                                 <span x-show="booking.status === null" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
-                                                                    {{ __('Pending') }}
+                                                                    {{ __('messages.pending') }}
                                                                 </span>
                                                                 <span x-show="booking.status === true" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                                                                    {{ __('Approved') }}
+                                                                    {{ __('messages.approved') }}
                                                                 </span>
                                                                 <span x-show="booking.status === false" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">
-                                                                    {{ __('Rejected') }}
+                                                                    {{ __('messages.rejected') }}
                                                                 </span>
                                                             </div>
                                                             <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -208,7 +210,7 @@
                                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                                                                     </svg>
-                                                                    <span x-text="`${booking.number_of_student} students`"></span>
+                                                                    <span x-text="`${booking.number_of_student} ${window.studentsLabel}`"></span>
                                                                 </div>
                                                             </div>
                                                             <p class="mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-1" x-text="booking.purpose"></p>
@@ -218,7 +220,7 @@
                                                 <div class="flex md:flex-col gap-2">
                                                     <template x-if="booking.status === null">
                                                         <button @click="openEditModal(booking)" class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition text-center">
-                                                            {{ __('Edit') }}
+                                                            {{ __('messages.edit') }}
                                                         </button>
                                                     </template>
                                                 </div>
@@ -292,11 +294,12 @@
             get monthOptions() {
                 const options = [];
                 const now = new Date();
+                const locale = window.localeMap[window.appLocale] || 'en-US';
                 for (let i = 0; i < 6; i++) {
                     const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
                     options.push({
                         value: `${date.getFullYear()}-${date.getMonth() + 1}`,
-                        label: date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' })
+                        label: date.toLocaleDateString(locale, { year: 'numeric', month: 'long' })
                     });
                 }
                 return options;
@@ -305,11 +308,12 @@
             // Grouped bookings by month
             get groupedBookings() {
                 const groups = {};
+                const locale = window.localeMap[window.appLocale] || 'en-US';
 
                 this.filteredBookings.forEach(booking => {
                     const date = new Date(booking.start_time);
                     const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
-                    const label = date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
+                    const label = date.toLocaleDateString(locale, { year: 'numeric', month: 'long' });
 
                     if (!groups[key]) {
                         groups[key] = {
@@ -451,7 +455,42 @@
                     window.location.reload();
                 } catch (error) {
                     console.error('Update error:', error);
-                    this.editGeneralError = 'An error occurred while updating the booking.';
+                    this.editGeneralError = '{{ __("An error occurred while updating the booking.") }}';
+                    this.isSubmitting = false;
+                }
+            },
+
+            async deleteBooking() {
+                if (!this.editBookingId) return;
+
+                if (!confirm('{{ __("Are you sure you want to delete this booking? This action cannot be undone.") }}')) {
+                    return;
+                }
+
+                this.isSubmitting = true;
+
+                try {
+                    const response = await fetch(`/bookings/${this.editBookingId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok || response.redirected) {
+                        this.closeEditModal();
+                        // Reload the page to show updated data
+                        window.location.reload();
+                    } else {
+                        const data = await response.json();
+                        this.editGeneralError = data.message || '{{ __("Failed to delete booking.") }}';
+                    }
+                } catch (error) {
+                    console.error('Error deleting booking:', error);
+                    this.editGeneralError = '{{ __("An error occurred while deleting the booking.") }}';
+                } finally {
                     this.isSubmitting = false;
                 }
             }
