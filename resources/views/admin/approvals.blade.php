@@ -48,7 +48,7 @@
             </div>
 
             <!-- Pending Bookings List -->
-            <div class="space-y-4" x-data="{ expandedBooking: null }">
+            <div class="space-y-4" x-data="{ expandedBooking: null, showRejectModal: false, rejectBookingId: null, rejectBookingAction: '' }">
                 @foreach($pendingBookings as $booking)
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="p-6">
@@ -110,7 +110,7 @@
                                         {{ __('Approve') }}
                                     </button>
                                 </form>
-                                <button @click="showRejectModal{{ $booking->id }} = true" class="flex-1 md:flex-none px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition flex items-center justify-center">
+                                <button @click="showRejectModal = true; rejectBookingId = {{ $booking->id }}; rejectBookingAction = '{{ route('bookings.reject', $booking) }}'" class="flex-1 md:flex-none px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition flex items-center justify-center">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
@@ -142,35 +142,36 @@
                         </div>
                     </div>
 
-                    <!-- Reject Modal -->
-                    <div x-data="{ showRejectModal{{ $booking->id }}: false }" x-show="showRejectModal{{ $booking->id }}" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-                        <div class="flex items-center justify-center min-h-screen px-4">
-                            <div @click="showRejectModal{{ $booking->id }} = false" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-                            <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ __('Reject Booking') }}</h3>
-                                <form action="{{ route('bookings.reject', $booking) }}" method="POST">
-                                    @csrf
-                                    <div class="mb-4">
-                                        <label for="rejection_reason{{ $booking->id }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            {{ __('Rejection Reason') }} <span class="text-red-500">*</span>
-                                        </label>
-                                        <textarea id="rejection_reason{{ $booking->id }}" name="rejection_reason" rows="4" required placeholder="{{ __('Please provide a reason for rejection...') }}"
-                                            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:ring-primary focus:border-primary"></textarea>
-                                    </div>
-                                    <div class="flex justify-end gap-3">
-                                        <button type="button" @click="showRejectModal{{ $booking->id }} = false" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                                            {{ __('Cancel') }}
-                                        </button>
-                                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
-                                            {{ __('Reject Booking') }}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+                </div>
+                @endforeach
+
+                <!-- Shared Reject Modal -->
+                <div x-show="showRejectModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+                    <div class="flex items-center justify-center min-h-screen px-4">
+                        <div @click="showRejectModal = false" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ __('Reject Booking') }}</h3>
+                            <form :action="rejectBookingAction" method="POST">
+                                @csrf
+                                <div class="mb-4">
+                                    <label for="rejection_reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        {{ __('Rejection Reason') }} <span class="text-red-500">*</span>
+                                    </label>
+                                    <textarea id="rejection_reason" name="rejection_reason" rows="4" required placeholder="{{ __('Please provide a reason for rejection...') }}"
+                                        class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm focus:ring-primary focus:border-primary"></textarea>
+                                </div>
+                                <div class="flex justify-end gap-3">
+                                    <button type="button" @click="showRejectModal = false" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                                        {{ __('Cancel') }}
+                                    </button>
+                                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                                        {{ __('Reject Booking') }}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-                @endforeach
             </div>
             @endif
         </div>
