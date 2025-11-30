@@ -55,6 +55,7 @@
                             {{ __('messages.date') }} <span class="text-red-500">*</span>
                         </label>
                         <input type="date" id="create_event_date" x-model="createEventData.date" required
+                            min="{{ date('Y-m-d') }}"
                             class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full">
                         <p x-show="createErrors.start_at" x-text="createErrors.start_at" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
                     </div>

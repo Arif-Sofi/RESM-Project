@@ -54,6 +54,7 @@
                             {{ __('messages.date') }} <span class="text-red-500">*</span>
                         </label>
                         <input type="date" id="edit_event_date" x-model="editEventData.date" required
+                            min="{{ date('Y-m-d') }}"
                             class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full">
                         <p x-show="editErrors.start_at" x-text="editErrors.start_at" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
                     </div>
