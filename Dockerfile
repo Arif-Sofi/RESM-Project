@@ -76,6 +76,15 @@ fi\n\
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache\n\
 \n\
+
+# Fix permissions for PHP files (allows www-data to read new files created from host)\n\
+find /var/www/html/app -type f -name "*.php" -exec chmod 644 {} \\; 2>/dev/null || true\n\
+find /var/www/html/resources -type f \\( -name "*.php" -o -name "*.blade.php" -o -name "*.js" \\) -exec chmod 644 {} \\; 2>/dev/null || true\n\
+find /var/www/html/database -type f -name "*.php" -exec chmod 644 {} \\; 2>/dev/null || true\n\
+find /var/www/html/routes -type f -name "*.php" -exec chmod 644 {} \\; 2>/dev/null || true\n\
+find /var/www/html/tests -type f -name "*.php" -exec chmod 644 {} \\; 2>/dev/null || true\n\
+\n\
+
 # Execute the main command\n\
 exec "$@"' > /usr/local/bin/docker-entrypoint.sh \
     && chmod +x /usr/local/bin/docker-entrypoint.sh
