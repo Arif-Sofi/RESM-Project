@@ -52,6 +52,12 @@
 
                 <!-- Booking Info -->
                 <div class="space-y-4">
+
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <div class="text-sm text-gray-500 dark:text-gray-400">{{ __('Created By') }}</div>
+                        <div class="text-gray-900 dark:text-gray-100 mt-1" x-text="viewBookingData?.user?.name"></div>
+                    </div>
+
                     <!-- Room & Location -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
