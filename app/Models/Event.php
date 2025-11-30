@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +33,23 @@ class Event extends Model
         'start_at' => 'datetime',
         'end_at' => 'datetime',
     ];
+
+    /*
+    changes timezone to Asia/Kuala_Lumpur when retrieving from database(UTC)
+    */
+    protected function startAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::parse($value)->timezone('Asia/Kuala_Lumpur'),
+        );
+    }
+
+    protected function endAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::parse($value)->timezone('Asia/Kuala_Lumpur'),
+        );
+    }
 
     /**
      * このイベントを作成したユーザーを取得 (Userモデルとの1対多リレーション)
