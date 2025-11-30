@@ -15,7 +15,7 @@ window.Alpine = Alpine;
 // Register Alpine.js components
 document.addEventListener('alpine:init', () => {
     Alpine.data('unifiedBooking', (rooms, authUserId) => unifiedBookingComponent(rooms, authUserId));
-    Alpine.data('eventCalendar', (users, authUserId) => eventCalendarComponent(users, authUserId));
+    Alpine.data('eventCalendar', (users, authUserId, initialEvents = []) => eventCalendarComponent(users, authUserId, initialEvents));
 });
 
 Alpine.start();

@@ -73,7 +73,7 @@ if [ ! -d "node_modules/.bin" ]; then\n\
 fi\n\
 \n\
 # Fix permissions\n\
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/resources\n\
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache\n\
 \n\
 

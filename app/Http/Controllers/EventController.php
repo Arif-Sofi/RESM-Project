@@ -39,6 +39,25 @@ class EventController extends Controller
     }
 
     /**
+     * Display user's own events.
+     */
+    public function myEvents()
+    {
+        $user = Auth::user();
+
+        // Get only events where user is the creator
+        $events = Event::where('user_id', $user->id)
+            ->with(['creator', 'staff'])
+            ->orderBy('start_at', 'desc')
+            ->get();
+
+        // Get all users for staff selection
+        $users = User::orderBy('name')->get();
+
+        return view('events.my_events', compact('events', 'users'));
+    }
+
+    /**
      * Store a newly created event.
      */
     public function store(Request $request)

@@ -18,43 +18,58 @@
             <script>
                 window.eventUsersData = @json($users);
                 window.eventAuthUserId = {{ Auth::id() }};
+                window.eventsData = @json($events);
             </script>
 
             <!-- Event Calendar Interface -->
-            <div x-data="eventCalendar(window.eventUsersData, window.eventAuthUserId)" class="space-y-6">
+            <div x-data="eventCalendar(window.eventUsersData, window.eventAuthUserId, window.eventsData)" class="space-y-6">
 
                 <!-- Top Action Bar -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ __('messages.event_calendar') }}</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('messages.event_calendar_description') }}</p>
+                    <div class="flex gap-2">
+                        <a href="{{ route('events.my-events') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-200 uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+                            {{ __('messages.my_events') }}
+                        </a>
                     </div>
 
-                    <button @click="openCreateModal()" class="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-80 transition">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
-                        {{ __('messages.create_event') }}
-                    </button>
-                </div>
-
-                <!-- Legend -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-                    <div class="flex flex-wrap gap-4 text-sm">
-                        <div class="flex items-center gap-2">
-                            <span class="w-4 h-4 rounded bg-blue-500"></span>
-                            <span class="text-gray-700 dark:text-gray-300">{{ __('messages.your_events') }}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-4 h-4 rounded bg-green-500"></span>
-                            <span class="text-gray-700 dark:text-gray-300">{{ __('messages.staff_events') }}</span>
-                        </div>
+                    <div class="flex gap-2">
+                        <button @click="currentView = 'calendar'" :class="currentView === 'calendar' ? 'bg-primary text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200'" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-opacity-80 transition">
+                            {{ __('messages.calendar_view') }}
+                        </button>
+                        <button @click="currentView = 'list'" :class="currentView === 'list' ? 'bg-primary text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200'" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-opacity-80 transition">
+                            {{ __('messages.list_view') }}
+                        </button>
                     </div>
                 </div>
 
-                <!-- Calendar Container -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-                    <div id="event-calendar" class="min-h-[600px]"></div>
+                <!-- Calendar View -->
+                <div x-show="currentView === 'calendar'" x-cloak>
+                    <!-- Legend -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6">
+                        <div class="flex flex-wrap gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="w-4 h-4 rounded bg-blue-500"></span>
+                                <span class="text-gray-700 dark:text-gray-300">{{ __('messages.your_events') }}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-4 h-4 rounded bg-green-500"></span>
+                                <span class="text-gray-700 dark:text-gray-300">{{ __('messages.staff_events') }}</span>
+                            </div>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm ml-auto">{{ __('messages.click_calendar_to_create') }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Container -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+                        <div id="event-calendar" class="min-h-[600px]"></div>
+                    </div>
+                </div>
+
+                <!-- List View -->
+                <div x-show="currentView === 'list'" x-cloak>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                        @include('events._table_list')
+                    </div>
                 </div>
 
                 <!-- Modals -->

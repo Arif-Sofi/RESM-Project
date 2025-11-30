@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('rooms', controller: 'App\Http\Controllers\RoomController');
 
     // Events routes
+    Route::get('/events/my-events', [EventController::class, 'myEvents'])->name('events.my-events');
     Route::resource('events', EventController::class)->except(['create', 'show', 'edit']);
     Route::get('/api/events', [EventController::class, 'apiEvents'])->name('api.events');
 

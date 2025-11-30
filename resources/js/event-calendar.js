@@ -1,11 +1,15 @@
 // Event Calendar Alpine.js Component
-export default function (users, authUserId) {
+export default function (users, authUserId, initialEvents = []) {
     return {
         currentView: 'calendar',
         users: users,
-        events: [],
+        events: initialEvents,
         calendar: null,
         authUserId: authUserId,
+
+        // List view state
+        searchQuery: '',
+        sortBy: 'date_desc',
 
         // View modal state
         showViewModal: false,
@@ -50,6 +54,32 @@ export default function (users, authUserId) {
         // Filter out current user from staff list (they're already the creator)
         get availableStaff() {
             return this.users.filter(user => user.id !== this.authUserId);
+        },
+
+        // Filtered and sorted events for list view
+        get filteredEventsList() {
+            let filtered = this.events.filter(event => {
+                const searchLower = this.searchQuery.toLowerCase();
+                return event.title.toLowerCase().includes(searchLower) ||
+                       (event.description || '').toLowerCase().includes(searchLower) ||
+                       (event.creator?.name || '').toLowerCase().includes(searchLower);
+            });
+
+            // Sort events
+            filtered.sort((a, b) => {
+                switch (this.sortBy) {
+                    case 'date_asc':
+                        return new Date(a.start_at) - new Date(b.start_at);
+                    case 'date_desc':
+                        return new Date(b.start_at) - new Date(a.start_at);
+                    case 'title':
+                        return a.title.localeCompare(b.title);
+                    default:
+                        return new Date(b.start_at) - new Date(a.start_at);
+                }
+            });
+
+            return filtered;
         },
 
         init() {
@@ -407,14 +437,14 @@ export default function (users, authUserId) {
                     this.closeDeleteModal();
                     this.closeEditModal();
                     this.loadCalendarEvents();
-                    window.showSuccess('Event deleted successfully!');
+                    window.showSuccess('Event cancelled successfully!');
                 } else {
                     const data = await response.json();
-                    this.editGeneralError = data.message || 'Failed to delete event.';
+                    this.editGeneralError = data.message || 'Failed to cancel event.';
                 }
             } catch (error) {
-                console.error('Error deleting event:', error);
-                this.editGeneralError = 'An error occurred while deleting the event.';
+                console.error('Error cancelling event:', error);
+                this.editGeneralError = 'An error occurred while cancelling the event.';
             } finally {
                 this.isSubmitting = false;
             }
