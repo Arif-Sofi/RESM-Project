@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\LocalizationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QrCodeController;
@@ -42,6 +43,10 @@ Route::middleware('auth')->group(function () {
 
     // Rooms routes
     Route::resource('rooms', controller: 'App\Http\Controllers\RoomController');
+
+    // Events routes
+    Route::resource('events', EventController::class)->except(['create', 'show', 'edit']);
+    Route::get('/api/events', [EventController::class, 'apiEvents'])->name('api.events');
 
     // QR Code routes
     Route::get('/qr-code', [QrCodeController::class, 'index'])->name('qr.index');

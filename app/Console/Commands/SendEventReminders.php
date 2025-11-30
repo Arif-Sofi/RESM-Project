@@ -48,7 +48,7 @@ class SendEventReminders extends Command
             $event->reminder_sent_at = $now;
             $event->save();
 
-            $this->info("Sent reminder for event: {$event->name}");
+            $this->info("Sent reminder for event: {$event->title}");
         }
 
         $this->info('Event reminders sent successfully.');

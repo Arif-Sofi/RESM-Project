@@ -26,7 +26,7 @@ class EventCreatedNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Event Created: '.$this->event->name,
+            subject: 'New Event Created: '.$this->event->title,
         );
     }
 
