@@ -47,6 +47,11 @@ export default function (users, authUserId) {
         showStaffDropdown: false,
         showEditStaffDropdown: false,
 
+        // Filter out current user from staff list (they're already the creator)
+        get availableStaff() {
+            return this.users.filter(user => user.id !== this.authUserId);
+        },
+
         init() {
             this.initCalendar();
             this.loadCalendarEvents();
@@ -195,10 +200,19 @@ export default function (users, authUserId) {
             this.createErrors = {};
             this.createGeneralError = '';
 
-            const startDateTime = `${this.createEventData.date}T${this.createEventData.start_time}:00`;
-            const endDateTime = this.createEventData.end_time
-                ? `${this.createEventData.date}T${this.createEventData.end_time}:00`
-                : null;
+            // Convert local time to ISO string (UTC) for server storage
+            const startLocal = new Date(`${this.createEventData.date}T${this.createEventData.start_time}:00`);
+            const startDateTime = startLocal.toISOString();
+
+            let endDateTime = null;
+            if (this.createEventData.end_time) {
+                const endLocal = new Date(`${this.createEventData.date}T${this.createEventData.end_time}:00`);
+                // Handle events crossing midnight
+                if (this.createEventData.end_time < this.createEventData.start_time) {
+                    endLocal.setDate(endLocal.getDate() + 1);
+                }
+                endDateTime = endLocal.toISOString();
+            }
 
             try {
                 const response = await fetch('/events', {
@@ -242,15 +256,31 @@ export default function (users, authUserId) {
         openEditModal(event) {
             this.editEventId = event.id;
 
+            // Parse UTC timestamps and convert to local time for display
             const startDate = new Date(event.start_at);
             const endDate = event.end_at ? new Date(event.end_at) : null;
+
+            // Format date as YYYY-MM-DD in local timezone
+            const formatLocalDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            // Format time as HH:mm in local timezone
+            const formatLocalTime = (date) => {
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            };
 
             this.editEventData = {
                 title: event.title,
                 description: event.description || '',
-                date: startDate.toISOString().split('T')[0],
-                start_time: startDate.toTimeString().substring(0, 5),
-                end_time: endDate ? endDate.toTimeString().substring(0, 5) : '',
+                date: formatLocalDate(startDate),
+                start_time: formatLocalTime(startDate),
+                end_time: endDate ? formatLocalTime(endDate) : '',
                 staff: event.staff ? event.staff.map(s => s.id) : []
             };
 
@@ -295,10 +325,19 @@ export default function (users, authUserId) {
             this.editErrors = {};
             this.editGeneralError = '';
 
-            const startDateTime = `${this.editEventData.date}T${this.editEventData.start_time}:00`;
-            const endDateTime = this.editEventData.end_time
-                ? `${this.editEventData.date}T${this.editEventData.end_time}:00`
-                : null;
+            // Convert local time to ISO string (UTC) for server storage
+            const startLocal = new Date(`${this.editEventData.date}T${this.editEventData.start_time}:00`);
+            const startDateTime = startLocal.toISOString();
+
+            let endDateTime = null;
+            if (this.editEventData.end_time) {
+                const endLocal = new Date(`${this.editEventData.date}T${this.editEventData.end_time}:00`);
+                // Handle events crossing midnight
+                if (this.editEventData.end_time < this.editEventData.start_time) {
+                    endLocal.setDate(endLocal.getDate() + 1);
+                }
+                endDateTime = endLocal.toISOString();
+            }
 
             try {
                 const response = await fetch(`/events/${this.editEventId}`, {

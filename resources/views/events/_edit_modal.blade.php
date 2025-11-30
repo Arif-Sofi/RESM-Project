@@ -48,17 +48,18 @@
                         <p x-show="editErrors.title" x-text="editErrors.title" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Date -->
-                        <div>
-                            <label for="edit_event_date" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
-                                {{ __('messages.date') }} <span class="text-red-500">*</span>
-                            </label>
-                            <input type="date" id="edit_event_date" x-model="editEventData.date" required
-                                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full">
-                            <p x-show="editErrors.start_at" x-text="editErrors.start_at" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
-                        </div>
+                    <!-- Date (full width) -->
+                    <div>
+                        <label for="edit_event_date" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('messages.date') }} <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" id="edit_event_date" x-model="editEventData.date" required
+                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full">
+                        <p x-show="editErrors.start_at" x-text="editErrors.start_at" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
+                    </div>
 
+                    <!-- Start Time and End Time (side by side) -->
+                    <div class="grid grid-cols-2 gap-6">
                         <!-- Start Time -->
                         <div>
                             <label for="edit_event_start_time" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
@@ -77,29 +78,29 @@
                                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full">
                             <p x-show="editErrors.end_at" x-text="editErrors.end_at" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
                         </div>
+                    </div>
 
-                        <!-- Staff Selection (Multi-select dropdown) -->
-                        <div class="relative">
-                            <label class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
-                                {{ __('messages.assign_staff') }}
-                            </label>
-                            <button type="button" @click="showEditStaffDropdown = !showEditStaffDropdown"
-                                class="w-full px-3 py-2 text-left border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary">
-                                <span x-text="editEventData.staff.length > 0 ? getEditSelectedStaffNames() : '{{ __('messages.select_staff') }}'"></span>
-                                <svg class="absolute right-3 top-9 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </button>
-                            <div x-show="showEditStaffDropdown" @click.away="showEditStaffDropdown = false"
-                                class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-48 overflow-auto">
-                                <template x-for="user in users" :key="user.id">
-                                    <label class="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                                        <input type="checkbox" :checked="isEditStaffSelected(user.id)" @change="toggleEditStaff(user.id)"
-                                            class="rounded border-gray-300 text-primary focus:ring-primary">
-                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300" x-text="user.name"></span>
-                                    </label>
-                                </template>
-                            </div>
+                    <!-- Staff Selection (full width) -->
+                    <div class="relative">
+                        <label class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('messages.assign_staff') }}
+                        </label>
+                        <button type="button" @click="showEditStaffDropdown = !showEditStaffDropdown"
+                            class="w-full px-3 py-2 text-left border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary">
+                            <span x-text="editEventData.staff.length > 0 ? getEditSelectedStaffNames() : '{{ __('messages.select_staff') }}'"></span>
+                            <svg class="absolute right-3 top-9 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div x-show="showEditStaffDropdown" @click.away="showEditStaffDropdown = false"
+                            class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-48 overflow-auto">
+                            <template x-for="user in availableStaff" :key="user.id">
+                                <label class="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                    <input type="checkbox" :checked="isEditStaffSelected(user.id)" @change="toggleEditStaff(user.id)"
+                                        class="rounded border-gray-300 text-primary focus:ring-primary">
+                                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300" x-text="user.name"></span>
+                                </label>
+                            </template>
                         </div>
                     </div>
 
