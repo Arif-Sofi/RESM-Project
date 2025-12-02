@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
 
     // Events routes
     Route::get('/events/my-events', [EventController::class, 'myEvents'])->name('events.my-events');
+    Route::post('/events/import', [EventController::class, 'import'])->name('events.import');
     Route::resource('events', EventController::class)->except(['create', 'show', 'edit']);
     Route::get('/api/events', [EventController::class, 'apiEvents'])->name('api.events');
 
