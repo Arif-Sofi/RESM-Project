@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Imports\EventsImport;
 use App\Mail\EventCreatedNotification;
 use App\Models\Event;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -13,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EventController extends Controller
 {
@@ -98,13 +98,13 @@ class EventController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Event created successfully!',
-                    'event' => $event->load(['creator', 'staff'])
+                    'event' => $event->load(['creator', 'staff']),
                 ], 201);
             }
 
             return redirect()->route('events.index')->with('success', 'Event created successfully!');
         } catch (\Exception $e) {
-            \Log::error('Failed to create event: ' . $e->getMessage());
+            \Log::error('Failed to create event: '.$e->getMessage());
 
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Failed to create event.'], 500);
@@ -148,13 +148,13 @@ class EventController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Event updated successfully!',
-                    'event' => $event->fresh()->load(['creator', 'staff'])
+                    'event' => $event->fresh()->load(['creator', 'staff']),
                 ]);
             }
 
             return redirect()->route('events.index')->with('success', 'Event updated successfully!');
         } catch (\Exception $e) {
-            \Log::error('Failed to update event: ' . $e->getMessage());
+            \Log::error('Failed to update event: '.$e->getMessage());
 
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Failed to update event.'], 500);
@@ -177,13 +177,13 @@ class EventController extends Controller
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Event deleted successfully!'
+                    'message' => 'Event deleted successfully!',
                 ]);
             }
 
             return redirect()->route('events.index')->with('success', 'Event deleted successfully!');
         } catch (\Exception $e) {
-            \Log::error('Failed to delete event: ' . $e->getMessage());
+            \Log::error('Failed to delete event: '.$e->getMessage());
 
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Failed to delete event.'], 500);
@@ -230,7 +230,7 @@ class EventController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
+            'file' => 'required|mimes:xlsx,xls,csv',
         ]);
 
         $import = new EventsImport;
@@ -244,12 +244,13 @@ class EventController extends Controller
             foreach ($failures as $failure) {
                 $errorMessages[] = "Row {$failure->row()}: {$failure->errors()[0]} on attribute {$failure->attribute()}";
             }
+
             return redirect()->route('events.index')
                 ->with('import_errors', $errorMessages);
         } catch (\Exception $e) {
             // This catches other general exceptions during the import
             return redirect()->route('events.index')
-                ->with('import_errors', ['An unexpected error occurred during the file import: ' . $e->getMessage()]);
+                ->with('import_errors', ['An unexpected error occurred during the file import: '.$e->getMessage()]);
         }
 
         $importedCount = $import->getImportedCount();
@@ -281,7 +282,7 @@ class EventController extends Controller
             try {
                 Mail::to($recipient->email)->queue(new EventCreatedNotification($event));
             } catch (\Exception $e) {
-                \Log::error('Failed to send event notification to ' . $recipient->email.': ' . $e->getMessage());
+                \Log::error('Failed to send event notification to '.$recipient->email.': '.$e->getMessage());
             }
         }
     }
