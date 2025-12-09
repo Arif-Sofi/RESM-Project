@@ -98,13 +98,13 @@ class EventController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Event created successfully!',
-                    'event' => $event->load(['creator', 'staff']),
+                    'event' => $event->load(['creator', 'staff'])
                 ], 201);
             }
 
             return redirect()->route('events.index')->with('success', 'Event created successfully!');
         } catch (\Exception $e) {
-            \Log::error('Failed to create event: '.$e->getMessage());
+            \Log::error('Failed to create event: ' . $e->getMessage());
 
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Failed to create event.'], 500);
@@ -148,13 +148,13 @@ class EventController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Event updated successfully!',
-                    'event' => $event->fresh()->load(['creator', 'staff']),
+                    'event' => $event->fresh()->load(['creator', 'staff'])
                 ]);
             }
 
             return redirect()->route('events.index')->with('success', 'Event updated successfully!');
         } catch (\Exception $e) {
-            \Log::error('Failed to update event: '.$e->getMessage());
+            \Log::error('Failed to update event: ' . $e->getMessage());
 
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Failed to update event.'], 500);
@@ -177,13 +177,13 @@ class EventController extends Controller
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Event deleted successfully!',
+                    'message' => 'Event deleted successfully!'
                 ]);
             }
 
             return redirect()->route('events.index')->with('success', 'Event deleted successfully!');
         } catch (\Exception $e) {
-            \Log::error('Failed to delete event: '.$e->getMessage());
+            \Log::error('Failed to delete event: ' . $e->getMessage());
 
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Failed to delete event.'], 500);
@@ -281,7 +281,7 @@ class EventController extends Controller
             try {
                 Mail::to($recipient->email)->queue(new EventCreatedNotification($event));
             } catch (\Exception $e) {
-                \Log::error('Failed to send event notification to '.$recipient->email.': '.$e->getMessage());
+                \Log::error('Failed to send event notification to ' . $recipient->email.': ' . $e->getMessage());
             }
         }
     }

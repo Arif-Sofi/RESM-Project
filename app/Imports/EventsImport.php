@@ -20,6 +20,7 @@ class EventsImport implements ToCollection, WithHeadingRow, WithValidation, Skip
     use SkipsFailures;
 
     private int $importedCount = 0;
+
     private array $errorMessages = [];
 
     public function map($row): array
@@ -55,8 +56,8 @@ class EventsImport implements ToCollection, WithHeadingRow, WithValidation, Skip
     }
 
     /**
-    * @param Collection $rows
-    */
+     * @param Collection $rows
+     */
     public function collection(Collection $rows)
     {
         foreach ($rows as $rowIndex => $row)
