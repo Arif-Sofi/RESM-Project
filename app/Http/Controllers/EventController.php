@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\EventsImport;
 use App\Mail\EventCreatedNotification;
 use App\Models\Event;
 use App\Models\User;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EventController extends Controller
 {
@@ -225,6 +227,46 @@ class EventController extends Controller
     /**
      * Send email notifications to creator and staff.
      */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        $import = new EventsImport;
+
+        try {
+            Excel::import($import, $request->file('file'));
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            // This catches validation exceptions from the import class
+            $failures = $e->failures();
+            $errorMessages = [];
+            foreach ($failures as $failure) {
+                $errorMessages[] = "Row {$failure->row()}: {$failure->errors()[0]} on attribute {$failure->attribute()}";
+            }
+
+            return redirect()->route('events.index')
+                ->with('import_errors', $errorMessages);
+        } catch (\Exception $e) {
+            // This catches other general exceptions during the import
+            return redirect()->route('events.index')
+                ->with('import_errors', ['An unexpected error occurred during the file import: '.$e->getMessage()]);
+        }
+
+        $importedCount = $import->getImportedCount();
+        $errorMessages = $import->getErrorMessages();
+
+        $statusMessage = "{$importedCount} events imported successfully.";
+
+        if (count($errorMessages) > 0) {
+            return redirect()->route('events.index')
+                ->with('success', $statusMessage)
+                ->with('import_errors', $errorMessages);
+        }
+
+        return redirect()->route('events.index')->with('success', $statusMessage);
+    }
+
     private function sendEventNotifications(Event $event): void
     {
         $recipients = collect([$event->creator]);
