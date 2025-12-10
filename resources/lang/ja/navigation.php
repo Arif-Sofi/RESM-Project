@@ -7,4 +7,5 @@ return [
     'profile' => 'プロフィール',
     'logout' => 'ログアウト',
     'qr' => 'QRコードジェネレーター',
+    'generate report' => 'レポート作成',
 ];

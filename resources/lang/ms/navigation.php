@@ -7,4 +7,5 @@ return [
     'Pprofile' => 'Profil',
     'logout' => 'Log Keluar',
     'qr' => 'Penjana Kod QR',
+    'generate report' => 'Jana Laporan',
 ];

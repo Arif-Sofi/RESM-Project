@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\EventsExport;
 use App\Imports\EventsImport;
 use App\Mail\EventCreatedNotification;
 use App\Models\Event;
@@ -265,6 +266,18 @@ class EventController extends Controller
         }
 
         return redirect()->route('events.index')->with('success', $statusMessage);
+    }
+
+    /**
+     * Export events to Excel.
+     */
+    public function export(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $status = $request->input('status');
+
+        return Excel::download(new EventsExport($startDate, $endDate, $status), 'events.xlsx');
     }
 
     private function sendEventNotifications(Event $event): void

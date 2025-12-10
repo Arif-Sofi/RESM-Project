@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')">
                         {{ __('navigation.event calendar') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
+                        {{ __('navigation.generate report') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -118,6 +121,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')">
                 {{ __('navigation.event calendar') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')">
+                {{ __('Generate Report') }}
             </x-responsive-nav-link>
         </div>
 

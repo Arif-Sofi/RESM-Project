@@ -5,6 +5,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\LocalizationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QrCodeController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -47,12 +48,16 @@ Route::middleware('auth')->group(function () {
     // Events routes
     Route::get('/events/my-events', [EventController::class, 'myEvents'])->name('events.my-events');
     Route::post('/events/import', [EventController::class, 'import'])->name('events.import');
+    Route::get('/events/export', [EventController::class, 'export'])->name('events.export');
     Route::resource('events', EventController::class)->except(['create', 'show', 'edit']);
     Route::get('/api/events', [EventController::class, 'apiEvents'])->name('api.events');
 
     // QR Code routes
     Route::get('/qr-code', [QrCodeController::class, 'index'])->name('qr.index');
     Route::post('qr-code/generate', [QrCodeController::class, 'generate'])->name('qr.generate');
+
+    // Report routes
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 });
 
 require __DIR__.'/auth.php';
