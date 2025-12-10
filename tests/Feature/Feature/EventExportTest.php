@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Feature;
 
+use App\Exports\EventsExport;
 use App\Models\Event;
 use App\Models\User;
-use App\Exports\EventsExport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Maatwebsite\Excel\Facades\Excel;
 use Tests\TestCase;
