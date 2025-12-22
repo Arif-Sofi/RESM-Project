@@ -48,6 +48,15 @@ class DatabaseSeeder extends Seeder
             'remember_token' => Str::random(10),
         ]);
 
+        User::create([
+            'name' => 'Farisya Hazlin',
+            'role_id' => 2,
+            'email' => 'farisyahazlin@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('Abcd1234'),
+            'remember_token' => Str::random(10),
+        ]);
+
         $this->call([
             RoomSeeder::class,
             BookingSeeder::class,

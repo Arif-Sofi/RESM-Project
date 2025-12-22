@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\BookingsExport;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Mail\BookingApproved;
+
 use App\Mail\BookingConfirmationMail;
 use App\Mail\BookingRejected;
 use App\Models\Booking;
@@ -15,6 +17,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BookingController extends Controller
 {
@@ -246,6 +249,18 @@ class BookingController extends Controller
         Mail::to($booking->user->email)->queue(new BookingRejected($booking));
 
         return redirect()->route('admin.approvals')->with('success', 'Booking rejected successfully!');
+    }
+
+    /**
+     * Export bookings to Excel.
+     */
+    public function export(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $status = $request->input('status');
+
+        return Excel::download(new BookingsExport($startDate, $endDate, $status), 'bookings.xlsx');
     }
 
     /**

@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Bookings routes
+    Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
     Route::resource('bookings', controller: 'App\Http\Controllers\BookingController');
     Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
     Route::get('/admin/approvals', [BookingController::class, 'approvals'])->name('admin.approvals');
