@@ -82,6 +82,10 @@
                                 <span class="w-4 h-4 rounded bg-green-500"></span>
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('messages.staff_events') }}</span>
                             </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-4 h-4 rounded bg-gray-500"></span>
+                                <span class="text-gray-700 dark:text-gray-300">{{ __('Completed Event') }}</span>
+                            </div>
                             <p class="text-gray-500 dark:text-gray-400 text-sm ml-auto">{{ __('messages.click_calendar_to_create') }}</p>
                         </div>
                     </div>

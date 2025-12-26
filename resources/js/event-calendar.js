@@ -123,8 +123,13 @@ export default function (users, authUserId, initialEvents = []) {
 
         updateCalendarEvents() {
             const calendarEvents = this.events.map(event => {
-                // Determine color based on whether user is creator
-                let color = event.user_id === this.authUserId ? '#3b82f6' : '#10b981';
+                // Determine color based on status and whether user is creator
+                let color;
+                if (event.status === 'COMPLETED') {
+                    color = '#6b7280'; // Gray for completed events
+                } else {
+                    color = event.user_id === this.authUserId ? '#3b82f6' : '#10b981';
+                }
 
                 return {
                     id: event.id,
