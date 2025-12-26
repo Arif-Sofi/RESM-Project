@@ -26,12 +26,21 @@ class EventController extends Controller
     {
         $user = Auth::user();
 
-        // Get events where user is creator or staff
-        $events = Event::where('user_id', $user->id)
-            ->orWhereHas('staff', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->with(['creator', 'staff'])
+        // Start building the query
+        $query = Event::query();
+
+        // If not admin, restrict to own events or where staff
+        if (! $user->isAdmin()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhereHas('staff', function ($staffQuery) use ($user) {
+                        $staffQuery->where('user_id', $user->id);
+                    });
+            });
+        }
+
+        // Get events
+        $events = $query->with(['creator', 'staff'])
             ->orderBy('start_at', 'desc')
             ->get();
 
@@ -201,10 +210,16 @@ class EventController extends Controller
     {
         $user = Auth::user();
 
-        $query = Event::where('user_id', $user->id)
-            ->orWhereHas('staff', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
+        $query = Event::query();
+
+        if (! $user->isAdmin()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhereHas('staff', function ($sq) use ($user) {
+                        $sq->where('user_id', $user->id);
+                    });
             });
+        }
 
         // Filter by date range if provided
         if ($request->has('start') && $request->has('end')) {

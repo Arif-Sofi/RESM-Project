@@ -20,7 +20,9 @@
                     <div class="mb-8">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{{ __('Events Report') }}</h3>
                         <form action="{{ route('events.export') }}" method="GET" class="flex flex-col sm:flex-row gap-2 items-center">
+                            <label class=" ">Start Date:</label>
                             <input type="date" name="start_date" class="form-input rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
+                            <label class=" ">End Date:</label>
                             <input type="date" name="end_date" class="form-input rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
                             <select name="status" class="form-select rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
                                 <option value="">All Statuses</option>
@@ -37,7 +39,9 @@
                     <div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{{ __('Bookings Report') }}</h3>
                         <form action="{{ route('bookings.export') }}" method="GET" class="flex flex-col sm:flex-row gap-2 items-center">
+                            <label> Start Date:</label>
                             <input type="date" name="start_date" class="form-input rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
+                            <label> End Date:</label>
                             <input type="date" name="end_date" class="form-input rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
                             <select name="status" class="form-select rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
                                 <option value="all">All Statuses</option>

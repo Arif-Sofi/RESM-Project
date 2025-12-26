@@ -52,9 +52,11 @@
                             @csrf
                             <input type="file" name="file" id="import-file-input" onchange="document.getElementById('import-form').submit()" accept=".xlsx, .xls, .csv">
                         </form>
-                        <button type="button" onclick="document.getElementById('import-file-input').click()" class="inline-flex items-center px-4 py-2 bg-primary dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-white dark:text-gray-200 uppercase tracking-widest hover:bg-opacity-80 dark:hover:bg-gray-600 transition">
-                            Import Event
-                        </button>
+                        @if(auth()->user()->isAdmin())
+                            <button type="button" onclick="document.getElementById('import-file-input').click()" class="inline-flex items-center px-4 py-2 bg-primary dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md font-semibold text-xs text-white dark:text-gray-200 uppercase tracking-widest hover:bg-opacity-80 dark:hover:bg-gray-600 transition">
+                                Import Event
+                            </button>
+                        @endif
                     </div>
 
                     <div class="flex gap-2">
