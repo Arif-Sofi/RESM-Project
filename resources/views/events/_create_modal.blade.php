@@ -119,7 +119,22 @@
                                     <span class="ml-2 text-sm text-gray-700 dark:text-gray-300" x-text="user.name"></span>
                                 </label>
                             </template>
+                            <label class="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 sticky top-0 z-20">
+                                <input type="checkbox" x-model="createEventData.showOtherStaffInput"
+                                    class="rounded border-gray-300 text-primary focus:ring-primary">
+                                <span class="ml-2 text-sm font-bold text-gray-700 dark:text-gray-300">{{ __('Other (Specify Team/Group)') }}</span>
+                            </label>
                         </div>
+                    </div>
+
+                    <!-- Other Staff Input (Conditional) -->
+                    <div x-show="createEventData.showOtherStaffInput" x-transition>
+                        <label for="create_other_staff" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('Specify Other Staff') }}
+                        </label>
+                        <input type="text" id="create_other_staff" x-model="createEventData.other_staff"
+                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full"
+                            placeholder="{{ __('e.g., BMBI Teachers Team, HEP Team') }}">
                     </div>
 
                     <!-- Description -->

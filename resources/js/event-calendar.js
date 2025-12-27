@@ -24,7 +24,9 @@ export default function (users, authUserId, initialEvents = []) {
             date: '',
             start_time: '',
             end_time: '',
-            staff: []
+            staff: [],
+            other_staff: '',
+            showOtherStaffInput: false
         },
         editErrors: {},
         editGeneralError: '',
@@ -36,6 +38,8 @@ export default function (users, authUserId, initialEvents = []) {
             title: '',
             description: '',
             location: '',
+            other_staff: '',
+            showOtherStaffInput: false,
             date: '',
             start_time: '',
             end_time: '',
@@ -192,6 +196,8 @@ export default function (users, authUserId, initialEvents = []) {
                 title: '',
                 description: '',
                 location: '',
+                other_staff: '',
+                showOtherStaffInput: false,
                 date: date || new Date().toISOString().split('T')[0],
                 start_time: startTime || '09:00',
                 end_time: endTime || '10:00',
@@ -277,6 +283,7 @@ export default function (users, authUserId, initialEvents = []) {
                         title: this.createEventData.title,
                         description: this.createEventData.description,
                         location: this.createEventData.location,
+                        other_staff: this.createEventData.showOtherStaffInput ? this.createEventData.other_staff : null,
                         start_at: startDateTime,
                         end_at: endDateTime,
                         staff: this.createEventData.staff
@@ -331,6 +338,8 @@ export default function (users, authUserId, initialEvents = []) {
                 title: event.title,
                 description: event.description || '',
                 location: event.location || '',
+                other_staff: event.other_staff || '',
+                showOtherStaffInput: !!event.other_staff,
                 date: formatLocalDate(startDate),
                 start_time: formatLocalTime(startDate),
                 end_time: endDate ? formatLocalTime(endDate) : '',
@@ -417,6 +426,7 @@ export default function (users, authUserId, initialEvents = []) {
                         title: this.editEventData.title,
                         description: this.editEventData.description,
                         location: this.editEventData.location,
+                        other_staff: this.editEventData.showOtherStaffInput ? this.editEventData.other_staff : null,
                         start_at: startDateTime,
                         end_at: endDateTime,
                         staff: this.editEventData.staff

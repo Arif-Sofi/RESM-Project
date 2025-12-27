@@ -21,6 +21,7 @@ class Event extends Model
         'description',
         'location',
         'status',
+        'other_staff',
         'start_at',
         'end_at',
         'user_id',

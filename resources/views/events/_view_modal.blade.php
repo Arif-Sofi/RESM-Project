@@ -79,6 +79,12 @@
                             </div>
                         </div>
 
+                        <!-- Other Staff / Team -->
+                        <div x-show="viewEventData.other_staff">
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('messages.assigned_staff') }} (Other)</label>
+                            <p class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewEventData.other_staff"></p>
+                        </div>
+
                         <!-- Description -->
                         <div x-show="viewEventData.description">
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('messages.description') }}</label>

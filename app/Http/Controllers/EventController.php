@@ -29,13 +29,14 @@ class EventController extends Controller
         // Start building the query
         $query = Event::query();
 
-        // If not admin, restrict to own events or where staff
+        // If not admin, restrict to own events or where staff, or where other_staff is set
         if (! $user->isAdmin()) {
             $query->where(function ($q) use ($user) {
                 $q->where('user_id', $user->id)
                     ->orWhereHas('staff', function ($staffQuery) use ($user) {
                         $staffQuery->where('user_id', $user->id);
-                    });
+                    })
+                    ->orWhereNotNull('other_staff');
             });
         }
 
@@ -78,6 +79,7 @@ class EventController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'location' => 'required|string|max:255',
+            'other_staff' => 'nullable|string|max:255',
             'start_at' => 'required|date',
             'end_at' => 'nullable|date|after:start_at',
             'staff' => 'nullable|array',
@@ -90,6 +92,7 @@ class EventController extends Controller
                     'title' => $validated['title'],
                     'description' => $validated['description'] ?? null,
                     'location' => $validated['location'],
+                    'other_staff' => $validated['other_staff'] ?? null,
                     'start_at' => Carbon::parse($validated['start_at']),
                     'end_at' => isset($validated['end_at']) ? Carbon::parse($validated['end_at']) : null,
                     'user_id' => Auth::id(),
@@ -137,6 +140,7 @@ class EventController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'location' => 'required|string|max:255',
+            'other_staff' => 'nullable|string|max:255',
             'start_at' => 'required|date',
             'end_at' => 'nullable|date|after:start_at',
             'staff' => 'nullable|array',
@@ -149,6 +153,7 @@ class EventController extends Controller
                     'title' => $validated['title'],
                     'description' => $validated['description'] ?? null,
                     'location' => $validated['location'],
+                    'other_staff' => $validated['other_staff'] ?? null,
                     'start_at' => Carbon::parse($validated['start_at']),
                     'end_at' => isset($validated['end_at']) ? Carbon::parse($validated['end_at']) : null,
                 ]);
@@ -221,7 +226,8 @@ class EventController extends Controller
                 $q->where('user_id', $user->id)
                     ->orWhereHas('staff', function ($sq) use ($user) {
                         $sq->where('user_id', $user->id);
-                    });
+                    })
+                    ->orWhereNotNull('other_staff');
             });
         }
 
