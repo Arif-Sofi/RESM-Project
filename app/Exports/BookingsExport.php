@@ -34,12 +34,14 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping
         if ($this->status !== null && $this->status !== 'all') {
             if ($this->status === 'pending') {
                 $query->whereNull('status');
-            } else {
-                $query->where('status', $this->status);
+            } elseif ($this->status == '1') {
+                $query->where('status', 1);
+            } elseif ($this->status == '0') {
+                $query->where('status', 0);
             }
         }
 
-        return $query->get();
+        return $query->orderBy('start_time', 'desc')->get();
     }
 
     public function headings(): array
@@ -47,7 +49,7 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping
         return [
             'Room',
             'User',
-            'Title',
+            'Purpose',
             'Start Time',
             'End Time',
             'Status',
@@ -57,16 +59,16 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping
     public function map($booking): array
     {
         $status = 'Pending';
-        if ($booking->status === 1) {
+        if ($booking->status == 1) {
             $status = 'Approved';
-        } elseif ($booking->status === 0 && $booking->status !== null) {
+        } elseif ($booking->status == 0 && $booking->status !== null) {
             $status = 'Rejected';
         }
 
         return [
             $booking->room->name,
             $booking->user->name,
-            $booking->title,
+            $booking->purpose,
             $booking->start_time->format('Y-m-d H:i:s'),
             $booking->end_time->format('Y-m-d H:i:s'),
             $status,

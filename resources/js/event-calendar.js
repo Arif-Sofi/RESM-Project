@@ -98,6 +98,7 @@ export default function (users, authUserId, initialEvents = []) {
                 },
                 slotMinTime: '07:00:00',
                 slotMaxTime: '22:00:00',
+                allDaySlot: false,
                 height: 'auto',
                 selectable: true,
                 selectMirror: true,

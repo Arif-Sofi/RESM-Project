@@ -37,7 +37,7 @@ class EventsExport implements FromCollection, WithHeadings, WithMapping
             $query->where('status', $this->status);
         }
 
-        return $query->get();
+        return $query->orderBy('start_at', 'desc')->get();
     }
 
     public function headings(): array
