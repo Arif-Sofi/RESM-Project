@@ -43,7 +43,6 @@ class EventsExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            '#',
             'Title',
             'Description',
             'Status',
@@ -55,7 +54,6 @@ class EventsExport implements FromCollection, WithHeadings, WithMapping
     public function map($event): array
     {
         return [
-            $event->id,
             $event->title,
             $event->description,
             $event->status,

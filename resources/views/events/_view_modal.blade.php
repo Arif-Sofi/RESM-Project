@@ -78,6 +78,11 @@
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('messages.description') }}</label>
                             <p class="mt-1 text-gray-900 dark:text-gray-100 whitespace-pre-wrap" x-text="viewEventData.description"></p>
                         </div>
+
+                        <div x-show="viewEventData.status">
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('messages.status') }}</label>
+                            <p class="mt-1 text-gray-900 dark:text-gray-100 capitalize" x-text="viewEventData.status"></p>
+                        </div>
                     </div>
                 </template>
 

@@ -24,6 +24,7 @@
                             <input type="date" name="start_date" class="form-input rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
                             <label class=" ">End Date:</label>
                             <input type="date" name="end_date" class="form-input rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
+                            <label class=" ">Status:</label>
                             <select name="status" class="form-select rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
                                 <option value="">All Statuses</option>
                                 <option value="COMPLETED">Completed</option>
@@ -43,6 +44,7 @@
                             <input type="date" name="start_date" class="form-input rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
                             <label> End Date:</label>
                             <input type="date" name="end_date" class="form-input rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
+                            <label> Status:</label>
                             <select name="status" class="form-select rounded-md shadow-sm text-sm dark:bg-gray-700 dark:text-gray-200">
                                 <option value="all">All Statuses</option>
                                 <option value="1">Approved</option>

@@ -45,7 +45,6 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            '#',
             'Room',
             'User',
             'Title',
@@ -65,7 +64,6 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping
         }
 
         return [
-            $booking->id,
             $booking->room->name,
             $booking->user->name,
             $booking->title,
