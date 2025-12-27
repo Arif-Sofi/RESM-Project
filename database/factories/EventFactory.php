@@ -22,6 +22,7 @@ class EventFactory extends Factory
         return [
             'title' => fake()->sentence(3),
             'description' => fake()->paragraph(),
+            'location' => fake()->city() . ' ' . fake()->streetName(),
             'start_at' => $startAt,
             'end_at' => $endAt,
             'user_id' => \App\Models\User::factory(),

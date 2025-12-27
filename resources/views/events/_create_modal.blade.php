@@ -49,6 +49,17 @@
                         <p x-show="createErrors.title" x-text="createErrors.title" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
                     </div>
 
+                    <!-- Location -->
+                    <div>
+                        <label for="create_location" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('Location') }} <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="create_location" x-model="createEventData.location" required
+                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full"
+                            placeholder="{{ __('Enter event location') }}">
+                        <p x-show="createErrors.location" x-text="createErrors.location" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
+                    </div>
+
                     <!-- Date (full width) -->
                     <div>
                         <label for="create_event_date" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">

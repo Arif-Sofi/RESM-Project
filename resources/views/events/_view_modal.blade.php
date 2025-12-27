@@ -42,6 +42,12 @@
                             <p class="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100" x-text="viewEventData.title"></p>
                         </div>
 
+                        <!-- Location -->
+                        <div x-show="viewEventData.location">
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Location') }}</label>
+                            <p class="mt-1 text-gray-900 dark:text-gray-100" x-text="viewEventData.location"></p>
+                        </div>
+
                         <!-- Date & Time -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>

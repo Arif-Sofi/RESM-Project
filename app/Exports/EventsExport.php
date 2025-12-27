@@ -45,6 +45,7 @@ class EventsExport implements FromCollection, WithHeadings, WithMapping
         return [
             'Title',
             'Description',
+            'Location',
             'Status',
             'Start Date',
             'End Date',
@@ -56,6 +57,7 @@ class EventsExport implements FromCollection, WithHeadings, WithMapping
         return [
             $event->title,
             $event->description,
+            $event->location,
             $event->status,
             $event->start_at->format('Y-m-d H:i:s'),
             $event->end_at->format('Y-m-d H:i:s'),

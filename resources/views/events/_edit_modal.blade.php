@@ -48,6 +48,16 @@
                         <p x-show="editErrors.title" x-text="editErrors.title" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
                     </div>
 
+                    <!-- Location -->
+                    <div>
+                        <label for="edit_location" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('Location') }} <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="edit_location" x-model="editEventData.location" required
+                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary rounded-md shadow-sm w-full">
+                        <p x-show="editErrors.location" x-text="editErrors.location" class="mt-1 text-sm text-red-600 dark:text-red-400"></p>
+                    </div>
+
                     <!-- Date (full width) -->
                     <div>
                         <label for="edit_event_date" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-2">

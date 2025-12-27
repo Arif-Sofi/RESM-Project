@@ -77,6 +77,7 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'location' => 'required|string|max:255',
             'start_at' => 'required|date',
             'end_at' => 'nullable|date|after:start_at',
             'staff' => 'nullable|array',
@@ -88,6 +89,7 @@ class EventController extends Controller
                 $event = Event::create([
                     'title' => $validated['title'],
                     'description' => $validated['description'] ?? null,
+                    'location' => $validated['location'],
                     'start_at' => Carbon::parse($validated['start_at']),
                     'end_at' => isset($validated['end_at']) ? Carbon::parse($validated['end_at']) : null,
                     'user_id' => Auth::id(),
@@ -134,6 +136,7 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'location' => 'required|string|max:255',
             'start_at' => 'required|date',
             'end_at' => 'nullable|date|after:start_at',
             'staff' => 'nullable|array',
@@ -145,6 +148,7 @@ class EventController extends Controller
                 $event->update([
                     'title' => $validated['title'],
                     'description' => $validated['description'] ?? null,
+                    'location' => $validated['location'],
                     'start_at' => Carbon::parse($validated['start_at']),
                     'end_at' => isset($validated['end_at']) ? Carbon::parse($validated['end_at']) : null,
                 ]);
@@ -288,6 +292,11 @@ class EventController extends Controller
      */
     public function export(Request $request)
     {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $status = $request->input('status');

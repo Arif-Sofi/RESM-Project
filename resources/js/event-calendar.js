@@ -35,6 +35,7 @@ export default function (users, authUserId, initialEvents = []) {
         createEventData: {
             title: '',
             description: '',
+            location: '',
             date: '',
             start_time: '',
             end_time: '',
@@ -190,6 +191,7 @@ export default function (users, authUserId, initialEvents = []) {
             this.createEventData = {
                 title: '',
                 description: '',
+                location: '',
                 date: date || new Date().toISOString().split('T')[0],
                 start_time: startTime || '09:00',
                 end_time: endTime || '10:00',
@@ -261,6 +263,7 @@ export default function (users, authUserId, initialEvents = []) {
                     body: JSON.stringify({
                         title: this.createEventData.title,
                         description: this.createEventData.description,
+                        location: this.createEventData.location,
                         start_at: startDateTime,
                         end_at: endDateTime,
                         staff: this.createEventData.staff
@@ -314,6 +317,7 @@ export default function (users, authUserId, initialEvents = []) {
             this.editEventData = {
                 title: event.title,
                 description: event.description || '',
+                location: event.location || '',
                 date: formatLocalDate(startDate),
                 start_time: formatLocalTime(startDate),
                 end_time: endDate ? formatLocalTime(endDate) : '',
@@ -386,6 +390,7 @@ export default function (users, authUserId, initialEvents = []) {
                     body: JSON.stringify({
                         title: this.editEventData.title,
                         description: this.editEventData.description,
+                        location: this.editEventData.location,
                         start_at: startDateTime,
                         end_at: endDateTime,
                         staff: this.editEventData.staff

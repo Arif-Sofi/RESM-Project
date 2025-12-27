@@ -95,6 +95,7 @@ class EventSeeder extends Seeder
             $event = Event::create([
                 'title' => $title,
                 'description' => $description,
+                'location' => Arr::random(['Meeting Room A', 'Meeting Room B', 'Main Hall', 'Computer Lab 1', 'Science Lab', 'Library', 'Outdoor Field']),
                 'start_at' => $startAt,
                 'end_at' => $endAt,
                 'user_id' => $creator->id,
