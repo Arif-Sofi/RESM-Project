@@ -1,4 +1,4 @@
-﻿title,description,start_at,end_at,created_by
-Event Title 1,Event Description 1,2025/12/02 10:00,2025/12/02 15:00,Arif Sofi
-Event Title 2,Event Description 2,2025/12/05 10:00,2025/12/05 15:00,admin
-Event Title 3,Event Description 3,2025/12/06 10:00,2025/12/06 15:00,test
+﻿title,description,location,start_date,end_date,created_by,staff
+Event Title 1,Event Description 1,Dataran,2026/01/03 10:00,2026/01/03 13:00,admin,"test, Arif Sofi"
+,,,,,,
+,,,,,,

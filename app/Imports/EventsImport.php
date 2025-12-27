@@ -5,122 +5,71 @@ namespace App\Imports;
 use App\Models\Event;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
-use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\OnEachRow;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Validators\Failure;
+use Maatwebsite\Excel\Row;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class EventsImport implements SkipsOnFailure, ToCollection, WithHeadingRow, WithMapping, WithValidation
+class EventsImport implements OnEachRow, WithHeadingRow, WithValidation, SkipsEmptyRows
 {
-    use SkipsFailures;
-
     private int $importedCount = 0;
-
     private array $errorMessages = [];
 
-    public function map($row): array
+    /**
+     * @param Row $row
+     */
+    public function onRow(Row $row)
     {
-        // Convert date format from YYYY/MM/DD HH:MM (CSV) or Excel's numeric format (XLSX)
-        if (! empty($row['start_at'])) {
-            try {
-                if (is_numeric($row['start_at'])) {
-                    // Handle Excel's numeric date format from .xlsx files
-                    $row['start_at'] = Carbon::instance(Date::excelToDateTimeObject($row['start_at']))->toDateTimeString();
-                } else {
-                    // Handle string date format from .csv files
-                    $row['start_at'] = Carbon::createFromFormat('Y/m/d H:i', (string) $row['start_at'])->toDateTimeString();
-                }
-            } catch (\Exception $e) {
-                // If parsing fails, leave the original value for the validator to catch the error.
+        $rowIndex = $row->getIndex();
+        $row = $row->toArray();
+
+        // 1. Find Creator
+        $user = User::where('name', $row['created_by'])->first();
+        if (! $user) {
+            return;
+        }
+
+        // 2. Parse Dates (Matching your new CSV headers)
+        $startAt = $this->transformDate($row['start_date']);
+        $endAt = $this->transformDate($row['end_date']);
+
+        // 3. Create Event
+        $event = Event::create([
+            'title'       => $row['title'],
+            'description' => $row['description'] ?? null,
+            'location'    => $row['location'] ?? null,
+            'start_at'    => $startAt,
+            'end_at'      => $endAt,
+            'user_id'     => $user->id,
+            'status'      => $row['status'] ?? 'NOT-COMPLETED',
+        ]);
+
+        // 4. Handle Staff Assignment
+        if (! empty($row['staff'])) {
+            $staffNames = explode(',', $row['staff']);
+            $staffNames = array_map('trim', $staffNames);
+            $staffIds = User::whereIn('name', $staffNames)->pluck('id')->toArray();
+
+            if (! empty($staffIds)) {
+                $event->staff()->sync($staffIds);
             }
         }
 
-        if (! empty($row['end_at'])) {
-            try {
-                if (is_numeric($row['end_at'])) {
-                    $row['end_at'] = Carbon::instance(Date::excelToDateTimeObject($row['end_at']))->toDateTimeString();
-                } else {
-                    $row['end_at'] = Carbon::createFromFormat('Y/m/d H:i', (string) $row['end_at'])->toDateTimeString();
-                }
-            } catch (\Exception $e) {
-                // If parsing fails, leave the original value for the validator to catch the error.
-            }
-        }
-
-        return $row;
-    }
-
-    public function collection(Collection $rows)
-    {
-        foreach ($rows as $rowIndex => $row) {
-            // The row number in the spreadsheet is $rowIndex + 2 (1 for header, 1 for 0-based index)
-            $rowNumber = $rowIndex + 2;
-
-            try {
-                // 1. Validate 'created_by' user existence
-                $user = User::where('name', $row['created_by'])->first();
-                if (! $user) {
-                    $this->addError($rowNumber, 'created_by', "User '{$row['created_by']}' not found.");
-
-                    continue; // Skip this row
-                }
-
-                // 2. Validate date parsing
-                $start_at = Carbon::parse($row['start_at']);
-                $end_at = $row['end_at'] ? Carbon::parse($row['end_at']) : null;
-
-                if ($end_at && $end_at->isBefore($start_at)) {
-                    $this->addError($rowNumber, 'end_at', 'End date cannot be before the start date.');
-
-                    continue; // Skip this row
-                }
-
-                Event::create([
-                    'title' => $row['title'],
-                    'description' => $row['description'],
-                    'start_at' => $start_at,
-                    'end_at' => $end_at,
-                    'user_id' => $user->id,
-                ]);
-
-                $this->importedCount++;
-
-            } catch (\Exception $e) {
-                // Catch Carbon parsing errors or other unexpected issues
-                $this->addError($rowNumber, 'general', 'An unexpected error occurred: '.$e->getMessage());
-            }
-        }
+        $this->importedCount++;
     }
 
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'start_at' => 'required|date_format:Y-m-d H:i:s', // Enforce a specific format
-            'end_at' => 'nullable|date_format:Y-m-d H:i:s|after_or_equal:start_at',
-            'created_by' => 'required|string',
+            'title'       => 'required|string',
+            'start_date'  => 'required',
+            'end_date'    => 'required',
+            'created_by'  => 'required|exists:users,name',
+            'location'    => 'nullable|string',
+            'staff'       => 'nullable|string', 
         ];
-    }
-
-    /**
-     * @param  Failure[]  $failures
-     */
-    public function onFailure(Failure ...$failures)
-    {
-        foreach ($failures as $failure) {
-            $this->addError($failure->row(), $failure->attribute(), $failure->errors()[0]);
-        }
-    }
-
-    private function addError(int $rowNumber, string $attribute, string $message): void
-    {
-        $this->errorMessages[] = "Row {$rowNumber} ({$attribute}): {$message}";
     }
 
     public function getImportedCount(): int
@@ -130,7 +79,53 @@ class EventsImport implements SkipsOnFailure, ToCollection, WithHeadingRow, With
 
     public function getErrorMessages(): array
     {
-        // Remove duplicates and return
-        return array_unique($this->errorMessages);
+        return $this->errorMessages;
+    }
+
+    /**
+     * Transform Excel date or string to Carbon instance
+     */
+    private function transformDate($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        try {
+            // 1. Get the raw date object (unaware of timezone)
+            if (is_numeric($value)) {
+                $date = Carbon::instance(Date::excelToDateTimeObject($value));
+            } else {
+                $date = Carbon::parse($value);
+            }
+
+            // 2. Interpret this "raw time" as being in Kuala Lumpur
+            // shiftTimezone just tells Carbon "This existing time is actually in KL" without moving the hour hand
+            $date->shiftTimezone('Asia/Kuala_Lumpur');
+
+            // 3. Convert it to the app's storage timezone (UTC) so it saves correctly
+            $date->setTimezone(config('app.timezone'));
+
+            return $date;
+
+        } catch (\Exception $e) {
+            // Fallback: Try specific formats
+            try {
+                $date = Carbon::createFromFormat('d/m/Y H:i', $value);
+                $date->shiftTimezone('Asia/Kuala_Lumpur');
+                $date->setTimezone(config('app.timezone'));
+                return $date;
+            } catch (\Exception $e2) {
+                 try {
+                    $date = Carbon::createFromFormat('m/d/Y H:i', $value);
+                    $date->shiftTimezone('Asia/Kuala_Lumpur');
+                    $date->setTimezone(config('app.timezone'));
+                    return $date;
+                } catch (\Exception $e3) {
+                     return null;
+                }
+            }
+        }
     }
 }
+

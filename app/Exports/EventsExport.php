@@ -27,7 +27,7 @@ class EventsExport implements FromCollection, WithHeadings, WithMapping
      */
     public function collection()
     {
-        $query = Event::query();
+        $query = Event::with('staff');
 
         if ($this->startDate && $this->endDate) {
             $query->whereBetween('start_at', [$this->startDate, $this->endDate]);
@@ -46,6 +46,7 @@ class EventsExport implements FromCollection, WithHeadings, WithMapping
             'Title',
             'Description',
             'Location',
+            'Staff',
             'Status',
             'Start Date',
             'End Date',
@@ -58,6 +59,7 @@ class EventsExport implements FromCollection, WithHeadings, WithMapping
             $event->title,
             $event->description,
             $event->location,
+            $event->staff->pluck('name')->implode(', '),
             $event->status,
             $event->start_at->format('Y-m-d H:i:s'),
             $event->end_at->format('Y-m-d H:i:s'),
