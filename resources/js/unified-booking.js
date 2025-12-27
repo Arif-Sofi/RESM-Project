@@ -4,7 +4,7 @@ export default function (rooms, authUserId) {
         currentView: 'calendar',
         rooms: rooms,
         bookings: [],
-        selectedRooms: [], // 複数Room選択対応
+        selectedRooms: [], // Single room selection
         selectedDate: null,
         selectedStartTime: null,
         selectedEndTime: null,
@@ -134,12 +134,12 @@ export default function (rooms, authUserId) {
         },
 
         selectRoom(room) {
-            // 複数選択対応: クリックでトグル
+            // Single selection: toggle on click, replace if different
             const index = this.selectedRooms.findIndex(r => r.id === room.id);
             if (index === -1) {
-                this.selectedRooms.push(room);
+                this.selectedRooms = [room];
             } else {
-                this.selectedRooms.splice(index, 1);
+                this.selectedRooms = [];
             }
             this.loadCalendarEvents();
             // フィルターとして機能 - モーダルは開かない

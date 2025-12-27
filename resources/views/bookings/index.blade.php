@@ -68,9 +68,9 @@
                             </button>
 
                             <!-- Selected rooms count -->
-                            <div x-show="selectedRooms.length > 0" class="mb-2 text-xs text-gray-600 dark:text-gray-400">
+                            {{-- <div x-show="selectedRooms.length > 0" class="mb-2 text-xs text-gray-600 dark:text-gray-400">
                                 <span x-text="`${selectedRooms.length} room(s) selected`"></span>
-                            </div>
+                            </div> --}}
 
                             <!-- Room List (複数選択対応) -->
                             <div class="space-y-2 max-h-[500px] overflow-y-auto">

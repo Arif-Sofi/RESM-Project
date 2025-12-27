@@ -233,7 +233,11 @@ class BookingController extends Controller
         $this->authorize('approve', $booking);
         $booking->update(['status' => true]);
 
-        Mail::to($booking->user->email)->queue(new BookingApproved($booking));
+        try {
+            Mail::to($booking->user->email)->send(new BookingApproved($booking));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send booking approval email: '.$e->getMessage());
+        }
 
         return redirect()->route('admin.approvals')->with('success', 'Booking approved successfully!');
     }
@@ -246,7 +250,11 @@ class BookingController extends Controller
             'rejection_reason' => request()->input('rejection_reason'),
         ]);
 
-        Mail::to($booking->user->email)->queue(new BookingRejected($booking));
+        try {
+            Mail::to($booking->user->email)->send(new BookingRejected($booking));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send booking rejection email: '.$e->getMessage());
+        }
 
         return redirect()->route('admin.approvals')->with('success', 'Booking rejected successfully!');
     }
