@@ -224,6 +224,19 @@ export default function (users, authUserId, initialEvents = []) {
             return this.createEventData.staff.includes(userId);
         },
 
+        toggleAllCreateStaff() {
+             const allStaffIds = this.availableStaff.map(user => user.id);
+             if (this.isAllCreateStaffSelected()) {
+                 this.createEventData.staff = [];
+             } else {
+                 this.createEventData.staff = [...allStaffIds];
+             }
+        },
+
+        isAllCreateStaffSelected() {
+             return this.availableStaff.length > 0 && this.createEventData.staff.length === this.availableStaff.length;
+        },
+
         getSelectedStaffNames() {
             return this.users
                 .filter(user => this.createEventData.staff.includes(user.id))
@@ -349,6 +362,19 @@ export default function (users, authUserId, initialEvents = []) {
 
         isEditStaffSelected(userId) {
             return this.editEventData.staff.includes(userId);
+        },
+
+        toggleAllEditStaff() {
+             const allStaffIds = this.availableStaff.map(user => user.id);
+             if (this.isAllEditStaffSelected()) {
+                 this.editEventData.staff = [];
+             } else {
+                 this.editEventData.staff = [...allStaffIds];
+             }
+        },
+
+        isAllEditStaffSelected() {
+             return this.availableStaff.length > 0 && this.editEventData.staff.length === this.availableStaff.length;
         },
 
         getEditSelectedStaffNames() {

@@ -107,6 +107,11 @@
                         </button>
                         <div x-show="showStaffDropdown" @click.away="showStaffDropdown = false"
                             class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg max-h-48 overflow-auto">
+                            <label class="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 sticky top-0 z-20">
+                                <input type="checkbox" :checked="isAllCreateStaffSelected()" @change="toggleAllCreateStaff()"
+                                    class="rounded border-gray-300 text-primary focus:ring-primary">
+                                <span class="ml-2 text-sm font-bold text-gray-700 dark:text-gray-300">{{ __('All Staff') }}</span>
+                            </label>
                             <template x-for="user in availableStaff" :key="user.id">
                                 <label class="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                                     <input type="checkbox" :checked="isStaffSelected(user.id)" @change="toggleStaff(user.id)"

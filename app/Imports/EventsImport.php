@@ -48,9 +48,15 @@ class EventsImport implements OnEachRow, WithHeadingRow, WithValidation, SkipsEm
 
         // 4. Handle Staff Assignment
         if (! empty($row['staff'])) {
-            $staffNames = explode(',', $row['staff']);
-            $staffNames = array_map('trim', $staffNames);
-            $staffIds = User::whereIn('name', $staffNames)->pluck('id')->toArray();
+            if (strcasecmp(trim($row['staff']), 'All Staff') === 0) {
+                // If "All Staff", assign all users except the creator
+                $staffIds = User::where('id', '!=', $user->id)->pluck('id')->toArray();
+            } else {
+                // Assume staff are provided as comma-separated names e.g. "John Doe, Jane Smith"
+                $staffNames = explode(',', $row['staff']);
+                $staffNames = array_map('trim', $staffNames);
+                $staffIds = User::whereIn('name', $staffNames)->pluck('id')->toArray();
+            }
 
             if (! empty($staffIds)) {
                 $event->staff()->sync($staffIds);
