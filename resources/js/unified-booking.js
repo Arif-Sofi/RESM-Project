@@ -702,7 +702,7 @@ export default function (rooms, authUserId) {
             let filtered = this.bookings;
 
             // Hide rejected bookings (same as calendar view)
-            filtered = filtered.filter(booking => booking.status !== false);
+            // filtered = filtered.filter(booking => booking.status !== false);
 
             // Filter by search
             if (this.searchQuery) {

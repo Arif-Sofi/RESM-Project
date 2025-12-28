@@ -218,7 +218,7 @@ test('admin can approve booking', function () {
     $booking->refresh();
     expect($booking->status)->toBeTrue();
 
-    Mail::assertQueued(BookingApprovedMail::class);
+    Mail::assertSent(BookingApprovedMail::class);
 });
 
 test('regular user cannot approve booking', function () {
@@ -248,7 +248,7 @@ test('admin can reject booking with reason', function () {
     expect($booking->status)->toBeFalse()
         ->and($booking->rejection_reason)->toBe('Room unavailable');
 
-    Mail::assertQueued(BookingRejectedMail::class);
+    Mail::assertSent(BookingRejectedMail::class);
 });
 
 test('regular user cannot reject booking', function () {

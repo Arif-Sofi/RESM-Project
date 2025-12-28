@@ -115,7 +115,7 @@ describe('Booking Approval Workflow', function () {
 
         $this->post(route('bookings.approve', $booking));
 
-        Mail::assertQueued(\App\Mail\BookingApproved::class, function ($mail) use ($booking) {
+        Mail::assertSent(\App\Mail\BookingApproved::class, function ($mail) use ($booking) {
             return $mail->hasTo($booking->user->email);
         });
     });
@@ -168,7 +168,7 @@ describe('Booking Rejection Workflow', function () {
             'rejection_reason' => 'Room not available',
         ]);
 
-        Mail::assertQueued(\App\Mail\BookingRejected::class, function ($mail) use ($booking) {
+        Mail::assertSent(\App\Mail\BookingRejected::class, function ($mail) use ($booking) {
             return $mail->hasTo($booking->user->email);
         });
     });
@@ -341,7 +341,7 @@ describe('Complete Booking Lifecycle Workflow', function () {
         expect($booking->status)->toBeTrue();
 
         // Verify email was sent
-        Mail::assertQueued(\App\Mail\BookingApproved::class);
+        Mail::assertSent(\App\Mail\BookingApproved::class);
     });
 
     test('complete workflow from creation to rejection', function () {
@@ -372,7 +372,7 @@ describe('Complete Booking Lifecycle Workflow', function () {
             ->and($booking->rejection_reason)->toBe('Room is unavailable');
 
         // Verify email was sent
-        Mail::assertQueued(\App\Mail\BookingRejected::class);
+        Mail::assertSent(\App\Mail\BookingRejected::class);
     });
 
     test('user creates booking, updates it, then admin approves', function () {
