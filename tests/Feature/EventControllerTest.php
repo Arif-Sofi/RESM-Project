@@ -64,6 +64,7 @@ test('user can create an event', function () {
     $response = $this->post(route('events.store'), [
         'title' => 'Team Meeting',
         'description' => 'Weekly sync meeting',
+        'location' => 'Conference Room',
         'start_at' => $startAt->toDateTimeString(),
         'end_at' => $endAt->toDateTimeString(),
         'staff' => [$this->staffUser->id],
@@ -74,6 +75,7 @@ test('user can create an event', function () {
     $this->assertDatabaseHas('events', [
         'title' => 'Team Meeting',
         'description' => 'Weekly sync meeting',
+        'location' => 'Conference Room',
         'user_id' => $this->user->id,
     ]);
 
@@ -96,6 +98,7 @@ test('user can create event via json request', function () {
     $response = $this->postJson(route('events.store'), [
         'title' => 'API Event',
         'description' => 'Created via API',
+        'location' => 'Virtual Room',
         'start_at' => $startAt->toDateTimeString(),
         'end_at' => $endAt->toDateTimeString(),
         'staff' => [],
@@ -109,6 +112,7 @@ test('user can create event via json request', function () {
 
     $this->assertDatabaseHas('events', [
         'title' => 'API Event',
+        'location' => 'Virtual Room',
         'user_id' => $this->user->id,
     ]);
 });
@@ -132,6 +136,7 @@ test('creator can update their event', function () {
     $response = $this->patchJson(route('events.update', $event), [
         'title' => 'Updated Title',
         'description' => 'Updated description',
+        'location' => 'Updated Location',
         'start_at' => $event->start_at->toDateTimeString(),
         'end_at' => $event->end_at?->toDateTimeString(),
         'staff' => [$this->staffUser->id],
@@ -147,6 +152,7 @@ test('creator can update their event', function () {
         'id' => $event->id,
         'title' => 'Updated Title',
         'description' => 'Updated description',
+        'location' => 'Updated Location',
     ]);
 });
 

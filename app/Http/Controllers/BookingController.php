@@ -9,8 +9,10 @@ use App\Mail\BookingApproved;
 
 use App\Mail\BookingConfirmationMail;
 use App\Mail\BookingRejected;
+use App\Mail\NewBookingNotification;
 use App\Models\Booking;
 use App\Models\Room;
+use App\Models\User;
 use App\Services\BookingService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -107,6 +109,16 @@ class BookingController extends Controller
             if (! $request->expectsJson()) {
                 session()->flash('warning', 'Booking created but email notification failed to send.');
             }
+        }
+
+        // Send notification to admins
+        try {
+            $admins = User::where('role_id', 1)->get();
+            foreach ($admins as $admin) {
+                Mail::to($admin->email)->send(new NewBookingNotification($booking));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to send new booking notification to admins: '.$e->getMessage());
         }
 
         // Return JSON for AJAX requests
