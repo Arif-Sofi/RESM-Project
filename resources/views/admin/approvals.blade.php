@@ -142,15 +142,12 @@
 
                                             <!-- Action Buttons -->
                                             <div class="flex md:flex-col gap-2 md:min-w-[160px]">
-                                                <form :action="`/bookings/${booking.id}/approve`" method="POST" class="flex-1 md:flex-none">
-                                                    @csrf
-                                                    <button type="submit" class="w-full px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition flex items-center justify-center">
-                                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                                        </svg>
-                                                        {{ __('Approve') }}
-                                                    </button>
-                                                </form>
+                                                <button @click="openApproveModal(booking.id)" class="flex-1 md:flex-none px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition flex items-center justify-center">
+                                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    {{ __('Approve') }}
+                                                </button>
                                                 <button @click="openRejectModal(booking.id)" class="flex-1 md:flex-none px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition flex items-center justify-center">
                                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -215,6 +212,28 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Approve Modal -->
+                <div x-show="showApproveModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+                    <div class="flex items-center justify-center min-h-screen px-4">
+                        <div @click="closeApproveModal()" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ __('Approve Booking') }}</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">{{ __('Are you sure you want to approve this booking?') }}</p>
+                            <form :action="`/bookings/${approveBookingId}/approve`" method="POST">
+                                @csrf
+                                <div class="flex justify-end gap-3">
+                                    <button type="button" @click="closeApproveModal()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                                        {{ __('Cancel') }}
+                                    </button>
+                                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+                                        {{ __('Approve Booking') }}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -233,6 +252,10 @@
             // Reject modal state
             showRejectModal: false,
             rejectBookingId: null,
+
+            // Approve modal state
+            showApproveModal: false,
+            approveBookingId: null,
 
             // Initialize expanded months (first month expanded by default)
             init() {
@@ -258,7 +281,31 @@
                 return filtered;
             },
 
-            // Month options getter (based on available bookings + next 6 months)
+            // ... (keep other getters)
+
+            // Open reject modal
+            openRejectModal(bookingId) {
+                this.rejectBookingId = bookingId;
+                this.showRejectModal = true;
+            },
+
+            // Close reject modal
+            closeRejectModal() {
+                this.showRejectModal = false;
+                this.rejectBookingId = null;
+            },
+
+            // Open approve modal
+            openApproveModal(bookingId) {
+                this.approveBookingId = bookingId;
+                this.showApproveModal = true;
+            },
+
+            // Close approve modal
+            closeApproveModal() {
+                this.showApproveModal = false;
+                this.approveBookingId = null;
+            },
             get monthOptions() {
                 const options = [];
                 const now = new Date();
