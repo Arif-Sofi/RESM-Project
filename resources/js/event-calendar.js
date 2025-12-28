@@ -244,10 +244,15 @@ export default function (users, authUserId, initialEvents = []) {
         },
 
         getSelectedStaffNames() {
-            return this.users
+            let names = this.users
                 .filter(user => this.createEventData.staff.includes(user.id))
-                .map(user => user.name)
-                .join(', ');
+                .map(user => user.name);
+            
+            if (this.createEventData.showOtherStaffInput) {
+                names.push('Other Staff');
+            }
+            
+            return names.join(', ');
         },
 
         async createEvent() {
@@ -387,10 +392,15 @@ export default function (users, authUserId, initialEvents = []) {
         },
 
         getEditSelectedStaffNames() {
-            return this.users
+            let names = this.users
                 .filter(user => this.editEventData.staff.includes(user.id))
-                .map(user => user.name)
-                .join(', ');
+                .map(user => user.name);
+            
+            if (this.editEventData.showOtherStaffInput) {
+                names.push('Other Staff');
+            }
+            
+            return names.join(', ');
         },
 
         async updateEvent() {

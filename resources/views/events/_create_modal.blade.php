@@ -100,7 +100,7 @@
                         </label>
                         <button type="button" @click="showStaffDropdown = !showStaffDropdown"
                             class="w-full px-3 py-2 text-left border border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary">
-                            <span x-text="createEventData.staff.length > 0 ? getSelectedStaffNames() : '{{ __('messages.select_staff') }}'"></span>
+                            <span x-text="(createEventData.staff.length > 0 || createEventData.showOtherStaffInput) ? getSelectedStaffNames() : '{{ __('messages.select_staff') }}'"></span>
                             <svg class="absolute right-3 top-9 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
