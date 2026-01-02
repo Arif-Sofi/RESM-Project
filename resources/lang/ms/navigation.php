@@ -4,7 +4,7 @@ return [
     'dashboard' => 'Papan Pemuka',
     'event calendar' => 'Kalendar Acara',
     'bookings' => 'Tempahan',
-    'Pprofile' => 'Profil',
+    'profile' => 'Profil',
     'logout' => 'Log Keluar',
     'qr' => 'Penjana Kod QR',
     'generate report' => 'Jana Laporan',
