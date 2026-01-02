@@ -23,42 +23,60 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Booking Routes
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+    Route::get('/bookings/{booking}/edit', [BookingController::class, 'edit'])->name('bookings.edit');
+    Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
+    Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+    Route::get('/bookings/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
+    
+    // API Routes for Booking (Calendar)
+    Route::get('/api/bookings', [BookingController::class, 'apiIndex'])->name('api.bookings.index');
+    Route::get('/api/bookings/{booking}', [BookingController::class, 'apiShow'])->name('api.bookings.show');
+    Route::post('/api/bookings/check-availability', [BookingController::class, 'checkAvailability'])->name('api.bookings.check-availability');
+    Route::get('/api/bookings/available-rooms', [BookingController::class, 'availableRooms'])->name('api.bookings.available-rooms');
+    
+    // Booking AJAX helpers
+    Route::get('/bookings/room/{room}', [BookingController::class, 'getBookingsByRoom'])->name('bookings.by-room');
+    Route::get('/bookings/room-and-date/{room}', [BookingController::class, 'getBookingsByRoomAndDate'])->name('bookings.by-room-and-date');
+
+    // Admin Booking Approval
+    Route::get('/admin/approvals', [BookingController::class, 'approvals'])->name('admin.approvals');
+    Route::post('/bookings/{booking}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
+    Route::post('/bookings/{booking}/reject', [BookingController::class, 'reject'])->name('bookings.reject');
+
+    // Event Routes
+    Route::resource('events', EventController::class);
+    Route::get('/my-events', [EventController::class, 'myEvents'])->name('events.my-events');
+    Route::post('/events/import', [EventController::class, 'import'])->name('events.import');
+    Route::get('/api/events', [EventController::class, 'apiEvents'])->name('api.events');
+
+    // Reports & Export
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
+    Route::get('/events/export', [EventController::class, 'export'])->name('events.export');
+
+    // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Bookings routes
-    Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
-    Route::resource('bookings', controller: 'App\Http\Controllers\BookingController');
-    Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
-    Route::get('/admin/approvals', [BookingController::class, 'approvals'])->name('admin.approvals');
-    Route::get('/bookings/room/{room}', [BookingController::class, 'getBookingsByRoom']);
-    Route::get('/bookings/room-and-date/{room}', [BookingController::class, 'getBookingsByRoomAndDate']);
-    Route::post('/bookings/{booking}/approve', [BookingController::class, 'approve'])->name('bookings.approve');
-    Route::post('/bookings/{booking}/reject', [BookingController::class, 'reject'])->name('bookings.reject');
+    // QR Code
+    Route::get('/qr-scanner', [QrCodeController::class, 'index'])->name('qr.scanner');
+    Route::post('/qr/check-in', [QrCodeController::class, 'checkIn'])->name('qr.check-in');
 
-    // API routes for bookings
-    Route::get('/api/bookings', [BookingController::class, 'apiIndex'])->name('api.bookings');
-    Route::post('/api/bookings/check-availability', [BookingController::class, 'checkAvailability'])->name('api.bookings.check-availability');
-    Route::get('/api/bookings/available-rooms', [BookingController::class, 'availableRooms'])->name('api.bookings.available-rooms');
-    Route::get('/api/bookings/{booking}', [BookingController::class, 'apiShow'])->name('api.bookings.show');
+    // Notifications
+    Route::post('/notifications/{id}/read', function ($id) {
+        auth()->user()->unreadNotifications->where('id', $id)->markAsRead();
+        return response()->json(['success' => true]);
+    })->name('notifications.read');
 
-    // Rooms routes
-    Route::resource('rooms', controller: 'App\Http\Controllers\RoomController');
-
-    // Events routes
-    Route::get('/events/my-events', [EventController::class, 'myEvents'])->name('events.my-events');
-    Route::post('/events/import', [EventController::class, 'import'])->name('events.import');
-    Route::get('/events/export', [EventController::class, 'export'])->name('events.export');
-    Route::resource('events', EventController::class)->except(['create', 'show', 'edit']);
-    Route::get('/api/events', [EventController::class, 'apiEvents'])->name('api.events');
-
-    // QR Code routes
-    Route::get('/qr-code', [QrCodeController::class, 'index'])->name('qr.index');
-    Route::post('qr-code/generate', [QrCodeController::class, 'generate'])->name('qr.generate');
-
-    // Report routes
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('/notifications/read-all', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return response()->json(['success' => true]);
+    })->name('notifications.read-all');
 });
 
 require __DIR__.'/auth.php';
