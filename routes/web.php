@@ -31,13 +31,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
     Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
     Route::get('/bookings/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
-    
+
     // API Routes for Booking (Calendar)
     Route::get('/api/bookings', [BookingController::class, 'apiIndex'])->name('api.bookings.index');
     Route::get('/api/bookings/{booking}', [BookingController::class, 'apiShow'])->name('api.bookings.show');
     Route::post('/api/bookings/check-availability', [BookingController::class, 'checkAvailability'])->name('api.bookings.check-availability');
     Route::get('/api/bookings/available-rooms', [BookingController::class, 'availableRooms'])->name('api.bookings.available-rooms');
-    
+
     // Booking AJAX helpers
     Route::get('/bookings/room/{room}', [BookingController::class, 'getBookingsByRoom'])->name('bookings.by-room');
     Route::get('/bookings/room-and-date/{room}', [BookingController::class, 'getBookingsByRoomAndDate'])->name('bookings.by-room-and-date');
@@ -70,11 +70,13 @@ Route::middleware('auth')->group(function () {
     // Notifications
     Route::post('/notifications/{id}/read', function ($id) {
         auth()->user()->unreadNotifications->where('id', $id)->markAsRead();
+
         return response()->json(['success' => true]);
     })->name('notifications.read');
 
     Route::post('/notifications/read-all', function () {
         auth()->user()->unreadNotifications->markAsRead();
+
         return response()->json(['success' => true]);
     })->name('notifications.read-all');
 });

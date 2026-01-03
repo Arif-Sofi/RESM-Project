@@ -9,4 +9,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('app:send-event-reminders')->everyMinute();
-Schedule::command('events:update-status')->everyMinute(); //run "docker-compose exec app php artisan schedule:work" at separate terminal
+Schedule::command('events:update-status')->everyMinute(); // run "docker-compose exec app php artisan schedule:work" at separate terminal

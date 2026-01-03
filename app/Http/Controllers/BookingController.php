@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Exports\BookingsExport;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
-use App\Mail\BookingApproved;
-
 use App\Mail\BookingConfirmationMail;
 use App\Models\Booking;
 use App\Models\Room;

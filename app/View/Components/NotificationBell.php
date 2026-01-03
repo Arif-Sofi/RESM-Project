@@ -9,6 +9,7 @@ use Illuminate\View\Component;
 class NotificationBell extends Component
 {
     public $notifications;
+
     public $unreadCount;
 
     /**

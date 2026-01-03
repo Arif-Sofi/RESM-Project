@@ -12,14 +12,12 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Row;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class EventsImport implements OnEachRow, WithHeadingRow, WithValidation, SkipsEmptyRows
+class EventsImport implements OnEachRow, SkipsEmptyRows, WithHeadingRow, WithValidation
 {
     private int $importedCount = 0;
+
     private array $errorMessages = [];
 
-    /**
-     * @param Row $row
-     */
     public function onRow(Row $row)
     {
         $rowIndex = $row->getIndex();
@@ -37,13 +35,13 @@ class EventsImport implements OnEachRow, WithHeadingRow, WithValidation, SkipsEm
 
         // 3. Create Event
         $event = Event::create([
-            'title'       => $row['title'],
+            'title' => $row['title'],
             'description' => $row['description'] ?? null,
-            'location'    => $row['location'] ?? null,
-            'start_at'    => $startAt,
-            'end_at'      => $endAt,
-            'user_id'     => $user->id,
-            'status'      => $row['status'] ?? 'NOT-COMPLETED',
+            'location' => $row['location'] ?? null,
+            'start_at' => $startAt,
+            'end_at' => $endAt,
+            'user_id' => $user->id,
+            'status' => $row['status'] ?? 'NOT-COMPLETED',
         ]);
 
         // 4. Handle Staff Assignment
@@ -69,12 +67,12 @@ class EventsImport implements OnEachRow, WithHeadingRow, WithValidation, SkipsEm
     public function rules(): array
     {
         return [
-            'title'       => 'required|string',
-            'start_date'  => 'required',
-            'end_date'    => 'required',
-            'created_by'  => 'required|exists:users,name',
-            'location'    => 'nullable|string',
-            'staff'       => 'nullable|string', 
+            'title' => 'required|string',
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'created_by' => 'required|exists:users,name',
+            'location' => 'nullable|string',
+            'staff' => 'nullable|string',
         ];
     }
 
@@ -120,18 +118,19 @@ class EventsImport implements OnEachRow, WithHeadingRow, WithValidation, SkipsEm
                 $date = Carbon::createFromFormat('d/m/Y H:i', $value);
                 $date->shiftTimezone('Asia/Kuala_Lumpur');
                 $date->setTimezone(config('app.timezone'));
+
                 return $date;
             } catch (\Exception $e2) {
-                 try {
+                try {
                     $date = Carbon::createFromFormat('m/d/Y H:i', $value);
                     $date->shiftTimezone('Asia/Kuala_Lumpur');
                     $date->setTimezone(config('app.timezone'));
+
                     return $date;
                 } catch (\Exception $e3) {
-                     return null;
+                    return null;
                 }
             }
         }
     }
 }
-

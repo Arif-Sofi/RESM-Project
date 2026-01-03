@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Feature;
 
+use App\Exports\BookingsExport;
 use App\Models\Booking;
 use App\Models\Room;
 use App\Models\User;
-use App\Exports\BookingsExport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Maatwebsite\Excel\Facades\Excel;
 use Tests\TestCase;

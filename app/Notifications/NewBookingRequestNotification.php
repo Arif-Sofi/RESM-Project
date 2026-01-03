@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Booking;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -38,9 +37,9 @@ class NewBookingRequestNotification extends Notification
         return (new MailMessage)
             ->subject('New Booking Request Received')
             ->greeting('Hello Admin,')
-            ->line('A new booking request has been submitted by ' . $this->booking->user->name . '.')
-            ->line('Room: ' . $this->booking->room->name)
-            ->line('Purpose: ' . $this->booking->purpose)
+            ->line('A new booking request has been submitted by '.$this->booking->user->name.'.')
+            ->line('Room: '.$this->booking->room->name)
+            ->line('Purpose: '.$this->booking->purpose)
             ->action('Review Request', route('admin.approvals'))
             ->line('Thank you!');
     }
@@ -54,7 +53,7 @@ class NewBookingRequestNotification extends Notification
             'booking_id' => $this->booking->id,
             'user_name' => $this->booking->user->name,
             'room_name' => $this->booking->room->name,
-            'message' => 'New booking request from ' . $this->booking->user->name . ' for ' . $this->booking->room->name . '.',
+            'message' => 'New booking request from '.$this->booking->user->name.' for '.$this->booking->room->name.'.',
             'type' => 'new_booking_request',
             'link' => route('admin.approvals'),
         ];

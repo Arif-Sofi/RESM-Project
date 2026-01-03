@@ -10,7 +10,9 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 class BookingsExport implements FromCollection, WithHeadings, WithMapping
 {
     protected $startDate;
+
     protected $endDate;
+
     protected $status;
 
     public function __construct($startDate, $endDate, $status)
@@ -21,8 +23,8 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping
     }
 
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         $query = Booking::with(['user', 'room']);

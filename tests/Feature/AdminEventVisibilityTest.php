@@ -56,7 +56,7 @@ test('regular user only sees own events', function () {
         ->assertOk()
         ->assertViewHas('events', function ($events) use ($event1, $event2) {
             return $events->contains('id', $event1->id)
-                && !$events->contains('id', $event2->id);
+                && ! $events->contains('id', $event2->id);
         });
 
     $this->actingAs($user1)

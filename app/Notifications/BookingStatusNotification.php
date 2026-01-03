@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Booking;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -13,6 +12,7 @@ class BookingStatusNotification extends Notification
     use Queueable;
 
     protected $booking;
+
     protected $status; // 'approved' or 'rejected'
 
     /**
@@ -37,17 +37,17 @@ class BookingStatusNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $subject = $this->status === 'approved' 
-            ? 'Your Booking Has Been Approved!' 
+        $subject = $this->status === 'approved'
+            ? 'Your Booking Has Been Approved!'
             : 'Update on Your Booking Request';
 
         $message = (new MailMessage)
             ->subject($subject)
-            ->greeting('Hello ' . $notifiable->name . ',')
-            ->line('Your booking for ' . $this->booking->room->name . ' has been ' . $this->status . '.');
+            ->greeting('Hello '.$notifiable->name.',')
+            ->line('Your booking for '.$this->booking->room->name.' has been '.$this->status.'.');
 
         if ($this->status === 'rejected' && $this->booking->rejection_reason) {
-            $message->line('Reason: ' . $this->booking->rejection_reason);
+            $message->line('Reason: '.$this->booking->rejection_reason);
         }
 
         return $message
@@ -64,7 +64,7 @@ class BookingStatusNotification extends Notification
             'booking_id' => $this->booking->id,
             'room_name' => $this->booking->room->name,
             'status' => $this->status,
-            'message' => 'Your booking for ' . $this->booking->room->name . ' has been ' . $this->status . '.',
+            'message' => 'Your booking for '.$this->booking->room->name.' has been '.$this->status.'.',
             'type' => 'booking_status',
             'link' => route('bookings.my-bookings'),
         ];
