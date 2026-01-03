@@ -294,7 +294,10 @@ export default function (rooms, authUserId) {
         checkAvailableRooms() {
             if (!this.selectedStartTime || !this.selectedEndTime) return;
 
-            fetch(`/api/bookings/available-rooms?start=${this.selectedStartTime}&end=${this.selectedEndTime}`)
+            const start = new Date(this.selectedStartTime).toISOString();
+            const end = new Date(this.selectedEndTime).toISOString();
+
+            fetch(`/api/bookings/available-rooms?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`)
                 .then(response => response.json())
                 .then(data => {
                     this.availableRooms = data.available_rooms || [];
@@ -307,6 +310,8 @@ export default function (rooms, authUserId) {
 
             // Use the first selected room for availability check
             const roomId = this.selectedRooms[0].id;
+            const startDateTime = new Date(this.selectedStartTime).toISOString();
+            const endDateTime = new Date(this.selectedEndTime).toISOString();
 
             fetch(`/api/bookings/check-availability`, {
                 method: 'POST',
@@ -316,8 +321,8 @@ export default function (rooms, authUserId) {
                 },
                 body: JSON.stringify({
                     room_id: roomId,
-                    start_time: this.selectedStartTime,
-                    end_time: this.selectedEndTime
+                    start_time: startDateTime,
+                    end_time: endDateTime
                 })
             })
             .then(response => response.json())
@@ -494,8 +499,9 @@ export default function (rooms, authUserId) {
                 return;
             }
 
-            const startDateTime = `${this.editBookingData.date}T${this.editBookingData.start_time}:00`;
-            const endDateTime = `${this.editBookingData.date}T${this.editBookingData.end_time}:00`;
+            // Convert to UTC ISO string
+            const startDateTime = new Date(`${this.editBookingData.date}T${this.editBookingData.start_time}:00`).toISOString();
+            const endDateTime = new Date(`${this.editBookingData.date}T${this.editBookingData.end_time}:00`).toISOString();
 
             fetch(`/api/bookings/check-availability`, {
                 method: 'POST',
@@ -619,8 +625,9 @@ export default function (rooms, authUserId) {
                 return;
             }
 
-            const startDateTime = `${this.createBookingData.date}T${this.createBookingData.start_time}:00`;
-            const endDateTime = `${this.createBookingData.date}T${this.createBookingData.end_time}:00`;
+            // Convert to UTC ISO string
+            const startDateTime = new Date(`${this.createBookingData.date}T${this.createBookingData.start_time}:00`).toISOString();
+            const endDateTime = new Date(`${this.createBookingData.date}T${this.createBookingData.end_time}:00`).toISOString();
 
             fetch(`/api/bookings/check-availability`, {
                 method: 'POST',
