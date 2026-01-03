@@ -8,11 +8,11 @@ use App\Http\Requests\UpdateBookingRequest;
 use App\Mail\BookingApproved;
 
 use App\Mail\BookingConfirmationMail;
-use App\Mail\BookingRejected;
-use App\Mail\NewBookingNotification;
 use App\Models\Booking;
 use App\Models\Room;
 use App\Models\User;
+use App\Notifications\BookingStatusNotification;
+use App\Notifications\NewBookingRequestNotification;
 use App\Services\BookingService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -111,11 +111,11 @@ class BookingController extends Controller
             }
         }
 
-        // Send notification to admins
+        // Notify Admins
         try {
             $admins = User::where('role_id', 1)->get();
             foreach ($admins as $admin) {
-                Mail::to($admin->email)->send(new NewBookingNotification($booking));
+                $admin->notify(new NewBookingRequestNotification($booking));
             }
         } catch (\Exception $e) {
             \Log::error('Failed to send new booking notification to admins: '.$e->getMessage());
@@ -246,7 +246,7 @@ class BookingController extends Controller
         $booking->update(['status' => true]);
 
         try {
-            Mail::to($booking->user->email)->send(new BookingApproved($booking));
+            $booking->user->notify(new BookingStatusNotification($booking, 'approved'));
         } catch (\Exception $e) {
             \Log::error('Failed to send booking approval email: '.$e->getMessage());
         }
@@ -263,7 +263,7 @@ class BookingController extends Controller
         ]);
 
         try {
-            Mail::to($booking->user->email)->send(new BookingRejected($booking));
+            $booking->user->notify(new BookingStatusNotification($booking, 'rejected'));
         } catch (\Exception $e) {
             \Log::error('Failed to send booking rejection email: '.$e->getMessage());
         }

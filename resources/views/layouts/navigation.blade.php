@@ -58,6 +58,12 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+
+                <!-- Notifications Bell -->
+                <div class="hidden sm:flex sm:items-center sm:ms-4">
+                    <x-notification-bell />
+                </div>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
