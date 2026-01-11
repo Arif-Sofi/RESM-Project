@@ -24,7 +24,11 @@ class EventExportTest extends TestCase
         Event::factory()->create(['status' => 'COMPLETED']);
         Event::factory()->create(['status' => 'NOT-COMPLETED']);
 
-        $response = $this->get(route('events.export', ['status' => 'COMPLETED']));
+        $response = $this->get(route('events.export', [
+            'status' => 'COMPLETED',
+            'start_date' => now()->subYear()->toDateString(),
+            'end_date' => now()->addYear()->toDateString(),
+        ]));
 
         $response->assertSuccessful();
 
@@ -46,7 +50,11 @@ class EventExportTest extends TestCase
         Event::factory()->create(['status' => 'NOT-COMPLETED']);
         Event::factory()->create(['status' => 'NOT-COMPLETED']);
 
-        $this->get(route('events.export', ['status' => 'NOT-COMPLETED']));
+        $this->get(route('events.export', [
+            'status' => 'NOT-COMPLETED',
+            'start_date' => now()->subYear()->toDateString(),
+            'end_date' => now()->addYear()->toDateString(),
+        ]));
 
         Excel::assertDownloaded('events.xlsx', function (EventsExport $export) {
             return $export->collection()->count() === 2;
@@ -71,6 +79,7 @@ class EventExportTest extends TestCase
         $this->get(route('events.export', [
             'start_date' => $startDate,
             'end_date' => $endDate,
+            'status' => '',
         ]));
 
         Excel::assertDownloaded('events.xlsx', function (EventsExport $export) {

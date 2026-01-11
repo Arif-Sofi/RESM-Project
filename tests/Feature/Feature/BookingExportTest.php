@@ -26,7 +26,11 @@ class BookingExportTest extends TestCase
         Booking::factory()->create(['user_id' => $user->id, 'room_id' => $room->id, 'status' => 1]); // Approved
         Booking::factory()->create(['user_id' => $user->id, 'room_id' => $room->id, 'status' => null]); // Pending
 
-        $response = $this->get(route('bookings.export', ['status' => 'all']));
+        $response = $this->get(route('bookings.export', [
+            'status' => 'all',
+            'start_date' => now()->subYear()->toDateString(),
+            'end_date' => now()->addYear()->toDateString(),
+        ]));
 
         $response->assertSuccessful();
 
@@ -49,7 +53,11 @@ class BookingExportTest extends TestCase
         Booking::factory()->create(['user_id' => $user->id, 'room_id' => $room->id, 'status' => null]); // Pending
         Booking::factory()->create(['user_id' => $user->id, 'room_id' => $room->id, 'status' => 0]); // Rejected
 
-        $this->get(route('bookings.export', ['status' => '1']));
+        $this->get(route('bookings.export', [
+            'status' => '1',
+            'start_date' => now()->subYear()->toDateString(),
+            'end_date' => now()->addYear()->toDateString(),
+        ]));
 
         Excel::assertDownloaded('bookings.xlsx', function (BookingsExport $export) {
             return $export->collection()->count() === 1;
@@ -70,7 +78,11 @@ class BookingExportTest extends TestCase
         Booking::factory()->create(['user_id' => $user->id, 'room_id' => $room->id, 'status' => null]); // Pending
         Booking::factory()->create(['user_id' => $user->id, 'room_id' => $room->id, 'status' => 0]); // Rejected
 
-        $this->get(route('bookings.export', ['status' => 'pending']));
+        $this->get(route('bookings.export', [
+            'status' => 'pending',
+            'start_date' => now()->subYear()->toDateString(),
+            'end_date' => now()->addYear()->toDateString(),
+        ]));
 
         Excel::assertDownloaded('bookings.xlsx', function (BookingsExport $export) {
             return $export->collection()->count() === 2;

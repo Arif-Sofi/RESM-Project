@@ -23,12 +23,17 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Reports & Export (Must be before resource routes to avoid ID conflict)
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
+    Route::get('/events/export', [EventController::class, 'export'])->name('events.export');
+
     // Booking Routes
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::get('/bookings/{booking}/edit', [BookingController::class, 'edit'])->name('bookings.edit');
-    Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
+    Route::patch('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
     Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
     Route::get('/bookings/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
 
@@ -52,11 +57,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-events', [EventController::class, 'myEvents'])->name('events.my-events');
     Route::post('/events/import', [EventController::class, 'import'])->name('events.import');
     Route::get('/api/events', [EventController::class, 'apiEvents'])->name('api.events');
-
-    // Reports & Export
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/bookings/export', [BookingController::class, 'export'])->name('bookings.export');
-    Route::get('/events/export', [EventController::class, 'export'])->name('events.export');
 
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
