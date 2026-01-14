@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RoleSeeder::class);
 
-        User::factory()->count(15)->create([
+        User::factory()->count(7)->create([
             'role_id' => 2,
             'email_verified_at' => now(),
         ]);

@@ -143,9 +143,9 @@ class BookingSeeder extends Seeder
         $this->command->info('Generating realistic bookings...');
 
         // Generate bookings for each time period
-        $this->generateBookings($rooms, $users, 'past', 40);
-        $this->generateBookings($rooms, $users, 'current', 30);
-        $this->generateBookings($rooms, $users, 'future', 40);
+        $this->generateBookings($rooms, $users, 'past', 20);
+        $this->generateBookings($rooms, $users, 'current', 15);
+        $this->generateBookings($rooms, $users, 'future', 20);
 
         $totalBookings = Booking::count();
         $this->command->info("Successfully created {$totalBookings} bookings.");
