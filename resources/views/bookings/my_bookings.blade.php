@@ -263,11 +263,26 @@
                 const startDate = new Date(booking.start_time);
                 const endDate = new Date(booking.end_time);
 
+                // Helper to format date as YYYY-MM-DD in local timezone
+                const formatLocalDate = (date) => {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                };
+
+                // Helper to format time as HH:mm in local timezone
+                const formatLocalTime = (date) => {
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    return `${hours}:${minutes}`;
+                };
+
                 this.editBookingData = {
                     room_id: booking.room_id,
-                    date: startDate.toISOString().split('T')[0],
-                    start_time: startDate.toTimeString().slice(0, 5),
-                    end_time: endDate.toTimeString().slice(0, 5),
+                    date: formatLocalDate(startDate),
+                    start_time: formatLocalTime(startDate),
+                    end_time: formatLocalTime(endDate),
                     number_of_student: booking.number_of_student,
                     equipment_needed: booking.equipment_needed || '',
                     purpose: booking.purpose || ''
@@ -298,8 +313,16 @@
                     return;
                 }
 
-                const startTime = `${this.editBookingData.date}T${this.editBookingData.start_time}`;
-                const endTime = `${this.editBookingData.date}T${this.editBookingData.end_time}`;
+                // Convert local inputs to ISO string (UTC)
+                const startLocal = new Date(`${this.editBookingData.date}T${this.editBookingData.start_time}:00`);
+                const startTime = startLocal.toISOString();
+
+                const endLocal = new Date(`${this.editBookingData.date}T${this.editBookingData.end_time}:00`);
+                // Handle crossing midnight if needed (though simple booking usually same day, safe to just parse)
+                if (this.editBookingData.end_time < this.editBookingData.start_time) {
+                    endLocal.setDate(endLocal.getDate() + 1);
+                }
+                const endTime = endLocal.toISOString();
 
                 try {
                     const response = await fetch('/api/bookings/check-availability', {
@@ -329,8 +352,15 @@
                 this.editErrors = {};
                 this.editGeneralError = '';
 
-                const startTime = `${this.editBookingData.date}T${this.editBookingData.start_time}`;
-                const endTime = `${this.editBookingData.date}T${this.editBookingData.end_time}`;
+                // Convert local inputs to ISO string (UTC)
+                const startLocal = new Date(`${this.editBookingData.date}T${this.editBookingData.start_time}:00`);
+                const startTime = startLocal.toISOString();
+
+                const endLocal = new Date(`${this.editBookingData.date}T${this.editBookingData.end_time}:00`);
+                if (this.editBookingData.end_time < this.editBookingData.start_time) {
+                    endLocal.setDate(endLocal.getDate() + 1);
+                }
+                const endTime = endLocal.toISOString();
 
                 try {
                     const response = await fetch(`/bookings/${this.editBookingId}`, {
