@@ -97,17 +97,13 @@ class BookingController extends Controller
             'rejection_reason' => null,
         ]);
 
-        // Send the email notification (with error handling)
+        // Send notification to user (handles both email and database notification)
         try {
-            Mail::to(Auth::user()->email)->send(new BookingConfirmationMail($booking));
-            // Also trigger the system notification for the bell icon
             Auth::user()->notify(new BookingStatusNotification($booking, 'submitted'));
         } catch (\Exception $e) {
-            // Log the error but don't crash the booking creation
-            \Log::error('Failed to send booking confirmation email: '.$e->getMessage());
-            // Optionally add a flash message
+            \Log::error('Failed to send booking submission notification: '.$e->getMessage());
             if (! $request->expectsJson()) {
-                session()->flash('warning', 'Booking created but email notification failed to send.');
+                session()->flash('warning', 'Booking created but notification failed to send.');
             }
         }
 

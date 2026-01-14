@@ -4,10 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Event;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EventNotification extends Notification
+class EventNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -36,6 +37,7 @@ class EventNotification extends Notification
     {
         return (new MailMessage)
             ->subject('New Event Notification: '.$this->event->title)
+            ->greeting('Hello '.$notifiable->name.',')
             ->line('A new event has been created or you have been assigned to an event.')
             ->line('Title: '.$this->event->title)
             ->line('Location: '.$this->event->location)

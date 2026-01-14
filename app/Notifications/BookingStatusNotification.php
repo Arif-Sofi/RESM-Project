@@ -4,10 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Booking;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BookingStatusNotification extends Notification
+class BookingStatusNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -53,6 +54,16 @@ class BookingStatusNotification extends Notification
             ->subject($subject)
             ->greeting('Hello '.$notifiable->name.',')
             ->line('Your booking for '.$this->booking->room->name.' has '.$statusText.'.');
+
+        // Add detailed booking info for new submissions
+        if ($this->status === 'submitted') {
+            $message->line('**Booking Details:**')
+                ->line('• **Room:** '.$this->booking->room->name)
+                ->line('• **Purpose:** '.$this->booking->purpose)
+                ->line('• **Date:** '.$this->booking->start_time->format('d M Y'))
+                ->line('• **Time:** '.$this->booking->start_time->format('h:i A').' - '.$this->booking->end_time->format('h:i A'))
+                ->line('• **Equipment Needed:** '.($this->booking->equipment_needed ?? 'None'));
+        }
 
         if ($this->status === 'rejected' && $this->booking->rejection_reason) {
             $message->line('Reason: '.$this->booking->rejection_reason);
