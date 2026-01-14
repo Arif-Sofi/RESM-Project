@@ -143,6 +143,11 @@
                 <div class="font-medium text-sm text-primary dark:text-base">{{ Auth::user()->email }}</div>
             </div>
 
+            <div class="mt-3 px-4 flex items-center">
+                 <div class="text-sm text-primary dark:text-base mr-2">{{ __('Notifications') }}</div>
+                 <x-notification-bell />
+            </div>
+
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('navigation.profile') }}

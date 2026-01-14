@@ -30,8 +30,8 @@
 
         <div class="max-h-96 overflow-y-auto">
             @forelse($notifications as $notification)
-                <a href="{{ $notification->data['link'] ?? '#' }}" 
-                   @click="markAsRead('{{ $notification->id }}')"
+                <a href="#" 
+                   @click.prevent="markAsRead('{{ $notification->id }}', '{{ $notification->data['link'] ?? '#' }}')"
                    class="block px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-0 transition duration-150 ease-in-out">
                     <p class="text-sm text-gray-800 dark:text-gray-200">{{ $notification->data['message'] }}</p>
                     <p class="text-xs text-gray-500 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
@@ -54,14 +54,33 @@
 </div>
 
 <script>
-    function markAsRead(id) {
-        fetch(`/notifications/${id}/read`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
+    function markAsRead(id, link) {
+        // Prevent default navigation if needed, though we handle it via event
+        
+        // Use sendBeacon if available for reliable background sending
+        if (navigator.sendBeacon) {
+            const formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            navigator.sendBeacon(`/notifications/${id}/read`, formData);
+            
+            // Navigate immediately since beacon handles the request
+            if(link && link !== '#') {
+                window.location.href = link;
             }
-        });
+        } else {
+            // Fallback for older browsers
+            fetch(`/notifications/${id}/read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            }).finally(() => {
+                if(link && link !== '#') {
+                    window.location.href = link;
+                }
+            });
+        }
     }
 
     function markAllAsRead() {

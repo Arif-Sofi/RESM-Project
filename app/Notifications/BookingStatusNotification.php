@@ -37,14 +37,22 @@ class BookingStatusNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $subject = $this->status === 'approved'
-            ? 'Your Booking Has Been Approved!'
-            : 'Update on Your Booking Request';
+        $subject = match($this->status) {
+            'approved' => 'Your Booking Has Been Approved!',
+            'rejected' => 'Update on Your Booking Request',
+            'submitted' => 'Booking Request Submitted',
+            default => 'Booking Notification',
+        };
+
+        $statusText = match($this->status) {
+            'submitted' => 'successfully submitted and is pending approval',
+            default => 'been '.$this->status,
+        };
 
         $message = (new MailMessage)
             ->subject($subject)
             ->greeting('Hello '.$notifiable->name.',')
-            ->line('Your booking for '.$this->booking->room->name.' has been '.$this->status.'.');
+            ->line('Your booking for '.$this->booking->room->name.' has '.$statusText.'.');
 
         if ($this->status === 'rejected' && $this->booking->rejection_reason) {
             $message->line('Reason: '.$this->booking->rejection_reason);
@@ -60,11 +68,16 @@ class BookingStatusNotification extends Notification
      */
     public function toArray(object $notifiable): array
     {
+        $message = match($this->status) {
+            'submitted' => 'Your booking for '.$this->booking->room->name.' has been submitted.',
+            default => 'Your booking for '.$this->booking->room->name.' has been '.$this->status.'.',
+        };
+
         return [
             'booking_id' => $this->booking->id,
             'room_name' => $this->booking->room->name,
             'status' => $this->status,
-            'message' => 'Your booking for '.$this->booking->room->name.' has been '.$this->status.'.',
+            'message' => $message,
             'type' => 'booking_status',
             'link' => route('bookings.my-bookings'),
         ];

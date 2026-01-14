@@ -100,6 +100,8 @@ class BookingController extends Controller
         // Send the email notification (with error handling)
         try {
             Mail::to(Auth::user()->email)->send(new BookingConfirmationMail($booking));
+            // Also trigger the system notification for the bell icon
+            Auth::user()->notify(new BookingStatusNotification($booking, 'submitted'));
         } catch (\Exception $e) {
             // Log the error but don't crash the booking creation
             \Log::error('Failed to send booking confirmation email: '.$e->getMessage());

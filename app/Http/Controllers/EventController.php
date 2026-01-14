@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
+use App\Notifications\EventNotification;
+
 class EventController extends Controller
 {
     use AuthorizesRequests;
@@ -323,7 +325,8 @@ class EventController extends Controller
 
         foreach ($recipients as $recipient) {
             try {
-                Mail::to($recipient->email)->queue(new EventCreatedNotification($event));
+                // Use the Notification class which handles both database (bell) and mail
+                $recipient->notify(new EventNotification($event));
             } catch (\Exception $e) {
                 \Log::error('Failed to send event notification to '.$recipient->email.': '.$e->getMessage());
             }
